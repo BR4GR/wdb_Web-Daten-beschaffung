@@ -85,4 +85,3 @@ print(content)
 # Parse html with relevant regexp
 
 """Erweiterte Aufgabe: gib aus, was es diese Woche zur Auswahl gibt!"""
-

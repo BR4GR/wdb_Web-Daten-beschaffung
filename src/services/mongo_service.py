@@ -16,4 +16,5 @@ class MongoService:
 
     def insert_category(self, category_data: dict) -> None:
         """Insert a new category document into the categories collection."""
-        self.db.categories.insert_one(category_data)
+        if not self.check_category_exists(category_data["id"]):
+            self.db.categories.insert_one(category_data)

@@ -87,9 +87,14 @@ class MigrosScraper:
         """Try to get al subcategries for each base categorie."""
         for category in self.base_categories:
             category_url = self.BASE_URL + "category/" + category["slug"]
-            self.scrape_category_via_url(category_url, category["slug"])
+            second_level_slugs = self.scrape_category_via_url(
+                category_url, category["slug"]
+            )
+            for slug in second_level_slugs:
+                url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
+                self.scrape_category_via_url(url, slug)
 
-    def scrape_category_via_url(self, category_url: str, slug: str) -> None:
+    def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
 
         # Clear the requests log before starting a new page scrape
@@ -105,12 +110,18 @@ class MigrosScraper:
 
         # Capture the network request with "category" in the URL
         category_data = self._get_category_response("search/category")
+        slugs = [
+            category["slug"]
+            for category in category_data.get("categories", [])
+            if category.get("level") == 3
+        ]
 
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
             print(f"Successfully fetched data for category: {category_url}")
             print(category_data.get("categories", [])[0])
+            return slugs
         else:
             print(f"Failed to fetch data for category: {category_url}")
 

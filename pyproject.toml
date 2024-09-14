@@ -12,11 +12,27 @@ numpy = "^2.0.1"
 lxml = "^5.3.0"
 jsonpath-ng = "^1.6.1"
 nbstripout = "^0.7.1"
+requests = "^2.32.3"
+beautifulsoup4 = "^4.12.3"
+pandas = "^2.2.2"
+jupyter = "^1.0.0"
+selenium = "^4.23.1"
+sqlalchemy = "^2.0.32"
+pymongo = "^4.8.0"
+python-dotenv = "^1.0.1"
+selenium-wire = {extras = ["devtools"], version = "^5.1.0"}
+blinker = "<1.8.0"
+mitmproxy = "^10.4.2"
 
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
+black = "^24.8.0"
+isort = "^5.13.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"

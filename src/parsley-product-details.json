@@ -1,0 +1,252 @@
+[
+    {
+        "uid": 100056335,
+        "migrosId": "277280209200",
+        "migrosOnlineId": "7094535",
+        "name": "parsley",
+        "brand": "Migros Bio",
+        "versioning": "Curly",
+        "title": "Migros Bio · parsley · Curly",
+        "description": "Migros Bio parsley Curly",
+        "productRange": "STANDARD",
+        "productAvailability": "ONLINE_AND_INSTORE",
+        "productInformation": {
+            "mainInformation": {
+                "labels": [
+                    {
+                        "id": "L73",
+                        "name": "Bio Knospe",
+                        "slug": "bio-knospe",
+                        "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1687156946/labels/Bio_Knospe"
+                    }
+                ],
+                "brand": {
+                    "name": "Migros Bio",
+                    "slug": "migros-bio",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1678265962/brands/MIGROS_BIO_screen_pantone1_rgb"
+                },
+                "nutritionalCharacteristics": [
+                    "Organic"
+                ],
+                "nutritionalCharacteristicsV2": [
+                    {
+                        "name": "Organic"
+                    }
+                ],
+                "ingredients": "Petersilie.",
+                "origin": "You can find information about the origin on the packaging in the store.",
+                "mcheck": {
+                    "carbonFootprint": {
+                        "rating": 5,
+                        "co2CarKmEquivalent": 2,
+                        "productionRatio": 75,
+                        "transportRatio": 13,
+                        "packagingRatio": 12,
+                        "image": "https://image.migros.ch/original/3cb33aa7d90d7331f458860ae78688a0923b5993.svg",
+                        "stackImage": "https://image.migros.ch/{stack}/3cb33aa7d90d7331f458860ae78688a0923b5993.svg",
+                        "co2KgRange": "0 - 0.9 kg CO₂eq / kg"
+                    }
+                },
+                "rating": {
+                    "nbReviews": 169,
+                    "nbStars": 4.5
+                },
+                "migipediaUrl": "https://migipedia.migros.ch/de/products/277280209200"
+            },
+            "nutrientsInformation": {
+                "nutrientsTable": {
+                    "headers": [
+                        "100 g"
+                    ],
+                    "rows": [
+                        {
+                            "label": "Energy",
+                            "values": [
+                                "235 kJ (56 kcal)",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Fat",
+                            "values": [
+                                "0.5 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "of which saturates",
+                            "values": [
+                                "0.1 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Carbohydrate",
+                            "values": [
+                                "6.8 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "of which sugars",
+                            "values": [
+                                "4.8 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Fibre",
+                            "values": [
+                                "4.3 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Protein",
+                            "values": [
+                                "3.9 g",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Salt",
+                            "values": [
+                                "0.1 g",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                "isAnalyticalConstituents": false
+            },
+            "usageInformation": {
+                "usage": "Parsley prefers a light location and rather cool temperatures. Keep the root ball moist and suitable for: salads, soups, sauces, mayonnaise, eggs, fish and meat dishes",
+                "additionalInformation": "An essential ingredient in European cuisine: parsley is a harmonious addition to soups, stocks and stews, and also adds a nice touch of colour. Stir in just before serving or use raw."
+            },
+            "otherInformation": {
+                "articleNumber": "277280209200",
+                "legalDesignation": "Petersilie",
+                "distributorName": "Migros-Genossenschafts-Bund",
+                "distributorStreetAndNumber": "Limmatstrasse 152, CH-8031 Zürich",
+                "remarks": [
+                    {
+                        "code": "Weitere Zusatzangaben",
+                        "value": "-"
+                    }
+                ],
+                "mainSpecificities": [
+                    {
+                        "code": "Production process",
+                        "value": "Bio-Produktion"
+                    },
+                    {
+                        "code": "Saison von",
+                        "value": "April"
+                    },
+                    {
+                        "code": "Saison bis",
+                        "value": "September"
+                    },
+                    {
+                        "code": "Packaging type",
+                        "value": "Beutel"
+                    },
+                    {
+                        "code": "Storage at home",
+                        "value": "gekühlt aufbewahren/lagern"
+                    },
+                    {
+                        "code": "Washing instructions",
+                        "value": "vor Gebrauch waschen"
+                    }
+                ]
+            }
+        },
+        "gtins": [
+            "7623186354670",
+            "7610632990735"
+        ],
+        "images": [
+            {
+                "cdn": "rokka",
+                "url": "https://image.migros.ch/{stack}/84d8216bee4ad29db489a5b9e7279a8c74740d0d/migros-bio-peterli-gekraust.jpg"
+            }
+        ],
+        "breadcrumb": [
+            {
+                "id": "7494732",
+                "name": "Fruits & vegetables",
+                "slugs": [
+                    "fruits-vegetables"
+                ]
+            },
+            {
+                "id": "7494760",
+                "name": "Fresh herbs & spices",
+                "slugs": [
+                    "fruits-vegetables",
+                    "fresh-herbs-spices"
+                ]
+            },
+            {
+                "id": "7494917",
+                "name": "Fresh herbs",
+                "slugs": [
+                    "fruits-vegetables",
+                    "fresh-herbs-spices",
+                    "fresh-herbs"
+                ]
+            }
+        ],
+        "productUrls": "https://www.migros.ch/en/product/277280209200",
+        "isMgbCompatible": true,
+        "isConsignmentProduct": false,
+        "offer": {
+            "price": {
+                "displayUnitPrice": true,
+                "formattedPrice": "1.50",
+                "advertisedDisplayValue": "1.50",
+                "effectiveDisplayValue": "1.50",
+                "multiplier": 1,
+                "value": 1.5,
+                "effectiveValue": 1.5,
+                "advertisedValue": 1.5,
+                "unitPrice": {
+                    "value": 5,
+                    "unit": "100g"
+                }
+            },
+            "quantity": "30g",
+            "quantityPrice": "5.–/100g",
+            "isVariableWeight": false,
+            "channel": {
+                "offerType": "OFFLINE",
+                "region": "national"
+            },
+            "maxOrderableQuantityV2": 96,
+            "pictos": [
+                {
+                    "type": "BIO",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679483586/labels/bio",
+                    "description": "Organic"
+                },
+                {
+                    "type": "REGION",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679482984/labels/suisse",
+                    "description": "Switzerland"
+                }
+            ],
+            "isNewOffer": false,
+            "displayPrice": true,
+            "type": "STANDARD"
+        }
+    }
+]

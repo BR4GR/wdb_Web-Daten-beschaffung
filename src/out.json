@@ -1,0 +1,1351 @@
+{
+    "productIds": [
+        100040525,
+        100000740,
+        100040509,
+        100020417,
+        100048550,
+        100033928,
+        100047607,
+        100008529,
+        100012866,
+        100012683,
+        100042922,
+        100042943,
+        100044689,
+        100017072,
+        100048706,
+        100066869,
+        100042923,
+        100040737,
+        100022617,
+        100025198,
+        100003779,
+        100023575,
+        100018693,
+        100045215,
+        100003508,
+        100033787,
+        100163168,
+        100048701,
+        100092197,
+        100029674,
+        100007683,
+        100004367,
+        100023482,
+        100007060,
+        100030238,
+        100017012,
+        100001731,
+        100006998,
+        100045276,
+        100035256,
+        100000756,
+        100037131,
+        100045142,
+        100034362,
+        100045952,
+        100020418,
+        100052861,
+        100006993,
+        100040542,
+        100007046,
+        100037598,
+        100026133,
+        100052842,
+        100002048,
+        100023585,
+        100043281,
+        100124050,
+        100090407,
+        100031478,
+        100052324,
+        100007674,
+        100007699,
+        100039227,
+        100007741,
+        100007655,
+        100020491,
+        100038355,
+        100050882,
+        100101814,
+        100005552,
+        100004644,
+        100048593,
+        100090403,
+        100003918,
+        100028941,
+        100042441,
+        100046670,
+        100056144,
+        100048660,
+        100026002,
+        100040510,
+        100012894,
+        100031519,
+        100008733,
+        100025973,
+        100022966,
+        100056335,
+        100033784,
+        100017568,
+        100020956,
+        100063570,
+        100141194,
+        100007656,
+        100048594,
+        100003925,
+        100040503,
+        100024299,
+        100025975,
+        100131525,
+        100050823
+    ],
+    "sponsoredProducts": [],
+    "categories": [
+        {
+            "id": 7494732,
+            "name": "Fruits & vegetables",
+            "numberOfProducts": 1281,
+            "sortPriority": 1,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables",
+            "type": "MAIN",
+            "slug": "fruits-vegetables",
+            "addAllItemsToBasket": false,
+            "level": 2
+        },
+        {
+            "id": 7494756,
+            "name": "Fruits",
+            "numberOfProducts": 455,
+            "sortPriority": 1,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits",
+            "type": "MAIN",
+            "slug": "fruits",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7494757,
+            "name": "Vegetables",
+            "numberOfProducts": 311,
+            "sortPriority": 2,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Vegetables",
+            "type": "MAIN",
+            "slug": "vegetables",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7494759,
+            "name": "Salad",
+            "numberOfProducts": 181,
+            "sortPriority": 4,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Salad",
+            "type": "MAIN",
+            "slug": "salad",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7494761,
+            "name": "Ready to use",
+            "numberOfProducts": 121,
+            "sortPriority": 6,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Readytouse",
+            "type": "MAIN",
+            "slug": "ready-to-use",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7494893,
+            "name": "Apples & pears",
+            "numberOfProducts": 120,
+            "sortPriority": 1,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Applespears",
+            "type": "MAIN",
+            "slug": "apples-pears",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494899,
+            "name": "Exotic fruits",
+            "numberOfProducts": 114,
+            "sortPriority": 7,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits",
+            "type": "MAIN",
+            "slug": "exotic-fruits",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494914,
+            "name": "Packaged salads",
+            "numberOfProducts": 108,
+            "sortPriority": 3,
+            "parentSortPriority": 4,
+            "path": "/DS/Fruitsvegetables/Salad/Packagedsalads",
+            "type": "MAIN",
+            "slug": "packaged-salads",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494758,
+            "name": "Root vegetables",
+            "numberOfProducts": 108,
+            "sortPriority": 3,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Rootvegetables",
+            "type": "MAIN",
+            "slug": "root-vegetables",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7494760,
+            "name": "Fresh herbs & spices",
+            "numberOfProducts": 106,
+            "sortPriority": 5,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Freshherbsspices",
+            "type": "MAIN",
+            "slug": "fresh-herbs-spices",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7495373,
+            "name": "Apples",
+            "numberOfProducts": 82,
+            "sortPriority": 1,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Applespears/Apples",
+            "type": "MAIN",
+            "slug": "apples",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494901,
+            "name": "Tomatoes",
+            "numberOfProducts": 78,
+            "sortPriority": 1,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Tomatoes",
+            "type": "MAIN",
+            "slug": "tomatoes",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495383,
+            "name": "Other exotic fruits",
+            "numberOfProducts": 70,
+            "sortPriority": 5,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits/Otherexoticfruits",
+            "type": "MAIN",
+            "slug": "other-exotic-fruits",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494917,
+            "name": "Fresh herbs",
+            "numberOfProducts": 63,
+            "sortPriority": 2,
+            "parentSortPriority": 5,
+            "path": "/DS/Fruitsvegetables/Freshherbsspices/Freshherbs",
+            "type": "MAIN",
+            "slug": "fresh-herbs",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494920,
+            "name": "Vegetables",
+            "numberOfProducts": 63,
+            "sortPriority": 2,
+            "parentSortPriority": 6,
+            "path": "/DS/Fruitsvegetables/Readytouse/Vegetables",
+            "type": "MAIN",
+            "slug": "vegetables",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494907,
+            "name": "Other vegetables",
+            "numberOfProducts": 63,
+            "sortPriority": 7,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Othervegetables",
+            "type": "MAIN",
+            "slug": "other-vegetables",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494894,
+            "name": "Citrus fruits",
+            "numberOfProducts": 62,
+            "sortPriority": 2,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Citrusfruits",
+            "type": "MAIN",
+            "slug": "citrus-fruits",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494919,
+            "name": "Fruits",
+            "numberOfProducts": 58,
+            "sortPriority": 1,
+            "parentSortPriority": 6,
+            "path": "/DS/Fruitsvegetables/Readytouse/Fruits",
+            "type": "MAIN",
+            "slug": "fruits",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494905,
+            "name": "Cauliflower, broccoli & cabbage",
+            "numberOfProducts": 56,
+            "sortPriority": 5,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Cauliflowerbroccolicabbage",
+            "type": "MAIN",
+            "slug": "cauliflower-broccoli-cabbage",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494908,
+            "name": "Potatoes",
+            "numberOfProducts": 55,
+            "sortPriority": 1,
+            "parentSortPriority": 3,
+            "path": "/DS/Fruitsvegetables/Rootvegetables/Potatoes",
+            "type": "MAIN",
+            "slug": "potatoes",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494898,
+            "name": "Stone fruits",
+            "numberOfProducts": 52,
+            "sortPriority": 6,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Stonefruits",
+            "type": "MAIN",
+            "slug": "stone-fruits",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494912,
+            "name": "Salads",
+            "numberOfProducts": 45,
+            "sortPriority": 1,
+            "parentSortPriority": 4,
+            "path": "/DS/Fruitsvegetables/Salad/Salads",
+            "type": "MAIN",
+            "slug": "salads",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494895,
+            "name": "Red fruits & berries",
+            "numberOfProducts": 45,
+            "sortPriority": 3,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Redfruitsberries",
+            "type": "MAIN",
+            "slug": "red-fruits-berries",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494903,
+            "name": "Courgettes, aubergines & peppers",
+            "numberOfProducts": 43,
+            "sortPriority": 3,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Courgettesauberginespeppers",
+            "type": "MAIN",
+            "slug": "courgettes-aubergines-peppers",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495374,
+            "name": "Pears",
+            "numberOfProducts": 38,
+            "sortPriority": 2,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Applespears/Pears",
+            "type": "MAIN",
+            "slug": "pears",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494906,
+            "name": "Mushrooms",
+            "numberOfProducts": 34,
+            "sortPriority": 6,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Mushrooms",
+            "type": "MAIN",
+            "slug": "mushrooms",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494916,
+            "name": "Garlic, onions & shallots",
+            "numberOfProducts": 33,
+            "sortPriority": 1,
+            "parentSortPriority": 5,
+            "path": "/DS/Fruitsvegetables/Freshherbsspices/Garliconionsshallots",
+            "type": "MAIN",
+            "slug": "garlic-onions-shallots",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494896,
+            "name": "Grapes",
+            "numberOfProducts": 28,
+            "sortPriority": 4,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Grapes",
+            "type": "MAIN",
+            "slug": "grapes",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494897,
+            "name": "Melons & watermelons",
+            "numberOfProducts": 24,
+            "sortPriority": 5,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Melonswatermelons",
+            "type": "MAIN",
+            "slug": "melons-watermelons",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494904,
+            "name": "Green beans & sweetcorn",
+            "numberOfProducts": 23,
+            "sortPriority": 4,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Greenbeanssweetcorn",
+            "type": "MAIN",
+            "slug": "green-beans-sweetcorn",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494911,
+            "name": "Celery & beetroot",
+            "numberOfProducts": 21,
+            "sortPriority": 4,
+            "parentSortPriority": 3,
+            "path": "/DS/Fruitsvegetables/Rootvegetables/Celerybeetroot",
+            "type": "MAIN",
+            "slug": "celery-beetroot",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495377,
+            "name": "Tangerines & clementines",
+            "numberOfProducts": 21,
+            "sortPriority": 3,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Fruits/Citrusfruits/Tangerinesclementines",
+            "type": "MAIN",
+            "slug": "tangerines-clementines",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7495376,
+            "name": "Oranges",
+            "numberOfProducts": 21,
+            "sortPriority": 2,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Fruits/Citrusfruits/Oranges",
+            "type": "MAIN",
+            "slug": "oranges",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494909,
+            "name": "Carrots & peas",
+            "numberOfProducts": 20,
+            "sortPriority": 2,
+            "parentSortPriority": 3,
+            "path": "/DS/Fruitsvegetables/Rootvegetables/Carrotspeas",
+            "type": "MAIN",
+            "slug": "carrots-peas",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495382,
+            "name": "Hard-shelled fruits",
+            "numberOfProducts": 19,
+            "sortPriority": 4,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits/Hardshelledfruits",
+            "type": "MAIN",
+            "slug": "hard-shelled-fruits",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7495375,
+            "name": "Lemons & limes",
+            "numberOfProducts": 16,
+            "sortPriority": 1,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Fruits/Citrusfruits/Lemonslimes",
+            "type": "MAIN",
+            "slug": "lemons-limes",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494913,
+            "name": "Chicory",
+            "numberOfProducts": 15,
+            "sortPriority": 2,
+            "parentSortPriority": 4,
+            "path": "/DS/Fruitsvegetables/Salad/Chicory",
+            "type": "MAIN",
+            "slug": "chicory",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494902,
+            "name": "Cucumbers & avocados",
+            "numberOfProducts": 14,
+            "sortPriority": 2,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Vegetables/Cucumbersavocados",
+            "type": "MAIN",
+            "slug": "cucumbers-avocados",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494915,
+            "name": "Salad dressings",
+            "numberOfProducts": 13,
+            "sortPriority": 4,
+            "parentSortPriority": 4,
+            "path": "/DS/Fruitsvegetables/Salad/Saladdressings",
+            "type": "MAIN",
+            "slug": "salad-dressings",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494910,
+            "name": "Radish & fennel",
+            "numberOfProducts": 12,
+            "sortPriority": 3,
+            "parentSortPriority": 3,
+            "path": "/DS/Fruitsvegetables/Rootvegetables/Radishfennel",
+            "type": "MAIN",
+            "slug": "radish-fennel",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495379,
+            "name": "Mangos & avocados",
+            "numberOfProducts": 11,
+            "sortPriority": 1,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits/Mangosavocados",
+            "type": "MAIN",
+            "slug": "mangos-avocados",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494918,
+            "name": "Sprouts & shoots",
+            "numberOfProducts": 10,
+            "sortPriority": 3,
+            "parentSortPriority": 5,
+            "path": "/DS/Fruitsvegetables/Freshherbsspices/Sproutsshoots",
+            "type": "MAIN",
+            "slug": "sprouts-shoots",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494900,
+            "name": "Bananas",
+            "numberOfProducts": 10,
+            "sortPriority": 8,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Fruits/Bananas",
+            "type": "MAIN",
+            "slug": "bananas",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7495380,
+            "name": "Kiwi fruits",
+            "numberOfProducts": 9,
+            "sortPriority": 2,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits/Kiwifruits",
+            "type": "MAIN",
+            "slug": "kiwi-fruits",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494762,
+            "name": "Vitamin baskets",
+            "numberOfProducts": 5,
+            "sortPriority": 7,
+            "parentSortPriority": 1,
+            "path": "/DS/Fruitsvegetables/Vitaminbaskets",
+            "type": "MAIN",
+            "slug": "vitamin-baskets",
+            "addAllItemsToBasket": false,
+            "level": 3
+        },
+        {
+            "id": 7495381,
+            "name": "Pineapple",
+            "numberOfProducts": 5,
+            "sortPriority": 3,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Fruits/Exoticfruits/Pineapple",
+            "type": "MAIN",
+            "slug": "pineapple",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7495378,
+            "name": "Grapefruits",
+            "numberOfProducts": 4,
+            "sortPriority": 4,
+            "parentSortPriority": 2,
+            "path": "/DS/Fruitsvegetables/Fruits/Citrusfruits/Grapefruits",
+            "type": "MAIN",
+            "slug": "grapefruits",
+            "addAllItemsToBasket": false,
+            "level": 5
+        },
+        {
+            "id": 7494921,
+            "name": "Fruits",
+            "numberOfProducts": 4,
+            "sortPriority": 1,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Vitaminbaskets/Fruits",
+            "type": "MAIN",
+            "slug": "fruits",
+            "addAllItemsToBasket": false,
+            "level": 4
+        },
+        {
+            "id": 7494922,
+            "name": "Vegetables",
+            "numberOfProducts": 1,
+            "sortPriority": 2,
+            "parentSortPriority": 7,
+            "path": "/DS/Fruitsvegetables/Vitaminbaskets/Vegetables",
+            "type": "MAIN",
+            "slug": "vegetables",
+            "addAllItemsToBasket": false,
+            "level": 4
+        }
+    ],
+    "features": [
+        {
+            "id": "category",
+            "name": "Categories",
+            "type": "STRING",
+            "slug": "category",
+            "numberOfProducts": 4151,
+            "values": [
+                {
+                    "value": "Sprouts & shoots",
+                    "slug": "7494918",
+                    "numberOfProducts": 10
+                },
+                {
+                    "value": "Fruits",
+                    "slug": "7494919",
+                    "numberOfProducts": 58
+                },
+                {
+                    "value": "Garlic, onions & shallots",
+                    "slug": "7494916",
+                    "numberOfProducts": 33
+                },
+                {
+                    "value": "Fresh herbs",
+                    "slug": "7494917",
+                    "numberOfProducts": 63
+                },
+                {
+                    "value": "Packaged salads",
+                    "slug": "7494914",
+                    "numberOfProducts": 108
+                },
+                {
+                    "value": "Salad dressings",
+                    "slug": "7494915",
+                    "numberOfProducts": 13
+                },
+                {
+                    "value": "Root vegetables",
+                    "slug": "7494758",
+                    "numberOfProducts": 108
+                },
+                {
+                    "value": "Salads",
+                    "slug": "7494912",
+                    "numberOfProducts": 45
+                },
+                {
+                    "value": "Salad",
+                    "slug": "7494759",
+                    "numberOfProducts": 181
+                },
+                {
+                    "value": "Chicory",
+                    "slug": "7494913",
+                    "numberOfProducts": 15
+                },
+                {
+                    "value": "Fruits",
+                    "slug": "7494756",
+                    "numberOfProducts": 455
+                },
+                {
+                    "value": "Radish & fennel",
+                    "slug": "7494910",
+                    "numberOfProducts": 12
+                },
+                {
+                    "value": "Vegetables",
+                    "slug": "7494757",
+                    "numberOfProducts": 311
+                },
+                {
+                    "value": "Celery & beetroot",
+                    "slug": "7494911",
+                    "numberOfProducts": 21
+                },
+                {
+                    "value": "Vegetables",
+                    "slug": "7494920",
+                    "numberOfProducts": 63
+                },
+                {
+                    "value": "Mangos & avocados",
+                    "slug": "7495379",
+                    "numberOfProducts": 11
+                },
+                {
+                    "value": "Ready to use",
+                    "slug": "7494761",
+                    "numberOfProducts": 121
+                },
+                {
+                    "value": "Tangerines & clementines",
+                    "slug": "7495377",
+                    "numberOfProducts": 21
+                },
+                {
+                    "value": "Vitamin baskets",
+                    "slug": "7494762",
+                    "numberOfProducts": 5
+                },
+                {
+                    "value": "Grapefruits",
+                    "slug": "7495378",
+                    "numberOfProducts": 4
+                },
+                {
+                    "value": "Lemons & limes",
+                    "slug": "7495375",
+                    "numberOfProducts": 16
+                },
+                {
+                    "value": "Fresh herbs & spices",
+                    "slug": "7494760",
+                    "numberOfProducts": 106
+                },
+                {
+                    "value": "Oranges",
+                    "slug": "7495376",
+                    "numberOfProducts": 21
+                },
+                {
+                    "value": "Apples",
+                    "slug": "7495373",
+                    "numberOfProducts": 82
+                },
+                {
+                    "value": "Pears",
+                    "slug": "7495374",
+                    "numberOfProducts": 38
+                },
+                {
+                    "value": "Carrots & peas",
+                    "slug": "7494909",
+                    "numberOfProducts": 20
+                },
+                {
+                    "value": "Other vegetables",
+                    "slug": "7494907",
+                    "numberOfProducts": 63
+                },
+                {
+                    "value": "Potatoes",
+                    "slug": "7494908",
+                    "numberOfProducts": 55
+                },
+                {
+                    "value": "Cauliflower, broccoli & cabbage",
+                    "slug": "7494905",
+                    "numberOfProducts": 56
+                },
+                {
+                    "value": "Mushrooms",
+                    "slug": "7494906",
+                    "numberOfProducts": 34
+                },
+                {
+                    "value": "Courgettes, aubergines & peppers",
+                    "slug": "7494903",
+                    "numberOfProducts": 43
+                },
+                {
+                    "value": "Green beans & sweetcorn",
+                    "slug": "7494904",
+                    "numberOfProducts": 23
+                },
+                {
+                    "value": "Tomatoes",
+                    "slug": "7494901",
+                    "numberOfProducts": 78
+                },
+                {
+                    "value": "Cucumbers & avocados",
+                    "slug": "7494902",
+                    "numberOfProducts": 14
+                },
+                {
+                    "value": "Bananas",
+                    "slug": "7494900",
+                    "numberOfProducts": 10
+                },
+                {
+                    "value": "Exotic fruits",
+                    "slug": "7494899",
+                    "numberOfProducts": 114
+                },
+                {
+                    "value": "Fruits",
+                    "slug": "7494921",
+                    "numberOfProducts": 4
+                },
+                {
+                    "value": "Vegetables",
+                    "slug": "7494922",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Fruits & vegetables",
+                    "slug": "7494732",
+                    "numberOfProducts": 1281
+                },
+                {
+                    "value": "Melons & watermelons",
+                    "slug": "7494897",
+                    "numberOfProducts": 24
+                },
+                {
+                    "value": "Stone fruits",
+                    "slug": "7494898",
+                    "numberOfProducts": 52
+                },
+                {
+                    "value": "Red fruits & berries",
+                    "slug": "7494895",
+                    "numberOfProducts": 45
+                },
+                {
+                    "value": "Grapes",
+                    "slug": "7494896",
+                    "numberOfProducts": 28
+                },
+                {
+                    "value": "Apples & pears",
+                    "slug": "7494893",
+                    "numberOfProducts": 120
+                },
+                {
+                    "value": "Citrus fruits",
+                    "slug": "7494894",
+                    "numberOfProducts": 62
+                },
+                {
+                    "value": "Hard-shelled fruits",
+                    "slug": "7495382",
+                    "numberOfProducts": 19
+                },
+                {
+                    "value": "Other exotic fruits",
+                    "slug": "7495383",
+                    "numberOfProducts": 70
+                },
+                {
+                    "value": "Kiwi fruits",
+                    "slug": "7495380",
+                    "numberOfProducts": 9
+                },
+                {
+                    "value": "Pineapple",
+                    "slug": "7495381",
+                    "numberOfProducts": 5
+                }
+            ]
+        },
+        {
+            "id": "brand",
+            "name": "Brand",
+            "type": "STRING",
+            "slug": "brand",
+            "numberOfProducts": 1034,
+            "values": [
+                {
+                    "value": "Migros Fresca",
+                    "slug": "migros-fresca",
+                    "numberOfProducts": 357
+                },
+                {
+                    "value": "Migros Bio",
+                    "slug": "migros-bio",
+                    "numberOfProducts": 310
+                },
+                {
+                    "value": "Fresca",
+                    "slug": "fresca",
+                    "numberOfProducts": 112
+                },
+                {
+                    "value": "Anna's Best",
+                    "slug": "annas-best",
+                    "numberOfProducts": 66
+                },
+                {
+                    "value": "Extra",
+                    "slug": "extra",
+                    "numberOfProducts": 65
+                },
+                {
+                    "value": "M-Budget",
+                    "slug": "m-budget",
+                    "numberOfProducts": 27
+                },
+                {
+                    "value": "Demeter",
+                    "slug": "demeter",
+                    "numberOfProducts": 20
+                },
+                {
+                    "value": "Sélection",
+                    "slug": "selection",
+                    "numberOfProducts": 15
+                },
+                {
+                    "value": "Migros Daily",
+                    "slug": "migros-daily",
+                    "numberOfProducts": 13
+                },
+                {
+                    "value": "Frisch & Handgemacht",
+                    "slug": "frisch-handgemacht",
+                    "numberOfProducts": 10
+                },
+                {
+                    "value": "Amandine",
+                    "slug": "amandine",
+                    "numberOfProducts": 4
+                },
+                {
+                    "value": "Jazz",
+                    "slug": "jazz",
+                    "numberOfProducts": 4
+                },
+                {
+                    "value": "Mini Salatsossä",
+                    "slug": "mini-salatsossa",
+                    "numberOfProducts": 4
+                },
+                {
+                    "value": "Frifrench",
+                    "slug": "frifrench",
+                    "numberOfProducts": 3
+                },
+                {
+                    "value": "Masshard",
+                    "slug": "masshard",
+                    "numberOfProducts": 3
+                },
+                {
+                    "value": "California",
+                    "slug": "california",
+                    "numberOfProducts": 2
+                },
+                {
+                    "value": "So PotatOh!",
+                    "slug": "so-potatoh",
+                    "numberOfProducts": 2
+                },
+                {
+                    "value": "Sushi Mania",
+                    "slug": "sushi-mania",
+                    "numberOfProducts": 2
+                },
+                {
+                    "value": "Diwa",
+                    "slug": "diwa",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Frishling",
+                    "slug": "frishling",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Gala Victor",
+                    "slug": "gala-victor",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Gold Kiss",
+                    "slug": "gold-kiss",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Golden Victor",
+                    "slug": "golden-victor",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Greenstar",
+                    "slug": "greenstar",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Kanzi",
+                    "slug": "kanzi",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Kiku",
+                    "slug": "kiku",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Kissabel",
+                    "slug": "kissabel",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "M-Classic",
+                    "slug": "m-classic",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Pink Lady",
+                    "slug": "pink-lady",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Pomme d'Eve",
+                    "slug": "pomme-deve",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Rubens",
+                    "slug": "rubens",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "SweeTango",
+                    "slug": "sweetango",
+                    "numberOfProducts": 1
+                },
+                {
+                    "value": "Tentation",
+                    "slug": "tentation",
+                    "numberOfProducts": 1
+                }
+            ]
+        }
+    ],
+    "labels": [
+        {
+            "id": "promotion",
+            "name": "Promotions",
+            "slug": "promotion",
+            "numberOfProducts": 7
+        },
+        {
+            "id": "PRODUCT_BIO",
+            "name": "Organic",
+            "slug": "product_bio",
+            "numberOfProducts": 368
+        },
+        {
+            "id": "PRODUCT_OF_SWITZERLAND",
+            "name": "Swiss product",
+            "slug": "product_of_switzerland",
+            "numberOfProducts": 170
+        },
+        {
+            "id": "DIETARY_BOOLEAN_FILTER_VEGETARIAN",
+            "name": "Vegetarian",
+            "slug": "vegetarian",
+            "numberOfProducts": 2
+        },
+        {
+            "id": "DIETARY_BOOLEAN_FILTER_VEGAN",
+            "name": "Vegan",
+            "slug": "vegan",
+            "numberOfProducts": 5
+        },
+        {
+            "id": "DIETARY_BOOLEAN_FILTER_GLUTEN_FREE",
+            "name": "Gluten-free",
+            "slug": "gluten-free",
+            "numberOfProducts": 4
+        },
+        {
+            "id": "DIETARY_BOOLEAN_FILTER_LACTOSE_FREE",
+            "name": "Lactose-free",
+            "slug": "lactose-free",
+            "numberOfProducts": 4
+        }
+    ],
+    "groupedLabels": [
+        {
+            "id": "PRODUCT_SPECIAL_NUTRITION",
+            "name": "Special Nutrition",
+            "slug": "product_special_nutrition",
+            "values": [
+                {
+                    "id": "vegan",
+                    "name": "Vegan",
+                    "slug": "vegan",
+                    "numberOfProducts": 5
+                },
+                {
+                    "id": "gluten-free",
+                    "name": "Gluten-free",
+                    "slug": "gluten-free",
+                    "numberOfProducts": 4
+                },
+                {
+                    "id": "lactose-free",
+                    "name": "Lactose-free",
+                    "slug": "lactose-free",
+                    "numberOfProducts": 4
+                },
+                {
+                    "id": "vegetarian",
+                    "name": "Vegetarian",
+                    "slug": "vegetarian",
+                    "numberOfProducts": 2
+                }
+            ]
+        }
+    ],
+    "migrosLabels": [
+        {
+            "id": "L73",
+            "value": {
+                "en": "Bio Knospe",
+                "de": "Bio Knospe",
+                "fr": "Bio Knospe",
+                "it": "Bio Knospe"
+            },
+            "slug": {
+                "en": "bio-knospe",
+                "de": "bio-knospe",
+                "fr": "bio-knospe",
+                "it": "bio-knospe"
+            },
+            "numberOfProducts": 236
+        },
+        {
+            "id": "L28",
+            "value": {
+                "en": "Aus der Region. Für die Region.",
+                "de": "Aus der Region",
+                "fr": "De la région. Pour la région.",
+                "it": "De la région"
+            },
+            "slug": {
+                "en": "aus-der-region-fuer-die-region",
+                "de": "aus-der-region",
+                "fr": "de-la-region-pour-la-region",
+                "it": "de-la-region"
+            },
+            "numberOfProducts": 37
+        },
+        {
+            "id": "L56",
+            "value": {
+                "en": "Demeter",
+                "de": "Demeter",
+                "fr": "Demeter",
+                "it": "Demeter"
+            },
+            "slug": {
+                "en": "demeter",
+                "de": "demeter",
+                "fr": "demeter",
+                "it": "demeter"
+            },
+            "numberOfProducts": 37
+        },
+        {
+            "id": "L04",
+            "value": {
+                "en": "FAIRTRADE MAX HAVELAAR",
+                "de": "Fairtrade Max Havelaar",
+                "fr": "Fairtrade Max Havelaar",
+                "it": "Fairtrade Max Havelaar"
+            },
+            "slug": {
+                "en": "fairtrade-max-havelaar",
+                "de": "fairtrade-max-havelaar",
+                "fr": "fairtrade-max-havelaar",
+                "it": "fairtrade-max-havelaar"
+            },
+            "numberOfProducts": 14
+        },
+        {
+            "id": "L88",
+            "value": {
+                "en": "Nostrani del Ticino",
+                "de": "Nostrani del Ticino",
+                "fr": "Nostrani del Ticino",
+                "it": "Nostrani del Ticino"
+            },
+            "slug": {
+                "en": "nostrani-del-ticino",
+                "de": "nostrani-del-ticino",
+                "fr": "nostrani-del-ticino",
+                "it": "nostrani-del-ticino"
+            },
+            "numberOfProducts": 13
+        },
+        {
+            "id": "L53",
+            "value": {
+                "en": "Swissness",
+                "de": "Swissness",
+                "fr": "Swissness",
+                "it": "Swissness"
+            },
+            "slug": {
+                "en": "swissness",
+                "de": "swissness",
+                "fr": "swissness",
+                "it": "swissness"
+            },
+            "numberOfProducts": 5
+        },
+        {
+            "id": "L03",
+            "value": {
+                "en": "IP-SUISSE",
+                "de": "IP-SUISSE",
+                "fr": "IP-SUISSE",
+                "it": "IP-SUISSE"
+            },
+            "slug": {
+                "en": "ip-suisse",
+                "de": "ip-suisse",
+                "fr": "ip-suisse",
+                "it": "ip-suisse"
+            },
+            "numberOfProducts": 3
+        },
+        {
+            "id": "L15",
+            "value": {
+                "en": "aha!",
+                "de": "aha!",
+                "fr": "aha!",
+                "it": "aha!"
+            },
+            "slug": {
+                "en": "aha",
+                "de": "aha",
+                "fr": "aha",
+                "it": "aha"
+            },
+            "numberOfProducts": 1
+        },
+        {
+            "id": "L58",
+            "value": {
+                "en": "V-Label vegetarisch",
+                "de": "V-Label vegetarisch",
+                "fr": "V-Label vegetarisch",
+                "it": "V-Label vegetarisch"
+            },
+            "slug": {
+                "en": "v-label-vegetarisch",
+                "de": "v-label-vegetarisch",
+                "fr": "v-label-vegetarisch",
+                "it": "v-label-vegetarisch"
+            },
+            "numberOfProducts": 1
+        }
+    ],
+    "additionalFields": {},
+    "numberOfProducts": 1281,
+    "offset": 100
+}

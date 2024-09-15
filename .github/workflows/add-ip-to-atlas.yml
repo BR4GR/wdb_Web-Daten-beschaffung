@@ -1,28 +1,28 @@
 name: Add IP to MongoDB Atlas
+
 on:
-  workflow_call: # This allows this action to be called from another workflow
-  workflow_dispatch: # Allow manual runs
+  workflow_call:
+    secrets:
+      MONGO_API_PUBLIC_KEY:
+        required: true
+      MONGO_API_PRIVATE_KEY:
+        required: true
+      PROJECT_ID:
+        required: true
 
 jobs:
   add-ip:
     runs-on: ubuntu-latest
     steps:
-      # Get the current runner's public IP address
       - name: Get public IP address
         run: |
           IP=$(curl https://ipinfo.io/ip)
           echo "PUBLIC_IP=$IP" >> $GITHUB_ENV
 
-      # Debug: Print the JSON data
-      - name: Print the JSON data
-        run: |
-          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
-          echo "JSON Payload: $DATA"
-
-      # Add the IP address to MongoDB Atlas via the API
       - name: Add GitHub runner IP to MongoDB Atlas
         run: |
-          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
+          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" \
+            '{ipAddress: $ip, comment: $comment}')
           echo "Sending this JSON payload: $DATA"
           curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
               --digest \

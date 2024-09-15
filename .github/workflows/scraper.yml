@@ -61,6 +61,10 @@ jobs:
       #----------------------------------------------
       - name: Add IP to MongoDB Atlas
         uses: ./.github/workflows/add-ip-to-atlas.yml
+        with:
+          MONGO_API_PUBLIC_KEY: ${{ secrets.MONGO_API_PUBLIC_KEY }}
+          MONGO_API_PRIVATE_KEY: ${{ secrets.MONGO_API_PRIVATE_KEY }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
       #----------------------------------------------
       #       run the scraper

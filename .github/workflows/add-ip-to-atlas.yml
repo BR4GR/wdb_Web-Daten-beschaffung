@@ -12,9 +12,9 @@ jobs:
       - name: Get public IP address
         run: |
           IP=$(curl https://ipinfo.io/ip)
-          echo "PUBLIC_IP=$IP" >> $GITHUB_ENV
+          echo "IP=$IP" >> $GITHUB_ENV
           DATA="{
-                \"ipAddress\": \"$PUBLIC_IP\",
+                \"ipAddress\": \"$IP\",
                 \"comment\": \"My GitHub Action IP\"
               }"
           echo "DATA=$DATA" >> $GITHUB_ENV

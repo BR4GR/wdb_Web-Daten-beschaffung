@@ -47,7 +47,6 @@ class MigrosScraper:
 
     def _decompress_response(self, response: bytes, encoding: str) -> bytes:
         """Decompress response if necessary."""
-        print(f"Decoding response with encoding: {encoding}")
         if encoding == "gzip":
             return gzip.decompress(response)
         elif encoding == "br":
@@ -63,7 +62,6 @@ class MigrosScraper:
         while True:
             for request in self.driver.requests:
                 if url_contains in request.url:
-                    print(f"Found request with URL containing: {url_contains}")
                     response = request.response.body
                     encoding = request.response.headers.get("Content-Encoding", "")
                     response = self._decompress_response(response, encoding)
@@ -96,7 +94,6 @@ class MigrosScraper:
             for product in product_data:
                 migros_id = product.get("migrosId")
                 if migros_id:
-                    print(f"Found product migrosId: {migros_id}")
                     self.product_ids.add(migros_id)
 
         return self.base_categories
@@ -114,7 +111,6 @@ class MigrosScraper:
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
-        print(f"Scraping category URL: {category_url}")
         del self.driver.requests
         self.driver.get(category_url)
         time.sleep(10)  # Adjust this time if necessary
@@ -137,13 +133,11 @@ class MigrosScraper:
             for product in product_data:
                 migros_id = product.get("migrosId")
                 if migros_id:
-                    print(f"Found product migrosId: {migros_id}")
                     self.product_ids.add(migros_id)
 
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
-            print(f"Successfully fetched data for category: {category_url}")
             return slugs
         else:
             print(f"Failed to fetch data for category: {category_url}")
@@ -162,7 +156,6 @@ class MigrosScraper:
                 for product in product_cards:
                     new_id = product.get("migrosId")
                     if new_id:
-                        print(f"Found product migrosId: {new_id}")
                         self.product_ids.add(new_id)
 
             product_data = self._get_category_response("product-detail")
@@ -231,6 +224,7 @@ if __name__ == "__main__":
         # scraper.scrape_categories_from_base()  # Scrape subcategories
         print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
         scraper.scrape_products()  # Scrape products
+        print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
 
         # Log the migrosIds
         log_filename = f"{scraper.LOG_DIR}/migrosIds.log"

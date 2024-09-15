@@ -21,5 +21,5 @@ jobs:
               --digest \
               -X POST \
               --header "Content-Type: application/json" \
-              --data "{\"ipAddress\": $PUBLIC_IP, \"comment\": \"My GitHub Action IP\"}" \
+              --data "{\"ipAddress\": $(curl https://ipinfo.io/ip), \"comment\": \"My GitHub Action IP\"}" \
               "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList"

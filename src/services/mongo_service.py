@@ -1,4 +1,5 @@
 import time
+
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -61,3 +62,19 @@ class MongoService:
             print(
                 f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
             )
+
+    # Save scraped product ID with the date
+    def save_scraped_product_id(self, migros_id: str, date: str) -> None:
+        if not self.is_product_scraped_today(migros_id, date):
+            self.db.scraped_ids.insert_one({"migrosId": migros_id, "date": date})
+
+    # Check if a product has been scraped today
+    def is_product_scraped_today(self, migros_id: str, date: str) -> bool:
+        return (
+            self.db.scraped_ids.find_one({"migrosId": migros_id, "date": date})
+            is not None
+        )
+
+    # Remove all scraped IDs from a previous day
+    def reset_scraped_ids(self, current_date: str):
+        self.db.scraped_ids.delete_many({"date": {"$ne": current_date}})

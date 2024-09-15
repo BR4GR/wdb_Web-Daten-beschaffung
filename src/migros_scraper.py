@@ -2,6 +2,7 @@ import gzip
 import json
 import os
 import time
+from datetime import datetime
 
 import brotli
 import requests
@@ -30,6 +31,7 @@ class MigrosScraper:
         self.product_ids = set()  # Track all product IDs found (using migrosId)
         self.scraped_product_ids = set()  # Track all product IDs alresdy scraped
         self._clear_log_files()
+        self.current_day = datetime.now().date()
 
     def _initialize_driver(
         self, driver_path: str, binary_location: str
@@ -143,8 +145,24 @@ class MigrosScraper:
             print(f"Failed to fetch data for category: {category_url}")
             return []
 
+    def reset_scraped_ids_daily(self) -> None:
+        """Reset the scraped_product_ids in MongoDB if the date has changed."""
+        current_day = datetime.now().date().isoformat()
+        if current_day != self.current_day.isoformat():
+            print("New day detected. Resetting scraped product IDs in MongoDB.")
+            self.mongo_service.reset_scraped_ids(current_day)
+            self.current_day = datetime.now().date()
+
     def scrape_product_by_id(self, migros_id: str) -> None:
         """Scrape a product by its migrosId."""
+        # Check if product was already scraped today
+        if self.mongo_service.is_product_scraped_today(
+            migros_id, self.current_day.isoformat()
+        ):
+            print(f"Product {migros_id} was already scraped today. Skipping.")
+            self.scraped_product_ids.add(migros_id)
+            return
+
         product_uri = self.BASE_URL + "product/" + migros_id
         del self.driver.requests
         try:
@@ -162,6 +180,9 @@ class MigrosScraper:
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
             self.scraped_product_ids.add(migros_id)
+            self.mongo_service.save_scraped_product_id(
+                migros_id, self.current_day.isoformat()
+            )
         except Exception as e:
             print(f"Error scraping product {migros_id}: {str(e)}")
 

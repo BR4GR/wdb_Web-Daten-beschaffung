@@ -59,12 +59,30 @@ jobs:
       #----------------------------------------------
       #       Add IP to MongoDB Atlas
       #----------------------------------------------
-      - name: Add IP to MongoDB Atlas
-        uses: ./.github/workflows/add-ip-to-atlas.yml
-        with:
-          MONGO_API_PUBLIC_KEY: ${{ secrets.MONGO_API_PUBLIC_KEY }}
-          MONGO_API_PRIVATE_KEY: ${{ secrets.MONGO_API_PRIVATE_KEY }}
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      # Get the current runner's public IP address
+      - name: Get public IP address
+        run: |
+          IP=$(curl https://ipinfo.io/ip)
+          echo "PUBLIC_IP=$IP" >> $GITHUB_ENV
+
+      # Debug: Print the JSON data
+      - name: Print the JSON data
+        run: |
+          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
+          echo "JSON Payload: $DATA"
+
+      # Add the IP address to MongoDB Atlas via the API
+      - name: Add GitHub runner IP to MongoDB Atlas
+        run: |
+          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
+          echo "Sending this JSON payload: $DATA"
+          curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
+              --digest \
+              -X POST \
+              --header "Content-Type: application/json" \
+              --data "$DATA" \
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList"
+
 
       #----------------------------------------------
       #       run the scraper
@@ -81,5 +99,13 @@ jobs:
       #----------------------------------------------
       #       Remove the IP address from MongoDB Atlas
       #----------------------------------------------
-      - name: Remove the IP address from MongoDB Atlas
-        uses: ./.github/workflows/delete-ip-from-atlas.yml
+      - name: Get public IP address
+        run: |
+          IP=$(curl https://ipinfo.io/ip)
+
+      - name: Delete GitHub runner IP from MongoDB Atlas
+        run: |
+          curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
+              --digest \
+              -X DELETE \
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList/$PUBLIC_IP"

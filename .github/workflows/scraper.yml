@@ -23,6 +23,14 @@ jobs:
           python-version: '3.12'
 
       #----------------------------------------------
+      #       Install Chrome
+      #----------------------------------------------
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+
+      #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
       - name: Install Poetry

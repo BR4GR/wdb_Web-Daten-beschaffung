@@ -4,16 +4,16 @@ import os
 import time
 
 import brotli
+import requests
 from dotenv import load_dotenv
 from pymongo import MongoClient
-import requests
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver
 
-from services.mongo_service import (
+from services.mongo_service import (  # Import from selenium-wire instead of selenium
     MongoService,
-)  # Import from selenium-wire instead of selenium
+)
 
 
 class MigrosScraper:
@@ -37,6 +37,14 @@ class MigrosScraper:
         service = Service(driver_path)
         options = Options()
         options.binary_location = binary_location
+        options.add_argument("--headless")  # Run Chrome in headless mode
+        options.add_argument(
+            "--disable-dev-shm-usage"
+        )  # Overcome limited resource problems
+        options.add_argument("--no-sandbox")  # Bypass OS security model
+        options.add_argument("--disable-gpu")  # Disable GPU for headless mode
+        options.add_argument("--disable-dev-tools")  # Disable DevTools
+        options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
         driver = webdriver.Chrome(service=service, options=options)
         return driver
 

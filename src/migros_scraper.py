@@ -1,6 +1,7 @@
 import gzip
 import json
 import os
+import random
 import time
 from datetime import datetime
 
@@ -102,7 +103,8 @@ class MigrosScraper:
 
     def scrape_categories_from_base(self) -> None:
         """Try to get all subcategories for each base category."""
-        for category in self.base_categories:
+        random.shuffle(self.base_categories)
+        for category in self.base_categories[:2]:
             category_url = self.BASE_URL + "category/" + category["slug"]
             second_level_slugs = self.scrape_category_via_url(
                 category_url, category["slug"]
@@ -242,7 +244,7 @@ if __name__ == "__main__":
     scraper = MigrosScraper(mongo_service=mongo_service)
     try:
         scraper.get_base_categories()  # Get base categories
-        # scraper.scrape_categories_from_base()  # Scrape subcategories
+        scraper.scrape_categories_from_base()  # Scrape subcategories
         print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
         scraper.scrape_products()  # Scrape products
         print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")

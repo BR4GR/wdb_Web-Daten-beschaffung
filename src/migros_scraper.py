@@ -4,10 +4,16 @@ import os
 import time
 
 import brotli
+from dotenv import load_dotenv
+from pymongo import MongoClient
 import requests
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from seleniumwire import webdriver  # Import from selenium-wire instead of selenium
+from seleniumwire import webdriver
+
+from services.mongo_service import (
+    MongoService,
+)  # Import from selenium-wire instead of selenium
 
 
 class MigrosScraper:
@@ -151,3 +157,22 @@ class MigrosScraper:
         """Close the WebDriver session."""
         if self.driver:
             self.driver.quit()
+
+
+if __name__ == "__main__":
+    # Load environment variables from .env
+    load_dotenv()
+
+    MONGODB_URI = os.getenv("MONGO_URI")
+    MONGODB_DBNAME = os.getenv("MONGO_DBNAME")
+
+    # Initialize MongoDB Service
+    mongo_service = MongoService(MONGODB_URI, MONGODB_DBNAME)
+
+    # Initialize and run the scraper
+    scraper = MigrosScraper(mongo_service=mongo_service)
+    try:
+        scraper.get_base_categories()  # Get base categories
+        scraper.scrape_categories_from_base()  # Scrape subcategories
+    finally:
+        scraper.close()  # Make sure to close the driver

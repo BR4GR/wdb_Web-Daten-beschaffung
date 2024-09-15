@@ -1,0 +1,19 @@
+name: Delete IP from MongoDB Atlas
+
+on:
+  workflow_call: # This allows this action to be called from another workflow
+
+jobs:
+  delete-ip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get public IP address
+        run: |
+          IP=$(curl https://ipinfo.io/ip)
+
+      - name: Delete GitHub runner IP from MongoDB Atlas
+        run: |
+          curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
+              --digest \
+              -X DELETE \
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList/$IP"

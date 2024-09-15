@@ -16,13 +16,13 @@ jobs:
       # Debug: Print the JSON data
       - name: Print the JSON data
         run: |
-          DATA="{\"ipAddress\": \"$PUBLIC_IP\", \"comment\": \"My GitHub Action IP\"}"
+          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
           echo "JSON Payload: $DATA"
 
       # Add the IP address to MongoDB Atlas via the API
       - name: Add GitHub runner IP to MongoDB Atlas
         run: |
-          DATA="{\"ipAddress\": \"$PUBLIC_IP\", \"comment\": \"My GitHub Action IP\"}"
+          DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" '[{ipAddress: $ip, comment: $comment}]')
           echo "Sending this JSON payload: $DATA"
           curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
               --digest \

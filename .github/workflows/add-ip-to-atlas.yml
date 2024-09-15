@@ -2,13 +2,16 @@ name: Add IP to MongoDB Atlas
 
 on:
   workflow_call:
-    secrets:
+    inputs:
       MONGO_API_PUBLIC_KEY:
         required: true
+        type: string
       MONGO_API_PRIVATE_KEY:
         required: true
+        type: string
       PROJECT_ID:
         required: true
+        type: string
 
 jobs:
   add-ip:
@@ -24,9 +27,9 @@ jobs:
           DATA=$(jq -n --arg ip "$PUBLIC_IP" --arg comment "My GitHub Action IP" \
             '{ipAddress: $ip, comment: $comment}')
           echo "Sending this JSON payload: $DATA"
-          curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
+          curl -u "${{ inputs.MONGO_API_PUBLIC_KEY }}:${{ inputs.MONGO_API_PRIVATE_KEY }}" \
               --digest \
               -X POST \
               --header "Content-Type: application/json" \
               --data "$DATA" \
-              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList"
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ inputs.PROJECT_ID }}/accessList"

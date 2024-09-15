@@ -1,3 +1,4 @@
+import time
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -18,3 +19,45 @@ class MongoService:
         """Insert a new category document into the categories collection."""
         if not self.check_category_exists(category_data["id"]):
             self.db.categories.insert_one(category_data)
+
+    def check_product_exists(self, migros_id: str) -> bool:
+        """Check if a product with the given migrosId already exists in the MongoDB collection."""
+        return self.db.products.find_one({"migrosId": migros_id}) is not None
+
+    def get_latest_product_entry(self, migros_id: str) -> dict:
+        """Fetch the latest product entry for a given migrosId, based on the date it was added."""
+        return self.db.products.find_one(
+            {"migrosId": migros_id}, sort=[("dateAdded", -1)]
+        )
+
+    def insert_product(self, product_data: dict) -> None:
+        """Insert a new product document if the unitPrice is new or the product doesn't exist."""
+        migros_id = product_data.get("migrosId")
+        if not migros_id:
+            print("Product does not contain migrosId, skipping insertion.")
+            return
+
+        existing_product = self.get_latest_product_entry(migros_id)
+        new_unit_price = (
+            product_data.get("offer", {})
+            .get("price", {})
+            .get("unitPrice", {})
+            .get("value")
+        )
+
+        if (
+            not existing_product
+            or existing_product.get("offer", {})
+            .get("price", {})
+            .get("unitPrice", {})
+            .get("value")
+            != new_unit_price
+        ):
+            # Add the current timestamp or 'dateAdded' to the product data
+            product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+            self.db.products.insert_one(product_data)
+            print(f"Inserted new product with migrosId: {migros_id}")
+        else:
+            print(
+                f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
+            )

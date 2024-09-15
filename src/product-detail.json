@@ -1,0 +1,368 @@
+[
+    {
+        "uid": 100164725,
+        "migrosId": "204517700000",
+        "migrosOnlineId": "12501131",
+        "name": "Drink",
+        "brand": "Emmi",
+        "brandLine": "I'm Your Meal",
+        "versioning": "Choco",
+        "title": "Emmi I'm Your Meal · Drink · Choco",
+        "description": "Emmi Drink Choco",
+        "productRange": "STANDARD",
+        "productAvailability": "ONLINE_AND_INSTORE",
+        "productInformation": {
+            "mainInformation": {
+                "brand": {
+                    "name": "Emmi",
+                    "slug": "emmi"
+                },
+                "nutritionalCharacteristics": [
+                    "Vegetarian",
+                    "Gluten-free"
+                ],
+                "nutritionalCharacteristicsV2": [
+                    {
+                        "name": "Vegetarian"
+                    },
+                    {
+                        "name": "Gluten-free"
+                    }
+                ],
+                "ingredients": "Semi-skimmed MILK, MILK PROTEIN, rapeseed oil 3 %, maltodextrin, cocoa powder 1.5 %, soluble maize fibre, coconut extract, oligofructose, gluten-free oat fibre, acidity regulator (sodium citrate), rice starch, natural cocoa flavouring, sweetener (cyclamates, acesulfame K), thickener (gellan gum), lactase, minerals (iron, magnesium, copper, manganese, chromium), vitamins (A, D, E, C, K, thiamine, riboflavin, niacin, B6, folic acid, B12, biotin, pantothenic acid).",
+                "allergens": "Milk and its derivatives",
+                "origin": "You can find information about the origin on the packaging in the store.",
+                "rating": {
+                    "nbReviews": 5,
+                    "nbStars": 4.0
+                },
+                "migipediaUrl": "https://migipedia.migros.ch/de/products/204517700000"
+            },
+            "nutrientsInformation": {
+                "nutrientsTable": {
+                    "headers": [
+                        "100 ml"
+                    ],
+                    "rows": [
+                        {
+                            "label": "Energy",
+                            "values": [
+                                "~ 448 kJ (~ 107 kcal)",
+                                "~ 2240 kJ (~ 535 kcal)",
+                                "27 %"
+                            ]
+                        },
+                        {
+                            "label": "Fat",
+                            "values": [
+                                "~ 4.9 g",
+                                "~ 25 g",
+                                "35 %"
+                            ],
+                            "fsaLevel": "HIGH"
+                        },
+                        {
+                            "label": "of which saturates",
+                            "values": [
+                                "~ 1.4 g",
+                                "~ 7 g",
+                                "35 %"
+                            ],
+                            "fsaLevel": "HIGH"
+                        },
+                        {
+                            "label": "Carbohydrate",
+                            "values": [
+                                "~ 7 g",
+                                "~ 35 g",
+                                "13 %"
+                            ]
+                        },
+                        {
+                            "label": "of which sugars",
+                            "values": [
+                                "~ 4.4 g",
+                                "~ 22 g",
+                                "24 %"
+                            ],
+                            "fsaLevel": "LOW"
+                        },
+                        {
+                            "label": "Fibre",
+                            "values": [
+                                "~ 1.5 g",
+                                "~ 7.5 g",
+                                ""
+                            ]
+                        },
+                        {
+                            "label": "Protein",
+                            "values": [
+                                "~ 7.6 g",
+                                "~ 38 g",
+                                "76 %"
+                            ]
+                        },
+                        {
+                            "label": "Salt",
+                            "values": [
+                                "~ 0.34 g",
+                                "~ 1.7 g",
+                                "28 %"
+                            ],
+                            "fsaLevel": "LOW"
+                        },
+                        {
+                            "label": "Vitamin A",
+                            "values": [
+                                "~ 25 µg",
+                                "~ 125 µg",
+                                "16 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin D",
+                            "values": [
+                                "~ 0.3 µg",
+                                "~ 1.5 µg",
+                                "30 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin E",
+                            "values": [
+                                "~ 0.6 mg",
+                                "~ 3 mg",
+                                "25 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin C",
+                            "values": [
+                                "~ 3 mg",
+                                "~ 15 mg",
+                                "19 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin B1 (thiamin)",
+                            "values": [
+                                "~ 0.11 mg",
+                                "~ 0.55 mg",
+                                "50 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin B2 (riboflavin)",
+                            "values": [
+                                "~ 0.17 mg",
+                                "~ 0.85 mg",
+                                "61 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin B6",
+                            "values": [
+                                "~ 0.06 mg",
+                                "~ 0.3 mg",
+                                "21 %"
+                            ]
+                        },
+                        {
+                            "label": "Vitamin B12",
+                            "values": [
+                                "~ 0.25 µg",
+                                "~ 1.25 µg",
+                                "50 %"
+                            ]
+                        },
+                        {
+                            "label": "Potassium",
+                            "values": [
+                                "~ 140 mg",
+                                "~ 700 mg",
+                                "35 %"
+                            ]
+                        },
+                        {
+                            "label": "Calcium",
+                            "values": [
+                                "~ 240 mg",
+                                "~ 1200 mg",
+                                "150 %"
+                            ]
+                        },
+                        {
+                            "label": "Phosphorus",
+                            "values": [
+                                "~ 140 mg",
+                                "~ 700 mg",
+                                "100 %"
+                            ]
+                        },
+                        {
+                            "label": "Magnesium",
+                            "values": [
+                                "~ 18.75 mg",
+                                "~ 93.75 mg",
+                                "25 %"
+                            ]
+                        },
+                        {
+                            "label": "Iron",
+                            "values": [
+                                "~ 0.42 mg",
+                                "~ 2.1 mg",
+                                "15 %"
+                            ]
+                        },
+                        {
+                            "label": "Zinc",
+                            "values": [
+                                "~ 0.9 mg",
+                                "~ 4.5 mg",
+                                "45 %"
+                            ]
+                        },
+                        {
+                            "label": "folic acid",
+                            "values": [
+                                "~ 8 µg",
+                                "~ 40 µg",
+                                "20 %"
+                            ]
+                        }
+                    ]
+                },
+                "portionSentence": "1 pack ≈ 1 serving",
+                "isAnalyticalConstituents": false
+            },
+            "usageInformation": {
+                "additionalInformation": "High Protein"
+            },
+            "otherInformation": {
+                "articleNumber": "204517700000",
+                "legalDesignation": "Milk drink with cocoa powder and rapeseed oil. With sweeteners, vitamins and minerals, lactose-free. With 1.5 % fat in the milk content. UHT",
+                "distributorName": "Emmi Schweiz AG",
+                "distributorStreetAndNumber": "CH-6002 Luzern",
+                "remarks": [
+                    {
+                        "code": "Consumer storage instructions",
+                        "value": "Once opened, store at a maximum of 6 °C and consume quickly."
+                    }
+                ],
+                "mainSpecificities": [
+                    {
+                        "code": "Allergens",
+                        "value": "Gluten free"
+                    },
+                    {
+                        "code": "Vegetarianism",
+                        "value": "Vegetarian"
+                    }
+                ]
+            }
+        },
+        "gtins": [
+            "7610900863273"
+        ],
+        "images": [
+            {
+                "cdn": "rokka",
+                "url": "https://image.migros.ch/{stack}/7ad70c252606443d36fd06430bdcedb238684a28/emmi-im-your-meal-choco.jpg"
+            }
+        ],
+        "breadcrumb": [
+            {
+                "id": "7494731",
+                "name": "Dairy, eggs & fresh convenience food",
+                "slugs": [
+                    "dairy-eggs-fresh-convenience-foo"
+                ]
+            },
+            {
+                "id": "7494751",
+                "name": "Milk, butter & eggs",
+                "slugs": [
+                    "dairy-eggs-fresh-convenience-foo",
+                    "milk-butter-eggs"
+                ]
+            },
+            {
+                "id": "7494867",
+                "name": "Milk & dairy drinks",
+                "slugs": [
+                    "dairy-eggs-fresh-convenience-foo",
+                    "milk-butter-eggs",
+                    "milk-dairy-drinks"
+                ]
+            }
+        ],
+        "productUrls": "https://www.migros.ch/en/product/204517700000",
+        "isMgbCompatible": true,
+        "isConsignmentProduct": false,
+        "offer": {
+            "price": {
+                "displayUnitPrice": true,
+                "formattedPrice": "4.95",
+                "advertisedDisplayValue": "4.95",
+                "effectiveDisplayValue": "4.95",
+                "multiplier": 1,
+                "value": 4.95,
+                "effectiveValue": 4.95,
+                "advertisedValue": 4.95,
+                "unitPrice": {
+                    "value": 0.99,
+                    "unit": "100ml"
+                }
+            },
+            "promotionPrice": {
+                "displayUnitPrice": false,
+                "formattedPrice": "4.95",
+                "advertisedDisplayValue": "4.95",
+                "effectiveDisplayValue": "4.95",
+                "multiplier": 1,
+                "value": 4.95,
+                "effectiveValue": 4.95,
+                "advertisedValue": 4.95
+            },
+            "priceInsteadOfLabel": "was",
+            "quantity": "500ml",
+            "isVariableWeight": false,
+            "channel": {
+                "offerType": "OFFLINE",
+                "region": "national"
+            },
+            "maxOrderableQuantityV2": 96,
+            "pictos": [
+                {
+                    "type": "REGION",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679482984/labels/suisse",
+                    "description": "Switzerland"
+                },
+                {
+                    "type": "FRESHNESS",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679483166/labels/fresh",
+                    "description": "fresh"
+                }
+            ],
+            "badges": [
+                {
+                    "type": "CUMULUS_PROMOTION",
+                    "description": "20x"
+                },
+                {
+                    "type": "NEW",
+                    "description": "New"
+                }
+            ],
+            "promotionDateRange": {
+                "startDate": "2024-09-03",
+                "endDate": "2024-09-16"
+            },
+            "isNewOffer": true,
+            "displayPrice": true,
+            "type": "STANDARD"
+        }
+    }
+]

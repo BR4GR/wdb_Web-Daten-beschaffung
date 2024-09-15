@@ -11,9 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver
 
-from services.mongo_service import (  # Import from selenium-wire instead of selenium
-    MongoService,
-)
+from services.mongo_service import MongoService
 
 
 class MigrosScraper:
@@ -22,13 +20,15 @@ class MigrosScraper:
 
     def __init__(
         self,
-        mongo_service,
+        mongo_service: MongoService,
         driver_path: str = "/usr/bin/chromedriver",
         binary_location: str = "/usr/bin/chromium",
     ):
         self.driver = self._initialize_driver(driver_path, binary_location)
         self.mongo_service = mongo_service
         self.base_categories = []  # Store full base categories
+        self.product_ids = set()  # Track all product IDs found (using migrosId)
+        self.scraped_product_ids = set()  # Track all product IDs alresdy scraped
         self._clear_log_files()
 
     def _initialize_driver(
@@ -41,9 +41,6 @@ class MigrosScraper:
         options.add_argument(
             "--disable-dev-shm-usage"
         )  # Overcome limited resource problems
-        options.add_argument("--no-sandbox")  # Bypass OS security model
-        options.add_argument("--disable-gpu")  # Disable GPU for headless mode
-        options.add_argument("--disable-dev-tools")  # Disable DevTools
         options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
         driver = webdriver.Chrome(service=service, options=options)
         return driver
@@ -67,7 +64,6 @@ class MigrosScraper:
             for request in self.driver.requests:
                 if url_contains in request.url:
                     print(f"Found request with URL containing: {url_contains}")
-                    print(self.driver.requests)
                     response = request.response.body
                     encoding = request.response.headers.get("Content-Encoding", "")
                     response = self._decompress_response(response, encoding)
@@ -93,12 +89,20 @@ class MigrosScraper:
         categories = categories_response.get("categories", [])
         for category in categories:
             self.mongo_service.insert_category(category)
-            self.base_categories.append(category)  # Save full category
+            self.base_categories.append(category)
+
+        product_data = self._get_category_response("product-cards")
+        if product_data:
+            for product in product_data:
+                migros_id = product.get("migrosId")
+                if migros_id:
+                    print(f"Found product migrosId: {migros_id}")
+                    self.product_ids.add(migros_id)
 
         return self.base_categories
 
     def scrape_categories_from_base(self) -> None:
-        """Try to get al subcategries for each base categorie."""
+        """Try to get all subcategories for each base category."""
         for category in self.base_categories:
             category_url = self.BASE_URL + "category/" + category["slug"]
             second_level_slugs = self.scrape_category_via_url(
@@ -110,11 +114,8 @@ class MigrosScraper:
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
-
-        # Clear the requests log before starting a new page scrape
         print(f"Scraping category URL: {category_url}")
         del self.driver.requests
-        # Load the new category page
         self.driver.get(category_url)
         time.sleep(10)  # Adjust this time if necessary
 
@@ -130,14 +131,61 @@ class MigrosScraper:
             if category.get("level") == 3
         ]
 
+        # Capture product data from the "product-cards" endpoint
+        product_data = self._get_category_response("product-cards")
+        if product_data:
+            for product in product_data:
+                migros_id = product.get("migrosId")
+                if migros_id:
+                    print(f"Found product migrosId: {migros_id}")
+                    self.product_ids.add(migros_id)
+
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
             print(f"Successfully fetched data for category: {category_url}")
-            print(category_data.get("categories", [])[0])
             return slugs
         else:
             print(f"Failed to fetch data for category: {category_url}")
+            return []
+
+    def scrape_product_by_id(self, migros_id: str) -> None:
+        """Scrape a product by its migrosId."""
+        product_uri = self.BASE_URL + "product/" + migros_id
+        del self.driver.requests
+        try:
+            self.driver.get(product_uri)
+            time.sleep(5)
+
+            product_cards = self._get_category_response("product-cards")
+            if product_cards:
+                for product in product_cards:
+                    new_id = product.get("migrosId")
+                    if new_id:
+                        print(f"Found product migrosId: {new_id}")
+                        self.product_ids.add(new_id)
+
+            product_data = self._get_category_response("product-detail")
+            if product_data:
+                self.mongo_service.insert_product(product_data)
+            self.scraped_product_ids.add(migros_id)
+        except Exception as e:
+            print(f"Error scraping product {migros_id}: {str(e)}")
+
+    def scrape_products(self) -> None:
+        """Scrape all products from the Migros website."""
+        max_time = 60 * 60  # 1 hour
+        start_time = time.time()
+        try:
+            while (len(self.product_ids) > len(self.scraped_product_ids)) and (
+                time.time() - start_time < max_time
+            ):
+                ids_to_scrape = self.product_ids - self.scraped_product_ids
+                print(f"Scraping {len(ids_to_scrape)} products")
+                for migros_id in ids_to_scrape:
+                    self.scrape_product_by_id(migros_id)
+        except Exception as e:
+            print(f"Error during product scraping: {str(e)}")
 
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
@@ -149,7 +197,6 @@ class MigrosScraper:
         if not os.path.exists(self.LOG_DIR):
             os.makedirs(self.LOG_DIR)  # Create the log directory if it doesn't exist
         else:
-            # Clear all log files in the directory
             for log_file in os.listdir(self.LOG_DIR):
                 log_file_path = os.path.join(self.LOG_DIR, log_file)
                 if os.path.isfile(log_file_path):
@@ -181,6 +228,18 @@ if __name__ == "__main__":
     scraper = MigrosScraper(mongo_service=mongo_service)
     try:
         scraper.get_base_categories()  # Get base categories
-        scraper.scrape_categories_from_base()  # Scrape subcategories
+        # scraper.scrape_categories_from_base()  # Scrape subcategories
+        print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
+        scraper.scrape_products()  # Scrape products
+
+        # Log the migrosIds
+        log_filename = f"{scraper.LOG_DIR}/migrosIds.log"
+        if not os.path.exists(scraper.LOG_DIR):
+            os.makedirs(scraper.LOG_DIR)
+
+        with open(log_filename, "a") as log_file:
+            for product_id in scraper.product_ids:
+                log_file.write(f"{product_id}\n")
+
     finally:
         scraper.close()  # Make sure to close the driver

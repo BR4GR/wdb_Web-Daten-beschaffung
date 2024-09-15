@@ -2,7 +2,8 @@ name: Run Scraper
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # Runs daily at midnight
+    #- cron: "0 0 * * *"  # Runs daily at midnight
+    - cron: "0 * * * *"  # Runs every hour at the start of the hour
   workflow_dispatch:  # Allow manual runs
 
 jobs:

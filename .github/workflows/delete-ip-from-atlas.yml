@@ -17,4 +17,4 @@ jobs:
           curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
               --digest \
               -X DELETE \
-              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList/$IP"
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList/$PUBLIC_IP"

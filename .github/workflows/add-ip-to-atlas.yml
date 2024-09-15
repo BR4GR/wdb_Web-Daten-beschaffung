@@ -16,6 +16,8 @@ jobs:
                 \"ipAddress\": $IP,
                 \"comment\": \"My GitHub Action IP\"
               }"
+          echo "PUBLIC_IP=$IP" >> $GITHUB_ENV
+          echo "DATA=$DATA" >> $GITHUB_ENV
 
       # Add the IP address to MongoDB Atlas via the API
       - name: Add GitHub runner IP to MongoDB Atlas

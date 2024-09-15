@@ -17,9 +17,9 @@ jobs:
       # Add the IP address to MongoDB Atlas via the API
       - name: Add GitHub runner IP to MongoDB Atlas
         run: |
-          curl -u "${{ secrets.MONGO_API_PUBLIC_KEY }}:${{ secrets.MONGO_API_PRIVATE_KEY }}" \
+          curl -u "${{ vars.MONGO_API_PUBLIC_KEY }}:${{ vars.MONGO_API_PRIVATE_KEY }}" \
               --digest \
               -X POST \
               --header "Content-Type: application/json" \
               --data "{\"ipAddress\": \"$PUBLIC_IP\", \"comment\": \"My GitHub Action IP\"}" \
-              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.PROJECT_ID }}/accessList"
+              "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ vars.PROJECT_ID }}/accessList"

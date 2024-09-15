@@ -71,7 +71,7 @@ jobs:
           poetry run python src/migros_scraper.py
         env:
           MONGO_URI: ${{ secrets.MONGODB_URI }}
-          MONGO_NAME: ${{ secrets.MONGO_DBNAME }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DBNAME }}
 
       # Remove the IP address from MongoDB Atlas
       #----------------------------------------------

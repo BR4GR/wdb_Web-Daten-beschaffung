@@ -163,11 +163,11 @@ if __name__ == "__main__":
     # Load environment variables from .env
     load_dotenv()
 
-    MONGODB_URI = os.getenv("MONGO_URI")
-    MONGODB_DBNAME = os.getenv("MONGO_DBNAME")
+    MONGO_URI = os.getenv("MONGO_URI")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 
     # Initialize MongoDB Service
-    mongo_service = MongoService(MONGODB_URI, MONGODB_DBNAME)
+    mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME)
 
     # Initialize and run the scraper
     scraper = MigrosScraper(mongo_service=mongo_service)

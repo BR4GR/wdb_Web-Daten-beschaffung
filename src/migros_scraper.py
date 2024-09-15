@@ -115,6 +115,7 @@ class MigrosScraper:
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
+        print(f"Scraping category: {category_url}")
         del self.driver.requests
         self.driver.get(category_url)
         time.sleep(10)  # Adjust this time if necessary

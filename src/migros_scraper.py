@@ -167,7 +167,7 @@ class MigrosScraper:
 
             product_data = self._get_category_response("product-detail")
             if product_data:
-                self.mongo_service.insert_product(product_data)
+                self.mongo_service.insert_product(product_data[0])
             self.scraped_product_ids.add(migros_id)
         except Exception as e:
             print(f"Error scraping product {migros_id}: {str(e)}")

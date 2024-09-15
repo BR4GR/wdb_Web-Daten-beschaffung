@@ -2,6 +2,7 @@ name: Delete IP from MongoDB Atlas
 
 on:
   workflow_call: # This allows this action to be called from another workflow
+  workflow_dispatch: # Allow manual runs
 
 jobs:
   delete-ip:

@@ -2,6 +2,7 @@ name: Add IP to MongoDB Atlas
 
 on:
   workflow_call: # This allows this action to be called from another workflow
+  workflow_dispatch: # Allow manual runs
 
 jobs:
   add-ip:

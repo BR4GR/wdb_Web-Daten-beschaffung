@@ -46,22 +46,47 @@ class MongoService:
             .get("value")
         )
 
-        if (
-            not existing_product
-            or existing_product.get("offer", {})
+        if not existing_product:
+            # Product doesn't exist, insert as new
+            product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+            self.db.products.insert_one(product_data)
+            print(f"Inserted new product with migrosId: {migros_id}")
+
+        elif (
+            existing_product.get("offer", {})
             .get("price", {})
             .get("unitPrice", {})
             .get("value")
             != new_unit_price
         ):
-            # Add the current timestamp or 'dateAdded' to the product data
+            # Unit price has changed, insert as new and log price change
             product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             self.db.products.insert_one(product_data)
-            print(f"Inserted new product with migrosId: {migros_id}")
+
+            # Log the price change in the 'unit_price_history' collection
+            price_change_entry = {
+                "migrosId": migros_id,
+                "newPrice": new_unit_price,
+                "dateChanged": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            }
+            self.db.unit_price_history.insert_one(price_change_entry)
+            print(
+                f"New unit price detected for product with migrosId: {migros_id}. Logged price change."
+            )
+
         else:
+            # Product exists with the same price, skip insertion
             print(
                 f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
             )
+
+    def get_price_history(self, migros_id: str):
+        """Fetch the price history for a given product."""
+        return list(
+            self.db.unit_price_history.find({"migrosId": migros_id}).sort(
+                "dateChanged", 1
+            )
+        )
 
     def save_scraped_product_id(self, migros_id: str, date: str) -> None:
         """Save the scraped product ID with the date to prevent scraping the same product multiple times per day.
@@ -87,3 +112,41 @@ class MongoService:
             for scraped_data in self.db.scraped_ids.find({"date": current_date})
             if "migrosId" in scraped_data  # Ensure the key exists
         ]
+
+    def insert_new_base_categories(self, new_categories: list) -> None:
+        """Insert new base categories into the category_tracker collection."""
+        for category in new_categories:
+            # Check if the category exists by its ID
+            if not self.db.category_tracker.find_one({"id": category["id"]}):
+                # If not found, insert the full category with last_scraped set to None
+                category["last_scraped"] = (
+                    None  # Initialize last_scraped as None (empty)
+                )
+                self.db.category_tracker.insert_one(category)
+
+    def get_untracked_base_categories(self, base_categories: list) -> list:
+        """Fetch base categories that are not yet tracked in the category_tracker."""
+        tracked_categories_ids = self.db.category_tracker.distinct("id")
+        return [
+            category
+            for category in base_categories
+            if category["id"] not in tracked_categories_ids
+        ]
+
+    def get_oldest_scraped_category(self) -> dict:
+        """Fetch the category that was scraped the longest time ago."""
+        return self.db.category_tracker.find_one(
+            sort=[("last_scraped", 1)],
+        )
+
+    def get_unscraped_categories(self) -> list:
+        """Fetch categories that have never been scraped (i.e., last_scraped is None)."""
+        return list(self.db.category_tracker.find({"last_scraped": None}))
+
+    def mark_category_as_scraped(self, category_id: int, current_day) -> None:
+        """Mark a category as scraped today or insert if it's new."""
+        self.db.category_tracker.update_one(
+            {"id": category_id},
+            {"$set": {"last_scraped": current_day.isoformat()}},
+            upsert=True,
+        )

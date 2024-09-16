@@ -89,6 +89,28 @@ class MigrosScraper:
 
             time.sleep(1)
 
+    def get_and_store_base_categories(self) -> None:
+        """Fetch all base categories and ensure they are tracked in MongoDB."""
+        self.load_main_page()
+        categories_response = self._get_category_response("storemap")
+
+        self.base_categories = categories_response.get("categories", [])
+        for category in self.base_categories:
+            self.mongo_service.insert_category(category)
+        # Store any new categories in the category_tracker collection
+        untracked_categories = self.mongo_service.get_untracked_base_categories(
+            self.base_categories
+        )
+        if untracked_categories:
+            self.mongo_service.insert_new_base_categories(untracked_categories)
+
+        product_data = self._get_category_response("product-cards")
+        if product_data:
+            for product in product_data:
+                migros_id = product.get("migrosId")
+                if migros_id:
+                    self.product_ids.add(migros_id)
+
     def get_base_categories(self) -> list:
         """Fetch and store the full base categories with all attributes."""
         self.load_main_page()
@@ -108,17 +130,16 @@ class MigrosScraper:
 
         return self.base_categories
 
-    def scrape_categories_from_base(self) -> None:
+    def scrape_categorie_from_base(self) -> None:
         """Try to get all subcategories for each base category."""
-        random.shuffle(self.base_categories)
-        for category in self.base_categories[:1]:
-            category_url = self.BASE_URL + "category/" + category["slug"]
-            second_level_slugs = self.scrape_category_via_url(
-                category_url, category["slug"]
-            )
-            for slug in second_level_slugs:
-                url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
-                self.scrape_category_via_url(url, slug)
+        category = mongo_service.get_oldest_scraped_category()
+        category_url = self.BASE_URL + "category/" + category["slug"]
+        second_level_slugs = self.scrape_category_via_url(
+            category_url, category["slug"]
+        )
+        for slug in second_level_slugs:
+            url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
+            self.scrape_category_via_url(url, slug)
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
@@ -154,6 +175,31 @@ class MigrosScraper:
         else:
             print(f"Failed to fetch data for category: {category_url}")
             return []
+
+    def get_next_category_to_scrape(self) -> dict:
+        """Find the next category to scrape."""
+        # Check if any base category has never been scraped
+        untracked_categories = self.mongo_service.get_untracked_base_categories(
+            self.base_categories
+        )
+        if untracked_categories:
+            return untracked_categories[0]  # Scrape the first untracked category
+
+        # Otherwise, find the category that was scraped the longest time ago
+        return self.mongo_service.get_oldest_scraped_category()
+
+    def scrape_next_category(self):
+        """Scrape the next base category."""
+        next_category = self.get_next_category_to_scrape()
+        if not next_category:
+            print("No category found to scrape.")
+            return
+
+        print(f"Scraping category: {next_category['name']}")
+        self.scrape_all_layers_for_category(next_category)
+        self.mongo_service.mark_category_as_scraped(
+            next_category["category_id"], self.current_day
+        )
 
     def reset_scraped_ids_daily(self) -> None:
         """Reset the scraped_product_ids in MongoDB if the date has changed."""
@@ -247,11 +293,11 @@ if __name__ == "__main__":
     # Initialize and run the scraper
     scraper = MigrosScraper(mongo_service=mongo_service)
     try:
-        scraper.get_base_categories()  # Get base categories
+        scraper.get_and_store_base_categories()  # Get base categories
         scraper.scrape_products()  # Scrape products
         print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
 
-        scraper.scrape_categories_from_base()  # Scrape subcategories
+        scraper.scrape_categorie_from_base()  # Scrape subcategories
         print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
         scraper.scrape_products()  # Scrape products
         print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")

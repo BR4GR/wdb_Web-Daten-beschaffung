@@ -28,11 +28,14 @@ class MigrosScraper:
     ):
         self.driver = self._initialize_driver(driver_path, binary_location)
         self.mongo_service = mongo_service
-        self.base_categories = []  # Store full base categories
-        self.product_ids = set()  # Track all product IDs found (using migrosId)
-        self.scraped_product_ids = set()  # Track all product IDs alresdy scraped
+        self.base_categories = []
+        self.product_ids = set(
+            mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
+        )
+        self.scraped_product_ids = set(
+            mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
+        )
         self._clear_log_files()
-        self.current_day = datetime.now().date()
 
     def _initialize_driver(
         self, driver_path: str, binary_location: str
@@ -47,6 +50,10 @@ class MigrosScraper:
         options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
         driver = webdriver.Chrome(service=service, options=options)
         return driver
+
+    def current_day_in_iso(self):
+        """Return the current day in ISO format."""
+        return datetime.now().date().isoformat()
 
     def _decompress_response(self, response: bytes, encoding: str) -> bytes:
         """Decompress response if necessary."""
@@ -104,7 +111,7 @@ class MigrosScraper:
     def scrape_categories_from_base(self) -> None:
         """Try to get all subcategories for each base category."""
         random.shuffle(self.base_categories)
-        for category in self.base_categories[:2]:
+        for category in self.base_categories[:1]:
             category_url = self.BASE_URL + "category/" + category["slug"]
             second_level_slugs = self.scrape_category_via_url(
                 category_url, category["slug"]
@@ -150,17 +157,13 @@ class MigrosScraper:
 
     def reset_scraped_ids_daily(self) -> None:
         """Reset the scraped_product_ids in MongoDB if the date has changed."""
-        current_day = datetime.now().date().isoformat()
-        if current_day != self.current_day.isoformat():
-            print("New day detected. Resetting scraped product IDs in MongoDB.")
-            self.mongo_service.reset_scraped_ids(current_day)
-            self.current_day = datetime.now().date()
+        mongo_service.reset_scraped_ids(self.current_day_in_iso())
 
     def scrape_product_by_id(self, migros_id: str) -> None:
         """Scrape a product by its migrosId."""
         # Check if product was already scraped today
         if self.mongo_service.is_product_scraped_today(
-            migros_id, self.current_day.isoformat()
+            migros_id, self.current_day_in_iso()
         ):
             print(f"Product {migros_id} was already scraped today. Skipping.")
             self.scraped_product_ids.add(migros_id)
@@ -184,7 +187,7 @@ class MigrosScraper:
                 self.mongo_service.insert_product(product_data[0])
             self.scraped_product_ids.add(migros_id)
             self.mongo_service.save_scraped_product_id(
-                migros_id, self.current_day.isoformat()
+                migros_id, self.current_day_in_iso()
             )
         except Exception as e:
             print(f"Error scraping product {migros_id}: {str(e)}")
@@ -245,13 +248,16 @@ if __name__ == "__main__":
     scraper = MigrosScraper(mongo_service=mongo_service)
     try:
         scraper.get_base_categories()  # Get base categories
+        scraper.scrape_products()  # Scrape products
+        print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
+
         scraper.scrape_categories_from_base()  # Scrape subcategories
         print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
         scraper.scrape_products()  # Scrape products
         print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
 
         # Log the migrosIds
-        log_filename = f"{scraper.LOG_DIR}/migrosIds.log"
+        log_filename = f"{scraper.LOG_DIR}/00migrosIds.log"
         if not os.path.exists(scraper.LOG_DIR):
             os.makedirs(scraper.LOG_DIR)
 

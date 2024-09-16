@@ -63,18 +63,27 @@ class MongoService:
                 f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
             )
 
-    # Save scraped product ID with the date
     def save_scraped_product_id(self, migros_id: str, date: str) -> None:
+        """Save the scraped product ID with the date to prevent scraping the same product multiple times per day.
+        this is needed because we start multiple actions a day"""
         if not self.is_product_scraped_today(migros_id, date):
             self.db.scraped_ids.insert_one({"migrosId": migros_id, "date": date})
 
-    # Check if a product has been scraped today
     def is_product_scraped_today(self, migros_id: str, date: str) -> bool:
+        """Check if a product with the given migrosId has already been scraped today."""
         return (
             self.db.scraped_ids.find_one({"migrosId": migros_id, "date": date})
             is not None
         )
 
-    # Remove all scraped IDs from a previous day
     def reset_scraped_ids(self, current_date: str):
+        """Remove all scraped_ids entries that are not from the current date."""
         self.db.scraped_ids.delete_many({"date": {"$ne": current_date}})
+
+    def retrieve_todays_scraped_ids(self, current_date: str) -> list[int]:
+        """Retrieve all scraped_ids entries that are from the current date."""
+        return [
+            scraped_data["migrosId"]
+            for scraped_data in self.db.scraped_ids.find({"date": current_date})
+            if "migrosId" in scraped_data  # Ensure the key exists
+        ]

@@ -137,6 +137,9 @@ class MigrosScraper:
         second_level_slugs = self.scrape_category_via_url(
             category_url, category["slug"]
         )
+        self.mongo_service.mark_category_as_scraped(
+            category["category_id"], self.current_day
+        )
         for slug in second_level_slugs:
             url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
             self.scrape_category_via_url(url, slug)

@@ -182,7 +182,7 @@ class MigrosScraper:
         self.yeet(f"Scraping category URL: {category_url}")
         del self.driver.requests
         self.driver.get(category_url)
-        time.sleep(3)  # Adjust this time if necessary
+        time.sleep(2)  # Adjust this time if necessary
 
         # Log each network request URL to a file named after the category slug
         for request in self.driver.requests:
@@ -242,7 +242,7 @@ class MigrosScraper:
         del self.driver.requests
         try:
             self.driver.get(product_uri)
-            time.sleep(3)
+            time.sleep(2)
 
             # Check if the request for the product page was successful (status 200)
             for request in self.driver.requests:
@@ -291,7 +291,7 @@ class MigrosScraper:
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
         self.driver.get(self.BASE_URL)
-        time.sleep(3)  # Adjust this time if necessary
+        time.sleep(2)  # Adjust this time if necessary
 
     def _clear_log_files(self) -> None:
         """Clear all log files in the log directory."""

@@ -147,6 +147,6 @@ class MongoService:
         """Mark a category as scraped today or insert if it's new."""
         self.db.category_tracker.update_one(
             {"id": category_id},
-            {"$set": {"last_scraped": current_day.isoformat()}},
+            {"$set": {"last_scraped": current_day}},
             upsert=True,
         )

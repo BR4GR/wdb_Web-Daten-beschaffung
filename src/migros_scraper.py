@@ -138,7 +138,7 @@ class MigrosScraper:
             category_url, category["slug"]
         )
         self.mongo_service.mark_category_as_scraped(
-            category["category_id"], self.current_day
+            category["id"], self.current_day_in_iso()
         )
         for slug in second_level_slugs:
             url = self.BASE_URL + "category/" + category["slug"] + "/" + slug

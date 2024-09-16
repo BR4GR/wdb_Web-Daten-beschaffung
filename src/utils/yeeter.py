@@ -6,21 +6,15 @@ from pytz import timezone
 
 class Yeeter:
     def __init__(self, log_filename="yeeted.log"):
-        # Create a logger
         self.logger = logging.getLogger("Yeeter")
         self.logger.setLevel(logging.INFO)
 
-        # Create handlers for both console and file
-        console_handler = logging.StreamHandler()  # Console handler
-        file_handler = logging.FileHandler(log_filename)  # File handler
-
-        # Set logging format
-        formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+        console_handler = logging.StreamHandler()
         console_handler.setFormatter(self.CustomFormatter())
-        file_handler.setFormatter(self.CustomFormatter())
-
-        # Add handlers to the logger
         self.logger.addHandler(console_handler)
+
+        file_handler = logging.FileHandler(log_filename)
+        file_handler.setFormatter(self.CustomFormatter())
         self.logger.addHandler(file_handler)
 
     class CustomFormatter(logging.Formatter):
@@ -36,10 +30,11 @@ class Yeeter:
             record.created = self.converter(record.created)
             return super().formatTime(record, datefmt)
 
-    def info(self, message):
-        """Logs an info message."""
+    # New method to log quickly
+    def yeet(self, message: str):
+        """Shorthand for logging an info message."""
         self.logger.info(message)
 
-    def error(self, message):
-        """Logs an error message."""
+    def yeet_error(self, message: str):
+        """Shorthand for logging an error message."""
         self.logger.error(message)

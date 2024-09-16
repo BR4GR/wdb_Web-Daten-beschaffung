@@ -62,6 +62,14 @@ class MigrosScraper:
         """Log an error message."""
         self.yeeter.yeet_error(message)
 
+    def yeet_bug(self, message: str):
+        """Log a debug message."""
+        self.yeeter.yeet_bug(message)
+
+    def alarm(self, message: str):
+        """Log a warning message."""
+        self.yeeter.alarm(message)
+
     def current_day_in_iso(self):
         """Return the current day in ISO format."""
         return datetime.now().date().isoformat()
@@ -86,13 +94,15 @@ class MigrosScraper:
                     try:
                         # Check if the request has a response
                         if request.response is None:
-                            self.yeet(f"No response for request: {request.url}")
+                            self.alarm(f"No response for request: {request.url}")
                             continue  # Skip to the next request
 
                         # Check if the response body exists
                         response_body = request.response.body
                         if response_body is None:
-                            self.yeet(f"Empty response body for request: {request.url}")
+                            self.alarm(
+                                f"Empty response body for request: {request.url}"
+                            )
                             continue  # Skip to the next request
 
                         # Handle response encoding
@@ -266,7 +276,7 @@ class MigrosScraper:
                 for migros_id in ids_to_scrape:
                     self.scrape_product_by_id(migros_id)
         except Exception as e:
-            self.yeet(f"Error during product scraping: {str(e)}")
+            self.yeet_error(f"Error during product scraping: {str(e)}")
 
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""

@@ -123,6 +123,7 @@ class MigrosScraper:
 
     def get_and_store_base_categories(self) -> None:
         """Fetch all base categories and ensure they are tracked in MongoDB."""
+        self.yeet("Fetching and storing base categories")
         self.load_main_page()
         categories_response = self._get_category_response("storemap")
 
@@ -142,25 +143,6 @@ class MigrosScraper:
                 migros_id = product.get("migrosId")
                 if migros_id:
                     self.product_ids.add(migros_id)
-
-    def get_base_categories(self) -> list:
-        """Fetch and store the full base categories with all attributes."""
-        self.load_main_page()
-        categories_response = self._get_category_response("storemap")
-
-        categories = categories_response.get("categories", [])
-        for category in categories:
-            self.mongo_service.insert_category(category)
-            self.base_categories.append(category)
-
-        product_data = self._get_category_response("product-cards")
-        if product_data:
-            for product in product_data:
-                migros_id = product.get("migrosId")
-                if migros_id:
-                    self.product_ids.add(migros_id)
-
-        return self.base_categories
 
     def scrape_categorie_from_base(self) -> None:
         """Try to get all subcategories for each base category."""
@@ -188,10 +170,6 @@ class MigrosScraper:
         for request in self.driver.requests:
             self.log_request(slug, request)
 
-        # Capture the network request with "category" in the URL
-        category_data = self._get_category_response("search/category")
-
-        # Capture product data from the "product-cards" endpoint
         product_data = self._get_category_response("product-cards")
         if product_data:
             for product in product_data:
@@ -199,6 +177,7 @@ class MigrosScraper:
                 if migros_id:
                     self.product_ids.add(migros_id)
 
+        category_data = self._get_category_response("search/category")
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
@@ -240,6 +219,7 @@ class MigrosScraper:
 
         product_uri = self.BASE_URL + "product/" + migros_id
         del self.driver.requests
+        self.yeet(f"Scraping product: {product_uri}")
         try:
             self.driver.get(product_uri)
             time.sleep(2)

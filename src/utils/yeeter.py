@@ -1,7 +1,11 @@
 import logging
 from datetime import datetime, timezone
 
+from colorama import Fore, Style, init
 from pytz import timezone as pytz_timezone
+
+# Initialize colorama for Windows compatibility
+init(autoreset=True)
 
 
 class Yeeter:
@@ -9,38 +13,55 @@ class Yeeter:
         self.logger = logging.getLogger("Yeeter")
         self.logger.setLevel(logging.INFO)
 
-        # Console handler
+        # Define log format to include asctime, log level, logger name, and message
+        log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+
+        # Console handler (with color)
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(self.CustomFormatter())
+        console_handler.setFormatter(self.CustomFormatter(log_format, colored=True))
         self.logger.addHandler(console_handler)
 
-        # File handler
+        # File handler (without color)
         file_handler = logging.FileHandler(log_filename)
-        file_handler.setFormatter(self.CustomFormatter())
+        file_handler.setFormatter(self.CustomFormatter(log_format, colored=False))
         self.logger.addHandler(file_handler)
 
     class CustomFormatter(logging.Formatter):
         """Custom formatter that adjusts time to Berlin time zone and formats logs."""
 
+        def __init__(self, fmt, colored: bool = False):
+            super().__init__(fmt)
+            self.colored = colored
+
         def converter(self, timestamp):
             """Converts the UTC time to Berlin time using timezone-aware datetime."""
-            # Create a timezone-aware UTC datetime object
             utc_time = datetime.fromtimestamp(timestamp, tz=timezone.utc)
             berlin_time = utc_time.astimezone(pytz_timezone("Europe/Berlin"))
             return berlin_time
 
         def formatTime(self, record, datefmt=None):
             """Formats the time in the desired format without milliseconds."""
-            # Convert the record's creation time and return only up to seconds
             record_time = self.converter(record.created)
-            return record_time.strftime("%Y-%m-%d %H:%M")
+            return record_time.strftime("%Y-%m-%d %H:%M:%S")  # Ensure seconds only
 
         def format(self, record):
-            """Format the log message to include time, level, and message."""
-            log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-            record.asctime = self.formatTime(record)
-            formatter = logging.Formatter(log_format)
-            return formatter.format(record)
+            """Override the default format to add color."""
+            record.asctime = self.formatTime(record)  # Override the asctime field
+            log_message = super().format(record)
+
+            if self.colored:
+                # Apply colors to different log levels
+                if record.levelno == logging.INFO:
+                    return f"{Fore.GREEN}{log_message}{Style.RESET_ALL}"
+                elif record.levelno == logging.ERROR:
+                    return f"{Fore.RED}{log_message}{Style.RESET_ALL}"
+                elif record.levelno == logging.WARNING:
+                    return f"{Fore.YELLOW}{log_message}{Style.RESET_ALL}"
+                elif record.levelno == logging.DEBUG:
+                    return f"{Fore.CYAN}{log_message}{Style.RESET_ALL}"
+                else:
+                    return log_message
+            return log_message
 
     # New method to log quickly
     def yeet(self, message: str):

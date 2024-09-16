@@ -9,7 +9,6 @@ on:
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
-    timeout-minutes: 50  # Limit to 50 minutes
 
     steps:
       #----------------------------------------------

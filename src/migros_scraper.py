@@ -143,13 +143,14 @@ class MigrosScraper:
         for slug in second_level_slugs:
             url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
             self.scrape_category_via_url(url, slug)
+            self.scrape_products()
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
         print(f"Scraping category: {category_url}")
         del self.driver.requests
         self.driver.get(category_url)
-        time.sleep(10)  # Adjust this time if necessary
+        time.sleep(3)  # Adjust this time if necessary
 
         # Log each network request URL to a file named after the category slug
         for request in self.driver.requests:
@@ -222,7 +223,7 @@ class MigrosScraper:
         del self.driver.requests
         try:
             self.driver.get(product_uri)
-            time.sleep(5)
+            time.sleep(3)
 
             product_cards = self._get_category_response("product-cards")
             if product_cards:
@@ -259,7 +260,7 @@ class MigrosScraper:
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
         self.driver.get(self.BASE_URL)
-        time.sleep(5)  # Adjust this time if necessary
+        time.sleep(3)  # Adjust this time if necessary
 
     def _clear_log_files(self) -> None:
         """Clear all log files in the log directory."""

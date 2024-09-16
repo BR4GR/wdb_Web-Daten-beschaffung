@@ -79,12 +79,18 @@ class MigrosScraper:
                     try:
                         return json.loads(response.decode("utf-8"))
                     except json.JSONDecodeError:
-                        print("Error decoding JSON response.")
+                        print(
+                            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                            "Error decoding JSON response.",
+                        )
                         print(response)
                         return {}
 
             if time.time() - start_time > max_wait_time:
-                print(f"Timeout: {url_contains} request not found.")
+                print(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                    f"Timeout: {url_contains} request not found.",
+                )
                 return {}
 
             time.sleep(1)
@@ -147,7 +153,10 @@ class MigrosScraper:
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
-        print(f"Scraping category: {category_url}")
+        print(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            f"Scraping category: {category_url}",
+        )
         del self.driver.requests
         self.driver.get(category_url)
         time.sleep(3)  # Adjust this time if necessary
@@ -177,7 +186,10 @@ class MigrosScraper:
                 self.mongo_service.insert_category(category)
             return slugs
         else:
-            print(f"Failed to fetch data for category: {category_url}")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Failed to fetch data for category: {category_url}",
+            )
             return []
 
     def get_next_category_to_scrape(self) -> dict:
@@ -196,10 +208,16 @@ class MigrosScraper:
         """Scrape the next base category."""
         next_category = self.get_next_category_to_scrape()
         if not next_category:
-            print("No category found to scrape.")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                "No category found to scrape.",
+            )
             return
 
-        print(f"Scraping category: {next_category['name']}")
+        print(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            f"Scraping category: {next_category['name']}",
+        )
         self.scrape_all_layers_for_category(next_category)
         self.mongo_service.mark_category_as_scraped(
             next_category["category_id"], self.current_day
@@ -215,7 +233,10 @@ class MigrosScraper:
         if self.mongo_service.is_product_scraped_today(
             migros_id, self.current_day_in_iso()
         ):
-            print(f"Product {migros_id} was already scraped today. Skipping.")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Product {migros_id} was already scraped today. Skipping.",
+            )
             self.scraped_product_ids.add(migros_id)
             return
 
@@ -240,7 +261,10 @@ class MigrosScraper:
                 migros_id, self.current_day_in_iso()
             )
         except Exception as e:
-            print(f"Error scraping product {migros_id}: {str(e)}")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Error scraping product {migros_id}: {str(e)}",
+            )
 
     def scrape_products(self) -> None:
         """Scrape all products from the Migros website."""
@@ -251,11 +275,17 @@ class MigrosScraper:
                 time.time() - start_time < max_time
             ):
                 ids_to_scrape = self.product_ids - self.scraped_product_ids
-                print(f"Scraping {len(ids_to_scrape)} products")
+                print(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                    f"Scraping {len(ids_to_scrape)} products",
+                )
                 for migros_id in ids_to_scrape:
                     self.scrape_product_by_id(migros_id)
         except Exception as e:
-            print(f"Error during product scraping: {str(e)}")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Error during product scraping: {str(e)}",
+            )
 
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
@@ -299,12 +329,21 @@ if __name__ == "__main__":
     try:
         scraper.get_and_store_base_categories()  # Get base categories
         scraper.scrape_products()  # Scrape products
-        print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
+        print(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}",
+        )
 
         scraper.scrape_categorie_from_base()  # Scrape subcategories
-        print(f"Collected product IDs (migrosIds): {scraper.product_ids}")
+        print(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            f"Collected product IDs (migrosIds): {scraper.product_ids}",
+        )
         scraper.scrape_products()  # Scrape products
-        print(f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}")
+        print(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            f"scraped product IDs (migrosIds): {scraper.scraped_product_ids}",
+        )
 
         # Log the migrosIds
         log_filename = f"{scraper.LOG_DIR}/00migrosIds.log"

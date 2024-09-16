@@ -35,7 +35,10 @@ class MongoService:
         """Insert a new product document if the unitPrice is new or the product doesn't exist."""
         migros_id = product_data.get("migrosId")
         if not migros_id:
-            print("Product does not contain migrosId, skipping insertion.")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                "Product does not contain migrosId, skipping insertion.",
+            )
             return
 
         existing_product = self.get_latest_product_entry(migros_id)
@@ -50,7 +53,10 @@ class MongoService:
             # Product doesn't exist, insert as new
             product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             self.db.products.insert_one(product_data)
-            print(f"Inserted new product with migrosId: {migros_id}")
+            print(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Inserted new product with migrosId: {migros_id}",
+            )
 
         elif (
             existing_product.get("offer", {})
@@ -71,13 +77,15 @@ class MongoService:
             }
             self.db.unit_price_history.insert_one(price_change_entry)
             print(
-                f"New unit price detected for product with migrosId: {migros_id}. Logged price change."
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"New unit price detected for product with migrosId: {migros_id}. Logged price change.",
             )
 
         else:
             # Product exists with the same price, skip insertion
             print(
-                f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion.",
             )
 
     def get_price_history(self, migros_id: str):

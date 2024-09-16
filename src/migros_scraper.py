@@ -260,6 +260,17 @@ class MigrosScraper:
             self.driver.get(product_uri)
             time.sleep(3)
 
+            # Check if the request for the product page was successful (status 200)
+            for request in self.driver.requests:
+                if product_uri in request.url and request.response:
+                    if request.response.status_code != 200:
+                        print(
+                            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                            f"Failed to scrape product {migros_id}. HTTP status: {request.response.status_code}",
+                        )
+                        return  # Exit early if the request failed
+
+            # Continue with scraping product information if the response was successful
             product_cards = self._get_category_response("product-cards")
             if product_cards:
                 for product in product_cards:
@@ -270,10 +281,12 @@ class MigrosScraper:
             product_data = self._get_category_response("product-detail")
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
+
             self.scraped_product_ids.add(migros_id)
             self.mongo_service.save_scraped_product_id(
                 migros_id, self.current_day_in_iso()
             )
+
         except Exception as e:
             print(
                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),

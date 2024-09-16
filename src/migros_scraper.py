@@ -72,19 +72,52 @@ class MigrosScraper:
         while True:
             for request in self.driver.requests:
                 if url_contains in request.url:
-                    response = request.response.body
-                    encoding = request.response.headers.get("Content-Encoding", "")
-                    response = self._decompress_response(response, encoding)
-
                     try:
-                        return json.loads(response.decode("utf-8"))
+                        # Check if the request has a response
+                        if request.response is None:
+                            print(
+                                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                                f"No response for request: {request.url}",
+                            )
+                            continue  # Skip to the next request
+
+                        # Check if the response body exists
+                        response_body = request.response.body
+                        if response_body is None:
+                            print(
+                                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                                f"Empty response body for request: {request.url}",
+                            )
+                            continue  # Skip to the next request
+
+                        # Handle response encoding
+                        encoding = request.response.headers.get("Content-Encoding", "")
+                        response_body = self._decompress_response(
+                            response_body, encoding
+                        )
+
+                        # Parse the response JSON
+                        return json.loads(response_body.decode("utf-8"))
+
                     except json.JSONDecodeError:
                         print(
                             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
                             "Error decoding JSON response.",
                         )
-                        print(response)
+                        print(response_body)
                         return {}
+                    except AttributeError as e:
+                        print(
+                            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                            f"Attribute error: {str(e)}",
+                        )
+                        continue  # Skip to the next request
+                    except Exception as e:
+                        print(
+                            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                            f"Unexpected error: {str(e)}",
+                        )
+                        continue  # Skip to the next request
 
             if time.time() - start_time > max_wait_time:
                 print(
@@ -155,7 +188,7 @@ class MigrosScraper:
         """Scrape a category by loading the URL and capturing the network requests."""
         print(
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            f"Scraping category: {category_url}",
+            f"Scraping category URL: {category_url}",
         )
         del self.driver.requests
         self.driver.get(category_url)
@@ -167,11 +200,6 @@ class MigrosScraper:
 
         # Capture the network request with "category" in the URL
         category_data = self._get_category_response("search/category")
-        slugs = [
-            category["slug"]
-            for category in category_data.get("categories", [])
-            if category.get("level") == 3
-        ]
 
         # Capture product data from the "product-cards" endpoint
         product_data = self._get_category_response("product-cards")
@@ -184,6 +212,11 @@ class MigrosScraper:
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
+            slugs = [
+                category["slug"]
+                for category in category_data.get("categories", [])
+                if category.get("level") == 3
+            ]
             return slugs
         else:
             print(
@@ -203,25 +236,6 @@ class MigrosScraper:
 
         # Otherwise, find the category that was scraped the longest time ago
         return self.mongo_service.get_oldest_scraped_category()
-
-    def scrape_next_category(self):
-        """Scrape the next base category."""
-        next_category = self.get_next_category_to_scrape()
-        if not next_category:
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                "No category found to scrape.",
-            )
-            return
-
-        print(
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            f"Scraping category: {next_category['name']}",
-        )
-        self.scrape_all_layers_for_category(next_category)
-        self.mongo_service.mark_category_as_scraped(
-            next_category["category_id"], self.current_day
-        )
 
     def reset_scraped_ids_daily(self) -> None:
         """Reset the scraped_product_ids in MongoDB if the date has changed."""

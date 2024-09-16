@@ -174,6 +174,7 @@ class MigrosScraper:
         self.yeet(f"Scraping category URL: {category_url}")
         del self.driver.requests
         self.driver.get(category_url)
+        self.mongo_service.increment_request_count(self.current_day_in_iso())
         time.sleep(2)  # Adjust this time if necessary
 
         # Log each network request URL to a file named after the category slug
@@ -232,6 +233,7 @@ class MigrosScraper:
         self.yeet(f"Scraping product: {product_uri}")
         try:
             self.driver.get(product_uri)
+            self.mongo_service.increment_request_count(self.current_day_in_iso())
             time.sleep(2)
 
             # Check if the request for the product page was successful (status 200)
@@ -281,6 +283,7 @@ class MigrosScraper:
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
         self.driver.get(self.BASE_URL)
+        self.mongo_service.increment_request_count(self.current_day_in_iso())
         time.sleep(2)  # Adjust this time if necessary
 
     def _clear_log_files(self) -> None:

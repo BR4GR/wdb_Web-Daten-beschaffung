@@ -177,6 +177,23 @@ class MongoService:
             if "migrosId" in scraped_data  # Ensure the key exists
         ]
 
+    # ----------------------------------------------
+    #       request_counts
+    # ----------------------------------------------
+
+    def get_request_count(self, current_date: str) -> int:
+        """Retrieve the request count for the given date."""
+        record = self.db.request_counts.find_one({"date": current_date})
+        if record:
+            return record.get("count", 0)
+        return 0
+
+    def increment_request_count(self, current_date: str, count: int = 1) -> None:
+        """Increment the request count for the given date."""
+        self.db.request_counts.update_one(
+            {"date": current_date}, {"$inc": {"count": count}}, upsert=True
+        )
+
 
 if __name__ == "__main__":
     yeeter = Yeeter()

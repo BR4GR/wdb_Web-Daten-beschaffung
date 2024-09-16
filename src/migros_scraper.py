@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver
 
 from services.mongo_service import MongoService
+from utils.yeeter import Yeeter
 
 
 class MigrosScraper:
@@ -23,11 +24,13 @@ class MigrosScraper:
     def __init__(
         self,
         mongo_service: MongoService,
+        yeeter: Yeeter,
         driver_path: str = "/usr/bin/chromedriver",
         binary_location: str = "/usr/bin/chromium",
     ):
         self.driver = self._initialize_driver(driver_path, binary_location)
         self.mongo_service = mongo_service
+        self.yeeter = yeeter
         self.base_categories = []
         self.product_ids = set(
             mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
@@ -50,6 +53,14 @@ class MigrosScraper:
         options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
         driver = webdriver.Chrome(service=service, options=options)
         return driver
+
+    def yeet(self, message: str):
+        """Log an info message."""
+        self.yeeter.yeet(message)
+
+    def yeet_error(self, message: str):
+        """Log an error message."""
+        self.yeeter.yeet_error(message)
 
     def current_day_in_iso(self):
         """Return the current day in ISO format."""
@@ -247,10 +258,7 @@ class MigrosScraper:
         if self.mongo_service.is_product_scraped_today(
             migros_id, self.current_day_in_iso()
         ):
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                f"Product {migros_id} was already scraped today. Skipping.",
-            )
+            self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
             self.scraped_product_ids.add(migros_id)
             return
 
@@ -264,9 +272,8 @@ class MigrosScraper:
             for request in self.driver.requests:
                 if product_uri in request.url and request.response:
                     if request.response.status_code != 200:
-                        print(
-                            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                            f"Failed to scrape product {migros_id}. HTTP status: {request.response.status_code}",
+                        self.yeet_error(
+                            f"Failed to scrape product {migros_id}. HTTP status: {request.response.status_code}"
                         )
                         return  # Exit early if the request failed
 
@@ -288,10 +295,7 @@ class MigrosScraper:
             )
 
         except Exception as e:
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                f"Error scraping product {migros_id}: {str(e)}",
-            )
+            self.yeet_error(f"Error scraping product {migros_id}: {str(e)}")
 
     def scrape_products(self) -> None:
         """Scrape all products from the Migros website."""
@@ -350,9 +354,10 @@ if __name__ == "__main__":
 
     # Initialize MongoDB Service
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME)
+    yeeter = Yeeter(log_filename="000_migros_scraper.log")
 
     # Initialize and run the scraper
-    scraper = MigrosScraper(mongo_service=mongo_service)
+    scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
     try:
         scraper.get_and_store_base_categories()  # Get base categories
         scraper.scrape_products()  # Scrape products

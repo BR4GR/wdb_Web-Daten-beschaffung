@@ -3,11 +3,14 @@ import time
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
+from utils.yeeter import Yeeter, yeet
+
 
 class MongoService:
-    def __init__(self, uri: str, db_name: str):
+    def __init__(self, uri: str, db_name: str, yeeter: Yeeter):
         self.client = MongoClient(uri, server_api=ServerApi("1"))
         self.db = self.client[db_name]
+        self.yeeter = yeeter
 
     def close(self):
         self.client.close()
@@ -24,6 +27,7 @@ class MongoService:
         """Insert a new category document into the categories collection."""
         if not self.check_category_exists(category_data["id"]):
             self.db.categories.insert_one(category_data)
+            self.yeeter.yeet(f"Inserted new category: {category_data['id']}")
 
     def insert_new_base_categories(self, new_categories: list) -> None:
         """Insert new base categories into the category_tracker collection."""
@@ -85,9 +89,8 @@ class MongoService:
         """Insert a new product document if the unitPrice is new or the product doesn't exist."""
         migros_id = product_data.get("migrosId")
         if not migros_id:
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                "Product does not contain migrosId, skipping insertion.",
+            self.yeeter.yeet_error(
+                "Product does not contain migrosId, skipping insertion."
             )
             return
 
@@ -103,10 +106,7 @@ class MongoService:
             # Product doesn't exist, insert as new
             product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             self.db.products.insert_one(product_data)
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                f"Inserted new product with migrosId: {migros_id}",
-            )
+            self.yeeter.yeet(f"Inserted new product with migrosId: {migros_id}")
 
         elif (
             existing_product.get("offer", {})
@@ -126,16 +126,14 @@ class MongoService:
                 "dateChanged": time.strftime("%Y-%m-%dT%H:%M:%S"),
             }
             self.db.unit_price_history.insert_one(price_change_entry)
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                f"New unit price detected for product with migrosId: {migros_id}. Logged price change.",
+            self.yeeter.yeet(
+                f"\033[1;32mNew unit price detected for product with migrosId: {migros_id}. Logged price change.\033[0m"
             )
 
         else:
             # Product exists with the same price, skip insertion
-            print(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion.",
+            self.yeeter.logger.debug(
+                f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
             )
 
     # ----------------------------------------------
@@ -155,8 +153,7 @@ class MongoService:
     # ----------------------------------------------
 
     def save_scraped_product_id(self, migros_id: str, date: str) -> None:
-        """Save the scraped product ID with the date to prevent scraping the same product multiple times per day.
-        this is needed because we start multiple actions a day"""
+        """Save the scraped product ID with the date to prevent scraping the same product multiple times per day."""
         if not self.is_product_scraped_today(migros_id, date):
             self.db.scraped_ids.insert_one({"migrosId": migros_id, "date": date})
 
@@ -170,6 +167,7 @@ class MongoService:
     def reset_scraped_ids(self, current_date: str):
         """Remove all scraped_ids entries that are not from the current date."""
         self.db.scraped_ids.delete_many({"date": {"$ne": current_date}})
+        self.yeeter.yeet(f"Reset scraped IDs not from {current_date}.")
 
     def retrieve_todays_scraped_ids(self, current_date: str) -> list[int]:
         """Retrieve all scraped_ids entries that are from the current date."""
@@ -178,3 +176,14 @@ class MongoService:
             for scraped_data in self.db.scraped_ids.find({"date": current_date})
             if "migrosId" in scraped_data  # Ensure the key exists
         ]
+
+
+if __name__ == "__main__":
+    yeeter = Yeeter()
+    ms = MongoService("mongodb://localhost:27017", "exampledb", yeeter)
+    migros_id = "123456"
+    ms.yeeter.yeet(
+        f"\033[1;32mNew unit price detected for product with migrosId: {migros_id}. Logged price change.\033[0m"
+    )
+    ms.yeeter.yeet_bug("fix bugs")
+    ms.yeeter.alarm("ALAAAARM")

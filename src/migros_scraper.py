@@ -303,8 +303,8 @@ if __name__ == "__main__":
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 
     # Initialize MongoDB Service
-    mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME)
     yeeter = Yeeter(log_filename="000_migros_scraper.log")
+    mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
 
     # Initialize and run the scraper
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)

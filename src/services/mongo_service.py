@@ -89,9 +89,7 @@ class MongoService:
         """Insert a new product document if the unitPrice is new or the product doesn't exist."""
         migros_id = product_data.get("migrosId")
         if not migros_id:
-            self.yeeter.yeet_error(
-                "Product does not contain migrosId, skipping insertion."
-            )
+            self.yeeter.error("Product does not contain migrosId, skipping insertion.")
             return
 
         existing_product = self.get_latest_product_entry(migros_id)
@@ -202,5 +200,5 @@ if __name__ == "__main__":
     ms.yeeter.yeet(
         f"\033[1;32mNew unit price detected for product with migrosId: {migros_id}. Logged price change.\033[0m"
     )
-    ms.yeeter.yeet_bug("fix bugs")
+    ms.yeeter.bugreport("fix bugs")
     ms.yeeter.alarm("ALAAAARM")

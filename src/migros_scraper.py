@@ -9,6 +9,7 @@ import brotli
 import requests
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver
@@ -19,7 +20,6 @@ from utils.yeeter import Yeeter
 
 class MigrosScraper:
     BASE_URL = "https://www.migros.ch/en/"
-    LOG_DIR = "logs"
 
     def __init__(
         self,
@@ -38,7 +38,6 @@ class MigrosScraper:
         self.scraped_product_ids = set(
             mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
         )
-        self._clear_log_files()
 
     def _initialize_driver(
         self, driver_path: str, binary_location: str
@@ -54,20 +53,29 @@ class MigrosScraper:
         driver = webdriver.Chrome(service=service, options=options)
         return driver
 
+    def load_main_page(self) -> None:
+        """Load the main page of the Migros website."""
+        self.make_request_and_validate(self.BASE_URL)
+
+    def close(self) -> None:
+        """Close the WebDriver session."""
+        if self.driver:
+            self.driver.quit()
+
     def yeet(self, message: str):
-        """Log an info message."""
+        """print an info message."""
         self.yeeter.yeet(message)
 
-    def yeet_error(self, message: str):
-        """Log an error message."""
-        self.yeeter.yeet_error(message)
+    def error(self, message: str):
+        """print an error message."""
+        self.yeeter.error(message)
 
-    def yeet_bug(self, message: str):
-        """Log a debug message."""
-        self.yeeter.yeet_bug(message)
+    def bugreport(self, message: str):
+        """print a debug message."""
+        self.yeeter.bugreport(message)
 
     def alarm(self, message: str):
-        """Log a warning message."""
+        """prnt a warning message."""
         self.yeeter.alarm(message)
 
     def current_day_in_iso(self):
@@ -82,6 +90,17 @@ class MigrosScraper:
             return brotli.decompress(response)
         return response
 
+    def _log_scraper_state(self, url: str, request=None) -> None:
+        """
+        Use the Yeeter to log the scraper state before shutdown.
+        """
+        self.yeeter.log_scraper_state(
+            url=url,
+            request=request,
+            scraped_product_ids=self.scraped_product_ids,
+            base_categories=self.base_categories,
+        )
+
     def _get_category_response(
         self, url_contains: str, max_wait_time: int = 30
     ) -> dict:
@@ -92,38 +111,34 @@ class MigrosScraper:
             for request in self.driver.requests:
                 if url_contains in request.url:
                     try:
-                        # Check if the request has a response
                         if request.response is None:
                             self.alarm(f"No response for request: {request.url}")
-                            continue  # Skip to the next request
+                            continue
 
-                        # Check if the response body exists
                         response_body = request.response.body
                         if response_body is None:
                             self.alarm(
                                 f"Empty response body for request: {request.url}"
                             )
-                            continue  # Skip to the next request
+                            continue
 
-                        # Handle response encoding
                         encoding = request.response.headers.get("Content-Encoding", "")
                         response_body = self._decompress_response(
                             response_body, encoding
                         )
 
-                        # Parse the response JSON
                         return json.loads(response_body.decode("utf-8"))
 
                     except json.JSONDecodeError:
-                        self.yeet_error("Error decoding JSON response.")
-                        self.yeet_error(response_body)
+                        self.error("Error decoding JSON response.")
+                        self.error(response_body)
                         return {}
                     except AttributeError as e:
-                        self.yeet_error(f"Attribute error: {str(e)}")
-                        continue  # Skip to the next request
+                        self.error(f"Attribute error: {str(e)}")
+                        continue
                     except Exception as e:
-                        self.yeet_error(f"Unexpected error: {str(e)}")
-                        continue  # Skip to the next request
+                        self.error(f"Unexpected error: {str(e)}")
+                        continue
 
             if time.time() - start_time > max_wait_time:
                 self.yeet(f"Timeout: {url_contains} request not found.")
@@ -172,14 +187,7 @@ class MigrosScraper:
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
         self.yeet(f"Scraping category URL: {category_url}")
-        del self.driver.requests
-        self.driver.get(category_url)
-        self.mongo_service.increment_request_count(self.current_day_in_iso())
-        time.sleep(2)  # Adjust this time if necessary
-
-        # Log each network request URL to a file named after the category slug
-        for request in self.driver.requests:
-            self.log_request(slug, request)
+        self.make_request_and_validate(category_url)
 
         product_data = self._get_category_response("product-cards")
         if product_data:
@@ -199,7 +207,7 @@ class MigrosScraper:
             ]
             return slugs
         else:
-            self.yeet_error(f"Failed to fetch data for category: {category_url}")
+            self.error(f"Failed to fetch data for category: {category_url}")
             return []
 
     def get_next_category_to_scrape(self) -> dict:
@@ -229,23 +237,10 @@ class MigrosScraper:
             return
 
         product_uri = self.BASE_URL + "product/" + migros_id
-        del self.driver.requests
         self.yeet(f"Scraping product: {product_uri}")
         try:
-            self.driver.get(product_uri)
-            self.mongo_service.increment_request_count(self.current_day_in_iso())
-            time.sleep(2)
+            self.make_request_and_validate(product_uri)
 
-            # Check if the request for the product page was successful (status 200)
-            for request in self.driver.requests:
-                if product_uri in request.url and request.response:
-                    if request.response.status_code != 200:
-                        self.yeet_error(
-                            f"Failed to scrape product {migros_id}. HTTP status: {request.response.status_code}"
-                        )
-                        return  # Exit early if the request failed
-
-            # Continue with scraping product information if the response was successful
             product_cards = self._get_category_response("product-cards")
             if product_cards:
                 for product in product_cards:
@@ -263,7 +258,7 @@ class MigrosScraper:
             )
 
         except Exception as e:
-            self.yeet_error(f"Error scraping product {migros_id}: {str(e)}")
+            self.error(f"Error scraping product {migros_id}: {str(e)}")
 
     def scrape_products(self) -> None:
         """Scrape all products from the Migros website."""
@@ -278,64 +273,63 @@ class MigrosScraper:
                 for migros_id in ids_to_scrape:
                     self.scrape_product_by_id(migros_id)
         except Exception as e:
-            self.yeet_error(f"Error during product scraping: {str(e)}")
+            self.error(f"Error during product scraping: {str(e)}")
 
-    def load_main_page(self) -> None:
-        """Load the main page of the Migros website."""
-        self.driver.get(self.BASE_URL)
-        self.mongo_service.increment_request_count(self.current_day_in_iso())
-        time.sleep(2)  # Adjust this time if necessary
+    def make_request_and_validate(self, url: str) -> None:
+        """
+        Wrapper function to delete the acumulated requests,
+        handle the driver.get(), increment request counter,
+        and check for valid response (HTTP 200).
+        If a non-200 status code is encountered, stop the scraper.
+        """
+        try:
+            del self.driver.requests
+            self.driver.get(url)
+            self.mongo_service.increment_request_count(self.current_day_in_iso())
+            time.sleep(2)
 
-    def _clear_log_files(self) -> None:
-        """Clear all log files in the log directory."""
-        if not os.path.exists(self.LOG_DIR):
-            os.makedirs(self.LOG_DIR)  # Create the log directory if it doesn't exist
-        else:
-            for log_file in os.listdir(self.LOG_DIR):
-                log_file_path = os.path.join(self.LOG_DIR, log_file)
-                if os.path.isfile(log_file_path):
-                    open(log_file_path, "w").close()  # Clear the file
+            for request in self.driver.requests:
+                if url in request.url and request.response:
+                    if request.response.status_code >= 400:
+                        self.error(
+                            f"Error: {url} returned HTTP status {request.response.status_code}. Stopping scraper."
+                        )
+                        self._log_scraper_state(
+                            url, request
+                        )  # Log final state before exit
+                        self.close()
+                        raise SystemExit(f"Scraper stopped due to error on URL: {url}")
 
-    def log_request(self, slug: str, request: str) -> None:
-        """Append request URLs to a log file named after the slug."""
-        log_filename = f"{self.LOG_DIR}/{slug}.log"
-        with open(log_filename, "a") as log_file:
-            log_file.write(f"{request}\n")
+        # Handle WebDriver-specific errors
+        except WebDriverException as e:
+            self.error(f"WebDriverException on {url}: {str(e)}")
+            self._log_scraper_state(url)  # Log final state before exit
+            self.close()
+            raise SystemExit(f"Scraper stopped due to WebDriverException on URL: {url}")
 
-    def close(self) -> None:
-        """Close the WebDriver session."""
-        if self.driver:
-            self.driver.quit()
+        # Catch all other exceptions
+        except Exception as e:
+            self.error(f"Unexpected error during request to {url}: {str(e)}")
+            self._log_scraper_state(url)  # Log final state before exit
+            self.close()
+            raise SystemExit(f"Scraper stopped due to unexpected error on URL: {url}")
 
 
 if __name__ == "__main__":
-    # Load environment variables from .env
     load_dotenv()
 
     MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 
-    # Initialize MongoDB Service
-    yeeter = Yeeter(log_filename="000_migros_scraper.log")
+    yeeter = Yeeter()
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
 
-    # Initialize and run the scraper
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
     try:
-        scraper.get_and_store_base_categories()  # Get base categories
-        scraper.scrape_products()  # Scrape products
-
-        scraper.scrape_categorie_from_base()  # Scrape subcategories
-        scraper.scrape_products()  # Scrape products
-
-        # Log the migrosIds
-        log_filename = f"{scraper.LOG_DIR}/00migrosIds.log"
-        if not os.path.exists(scraper.LOG_DIR):
-            os.makedirs(scraper.LOG_DIR)
-
-        with open(log_filename, "a") as log_file:
-            for product_id in scraper.product_ids:
-                log_file.write(f"{product_id}\n")
+        scraper.get_and_store_base_categories()
+        scraper.scrape_products()
+        scraper.scrape_categorie_from_base()
+        scraper.scrape_products()
 
     finally:
-        scraper.close()  # Make sure to close the driver
+        scraper.close()

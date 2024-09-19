@@ -62,30 +62,30 @@ class Yeeter:
 
     # New method to log quickly
     def yeet(self, message: str):
-        """Shorthand for logging an info message."""
+        """Shorthand for printing an info message."""
         self.logger.info(message)
 
-    def yeet_error(self, message: str):
-        """Shorthand for logging an error message."""
+    def error(self, message: str):
+        """Shorthand for printing an error message."""
         self.logger.error(message)
 
     def alarm(self, message: str):
-        """Shorthand for logging a warning message."""
+        """Shorthand for printing a warning message."""
         self.logger.warning(message)
 
-    def yeet_bug(self, message: str):
-        """Shorthand for logging a debug message."""
+    def bugreport(self, message: str):
+        """Shorthand for printing a debug message."""
         self.logger.debug(message)
 
 
 def yeet(self, message: str):
-    """Shorthand for logging an info message."""
+    """Shorthand for printing an info message."""
     self.logger.info(message)
 
 
 if __name__ == "__main__":
     yeeter = Yeeter()
     yeeter.yeet("Scraping product: 123456")
-    yeeter.yeet_error("Error scraping product 123456: Connection timed out")
+    yeeter.error("Error scraping product 123456: Connection timed out")
     yeeter.alarm("Product price is higher than usual")
-    yeeter.yeet_bug("fix it")
+    yeeter.bugreport("fix it")

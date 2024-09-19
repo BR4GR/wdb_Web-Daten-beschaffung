@@ -1,5 +1,7 @@
 import logging
+import os
 from datetime import datetime, timezone
+from logging.handlers import RotatingFileHandler
 
 from colorama import Fore, Style, init
 from pytz import timezone as pytz_timezone
@@ -9,7 +11,18 @@ init(autoreset=True)
 
 
 class Yeeter:
-    def __init__(self, log_filename="yeeted.log"):
+    def __init__(
+        self,
+        log_filename="scraper.log",
+        log_dir="src/logs",
+        max_bytes=5000000,
+        backup_count=5,
+    ):
+        self.log_dir = log_dir
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+
+        log_filepath = os.path.join(self.log_dir, log_filename)
         self.logger = logging.getLogger("Yeeter")
         self.logger.setLevel(logging.DEBUG)
 
@@ -20,7 +33,9 @@ class Yeeter:
         console_handler.setFormatter(self.CustomFormatter(log_format, colored=True))
         self.logger.addHandler(console_handler)
 
-        file_handler = logging.FileHandler(log_filename)
+        file_handler = RotatingFileHandler(
+            log_filepath, maxBytes=max_bytes, backupCount=backup_count
+        )
         file_handler.setFormatter(self.CustomFormatter(log_format, colored=False))
         self.logger.addHandler(file_handler)
 
@@ -48,9 +63,7 @@ class Yeeter:
             log_message = super().format(record)
 
             if self.colored:
-                if record.levelno == logging.INFO:
-                    return f"{Fore.GREEN}{log_message}{Style.RESET_ALL}"
-                elif record.levelno == logging.ERROR:
+                if record.levelno == logging.ERROR:
                     return f"{Fore.RED}{log_message}{Style.RESET_ALL}"
                 elif record.levelno == logging.WARNING:
                     return f"{Fore.YELLOW}{log_message}{Style.RESET_ALL}"
@@ -77,6 +90,53 @@ class Yeeter:
         """Shorthand for printing a debug message."""
         self.logger.debug(message)
 
+    def clear_log_files(self) -> None:
+        """Delete all log files in the log directory."""
+        for log_file in os.listdir(self.log_dir):
+            log_file_path = os.path.join(self.log_dir, log_file)
+            if os.path.isfile(log_file_path):
+                os.remove(log_file_path)  # Delete the file
+                self.yeet(f"Deleted log file: {log_file_path}")
+
+    def log_scraper_state(
+        self, url: str, request=None, scraped_product_ids=None, base_categories=None
+    ):
+        """
+        Log the final state of the scraper before shutdown.
+        This captures details about the URL, request, response, and any other relevant data.
+        """
+        self.yeet(f"Logging scraper state for URL: {url}")
+
+        # Log current URL being processed
+        self.yeet(f"Current URL: {url}")
+
+        # Log the request and response if available
+        if request:
+            self.yeet(f"Request URL: {request.url}")
+            if request.response:
+                self.yeet(f"Response Status Code: {request.response.status_code}")
+                self.yeet(f"Response Headers: {request.response.headers}")
+            else:
+                self.yeet("No response available for this request.")
+        else:
+            self.yeet("No specific request object available.")
+
+        # Log the number of products or categories scraped
+        if scraped_product_ids is not None:
+            self.yeet(f"Total products scraped so far: {len(scraped_product_ids)}")
+
+        if base_categories is not None:
+            self.yeet(f"Total categories scraped so far: {len(base_categories)}")
+
+        # Log the last scraped product ID or category
+        if scraped_product_ids and len(scraped_product_ids) > 0:
+            last_product_id = list(scraped_product_ids)[-1]
+            self.yeet(f"Last scraped product ID: {last_product_id}")
+
+        if base_categories and len(base_categories) > 0:
+            last_category = base_categories[-1]
+            self.yeet(f"Last scraped category: {last_category.get('name', 'Unknown')}")
+
 
 def yeet(self, message: str):
     """Shorthand for printing an info message."""
@@ -88,4 +148,5 @@ if __name__ == "__main__":
     yeeter.yeet("Scraping product: 123456")
     yeeter.error("Error scraping product 123456: Connection timed out")
     yeeter.alarm("Product price is higher than usual")
+
     yeeter.bugreport("fix it")

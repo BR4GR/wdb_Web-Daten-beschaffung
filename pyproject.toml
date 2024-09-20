@@ -24,6 +24,7 @@ selenium-wire = {extras = ["devtools"], version = "^5.1.0"}
 blinker = "<1.8.0"
 mitmproxy = "^10.4.2"
 colorama = "^0.4.6"
+matplotlib = "^3.9.2"
 
 
 [tool.poetry.group.dev.dependencies]

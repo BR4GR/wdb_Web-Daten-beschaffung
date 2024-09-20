@@ -99,7 +99,7 @@ class MigrosScraper:
             base_categories=self.base_categories,
         )
 
-    def _get_category_response(
+    def _get_specific_response(
         self, url_contains: str, max_wait_time: int = 10
     ) -> dict:
         """Helper function to capture a network request and return the response."""
@@ -151,7 +151,7 @@ class MigrosScraper:
         """
         self.yeet("Fetching and storing base categories")
         self.load_main_page()
-        categories_response = self._get_category_response("storemap")
+        categories_response = self._get_specific_response("storemap")
 
         self.base_categories = categories_response.get("categories", [])
         for category in self.base_categories:
@@ -163,7 +163,7 @@ class MigrosScraper:
         if untracked_categories:
             self.mongo_service.insert_new_base_categories(untracked_categories)
 
-        product_data = self._get_category_response("product-cards", 5)
+        product_data = self._get_specific_response("product-cards", 5)
         if product_data:
             for product in product_data:
                 migros_id = product.get("migrosId")
@@ -195,7 +195,7 @@ class MigrosScraper:
         self.yeet(f"Scraping category URL: {category_url}")
         self.make_request_and_validate(category_url)
 
-        product_data = self._get_category_response("product-cards", 5)
+        product_data = self._get_specific_response("product-cards", 5)
         if product_data:
             for product in product_data:
                 migros_id = product.get("migrosId")
@@ -204,7 +204,7 @@ class MigrosScraper:
                         self.known_ids.add(migros_id)
                         self.scrape_product_by_id(migros_id)
 
-        category_data = self._get_category_response("search/category")
+        category_data = self._get_specific_response("search/category")
         if category_data:
             for category in category_data.get("categories", []):
                 self.mongo_service.insert_category(category)
@@ -237,7 +237,7 @@ class MigrosScraper:
         try:
             self.make_request_and_validate(product_uri)
 
-            product_data = self._get_category_response("product-detail")
+            product_data = self._get_specific_response("product-detail")
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
 
@@ -246,7 +246,7 @@ class MigrosScraper:
             )
             self.todays_scraped_product_ids.add(migros_id)
 
-            product_cards = self._get_category_response("product-cards", 5)
+            product_cards = self._get_specific_response("product-cards", 5)
             if product_cards:
                 for product in product_cards:
                     new_id = product.get("migrosId")
@@ -261,17 +261,33 @@ class MigrosScraper:
         Wrapper function to delete the acumulated requests,
         handle the driver.get(), increment request counter,
         and check for valid response (HTTP 200).
-        If a non-200 status code is encountered, stop the scraper.
+        If a error status code is encountered, stop the scraper.
         """
         try:
             del self.driver.requests
             self.driver.get(url)
             self.mongo_service.increment_request_count(self.current_day_in_iso())
-            time.sleep(2)
+            delay = random.uniform(0.0, 3.9)
+            self.yeet(f"Sleeping for {delay:.2f} seconds before the next request.")
+            time.sleep(delay)
 
             for request in self.driver.requests:
                 if url in request.url and request.response:
-                    if request.response.status_code >= 400:
+                    # Handle 429 Too Many Requests
+                    if request.response.status_code == 429:
+                        retry_after = int(
+                            request.response.headers.get("Retry-After", 60) * 1.6
+                        )
+                        self.error(
+                            f"HTTP 429 Too Many Requests. Retrying after {retry_after} seconds."
+                        )
+                        time.sleep(
+                            retry_after
+                        )  # Wait for the time specified in Retry-After
+                        self.make_request_and_validate(url)  # Retry the request
+                        return  # Exit after retrying
+
+                    elif request.response.status_code >= 400:
                         self.error(
                             f"Error: {url} returned HTTP status {request.response.status_code}. Stopping scraper."
                         )
@@ -301,37 +317,58 @@ if __name__ == "__main__":
 
     MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+    RUNNING_IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
     yeeter = Yeeter()
+    yeeter.yeet("Running in GitHub Actions:")
+    yeeter.yeet(RUNNING_IN_GITHUB_ACTIONS)
+
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
-
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
-    hour = datetime.now().hour % 12
 
-    try:
-        # if hour is 0 we will scrape all categories.
-        # if we encounter a product that was never seen before we will scrape it.
-        # repeating product scrapes will be done in product rounds.
-        if hour == 0:
-            yeeter.yeet("i'ts category time.")
-            scraper.get_and_store_base_categories()
-            yeeter.yeet("Finished scraping categories.")
-        # else we will scrape all products that have migrosId mod 11 == hour
-        # this is to distribute the scraping of products over the day.
-        # we need to keep the github action time from going over the limit
-        else:
-            ids = mongo_service.get_all_known_migros_ids()
-            ids_to_scrape = [
-                id
-                for id in ids
-                if (
-                    int(id) % 11 == hour
-                    and id not in scraper.todays_scraped_product_ids
-                )
-            ]
-            yeeter.yeet(f"Scraping {len(ids_to_scrape)} products. Hour: {hour}")
-            for migros_id in ids_to_scrape:
-                scraper.scrape_product_by_id(migros_id)
+    hour = datetime.now().hour
 
-    finally:
-        scraper.close()
+    ids = mongo_service.get_all_known_migros_ids()
+    yeeter.yeet(f"We have {len(ids)} known products.")
+
+    eatable_ids = mongo_service.db.products.distinct(
+        "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}
+    )
+    yeeter.yeet(f"{len(eatable_ids)}of which are eatable products.")
+
+    ids_eatable_but_not_scraped_today = [
+        id for id in eatable_ids if (id not in scraper.todays_scraped_product_ids)
+    ]
+    yeeter.yeet(
+        f"{len(ids_eatable_but_not_scraped_today)} of which are unscraped today."
+    )
+
+    if RUNNING_IN_GITHUB_ACTIONS:
+        try:
+            # if hour is 23 we will scrape all categories.
+            # if we encounter a product that was never seen before we will scrape it.
+            # repeating product scrapes will be done in product rounds.
+            if hour == 23:
+                yeeter.yeet("i'ts category time.")
+                scraper.get_and_store_base_categories()
+                yeeter.yeet("Finished scraping categories.")
+            # else we will scrape all products that have migrosId mod 23 == hour
+            # this is to distribute the scraping of products over the day.
+            # we need to keep the github action time from going over the limit
+            else:
+                ids_to_scrape = [
+                    id
+                    for id in ids_eatable_but_not_scraped_today
+                    if (int(id) % 23 == hour)
+                ]
+                yeeter.yeet(f"Scraping {len(ids_to_scrape)} products. Hour: {hour}")
+                for migros_id in ids_to_scrape:
+                    scraper.scrape_product_by_id(migros_id)
+        finally:
+            scraper.close()
+
+    else:
+        yeeter.yeet("Running in local mode.")
+        random.shuffle(ids_eatable_but_not_scraped_today)
+        for migros_id in ids_eatable_but_not_scraped_today:
+            scraper.scrape_product_by_id(migros_id)

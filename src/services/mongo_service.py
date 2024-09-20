@@ -79,11 +79,15 @@ class MongoService:
         """Check if a product with the given migrosId already exists in the MongoDB collection."""
         return self.db.products.find_one({"migrosId": migros_id}) is not None
 
-    def get_latest_product_entry(self, migros_id: str) -> dict:
+    def get_latest_product_entry_by_migros_id(self, migros_id: str) -> dict:
         """Fetch the latest product entry for a given migrosId, based on the date it was added."""
         return self.db.products.find_one(
             {"migrosId": migros_id}, sort=[("dateAdded", -1)]
         )
+
+    def get_all_known_migros_ids(self) -> list:
+        """Fetch all migrosIds of the known products."""
+        return self.db.products.distinct("migrosId")
 
     def insert_product(self, product_data: dict) -> None:
         """Insert a new product document if the unitPrice is new or the product doesn't exist."""
@@ -92,7 +96,7 @@ class MongoService:
             self.yeeter.error("Product does not contain migrosId, skipping insertion.")
             return
 
-        existing_product = self.get_latest_product_entry(migros_id)
+        existing_product = self.get_latest_product_entry_by_migros_id(migros_id)
         new_unit_price = (
             product_data.get("offer", {})
             .get("price", {})

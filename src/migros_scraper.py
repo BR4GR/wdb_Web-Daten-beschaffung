@@ -32,10 +32,8 @@ class MigrosScraper:
         self.mongo_service = mongo_service
         self.yeeter = yeeter
         self.base_categories = []
-        self.product_ids = set(
-            mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
-        )
-        self.scraped_product_ids = set(
+        self.known_ids = set(mongo_service.get_all_known_migros_ids())
+        self.todays_scraped_product_ids = set(
             mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
         )
 
@@ -97,12 +95,12 @@ class MigrosScraper:
         self.yeeter.log_scraper_state(
             url=url,
             request=request,
-            scraped_product_ids=self.scraped_product_ids,
+            scraped_product_ids=self.todays_scraped_product_ids,
             base_categories=self.base_categories,
         )
 
     def _get_category_response(
-        self, url_contains: str, max_wait_time: int = 30
+        self, url_contains: str, max_wait_time: int = 10
     ) -> dict:
         """Helper function to capture a network request and return the response."""
         start_time = time.time()
@@ -147,7 +145,10 @@ class MigrosScraper:
             time.sleep(1)
 
     def get_and_store_base_categories(self) -> None:
-        """Fetch all base categories and ensure they are tracked in MongoDB."""
+        """
+        Fetch all base categories and ensure they are tracked in MongoDB.
+        if we encounter a product that was never seen before we will scrape it.
+        """
         self.yeet("Fetching and storing base categories")
         self.load_main_page()
         categories_response = self._get_category_response("storemap")
@@ -162,39 +163,46 @@ class MigrosScraper:
         if untracked_categories:
             self.mongo_service.insert_new_base_categories(untracked_categories)
 
-        product_data = self._get_category_response("product-cards")
+        product_data = self._get_category_response("product-cards", 5)
         if product_data:
             for product in product_data:
                 migros_id = product.get("migrosId")
                 if migros_id:
-                    self.product_ids.add(migros_id)
+                    if migros_id not in self.known_ids:
+                        self.known_ids.add(migros_id)
+                        self.scrape_product_by_id(migros_id)
+        self.scrape_categories_from_base()
 
-    def scrape_categorie_from_base(self) -> None:
-        """Try to get all subcategories for each base category."""
-        category = mongo_service.get_oldest_scraped_category()
-        category_url = self.BASE_URL + "category/" + category["slug"]
-        second_level_slugs = self.scrape_category_via_url(
-            category_url, category["slug"]
-        )
-        self.mongo_service.mark_category_as_scraped(
-            category["id"], self.current_day_in_iso()
-        )
-        for slug in second_level_slugs:
-            url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
-            self.scrape_category_via_url(url, slug)
-            self.scrape_products()
+    def scrape_categories_from_base(self) -> None:
+        """
+        Try to get all subcategories for each base category.
+        if we encounter a product that was never seen before we will scrape it.
+        """
+        for category in self.base_categories:
+            category_url = self.BASE_URL + "category/" + category["slug"]
+            second_level_slugs = self.scrape_category_via_url(
+                category_url, category["slug"]
+            )
+            self.mongo_service.mark_category_as_scraped(
+                category["id"], self.current_day_in_iso()
+            )
+            for slug in second_level_slugs:
+                url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
+                self.scrape_category_via_url(url, slug)
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """Scrape a category by loading the URL and capturing the network requests."""
         self.yeet(f"Scraping category URL: {category_url}")
         self.make_request_and_validate(category_url)
 
-        product_data = self._get_category_response("product-cards")
+        product_data = self._get_category_response("product-cards", 5)
         if product_data:
             for product in product_data:
                 migros_id = product.get("migrosId")
                 if migros_id:
-                    self.product_ids.add(migros_id)
+                    if migros_id not in self.known_ids:
+                        self.known_ids.add(migros_id)
+                        self.scrape_product_by_id(migros_id)
 
         category_data = self._get_category_response("search/category")
         if category_data:
@@ -210,18 +218,6 @@ class MigrosScraper:
             self.error(f"Failed to fetch data for category: {category_url}")
             return []
 
-    def get_next_category_to_scrape(self) -> dict:
-        """Find the next category to scrape."""
-        # Check if any base category has never been scraped
-        untracked_categories = self.mongo_service.get_untracked_base_categories(
-            self.base_categories
-        )
-        if untracked_categories:
-            return untracked_categories[0]  # Scrape the first untracked category
-
-        # Otherwise, find the category that was scraped the longest time ago
-        return self.mongo_service.get_oldest_scraped_category()
-
     def reset_scraped_ids_daily(self) -> None:
         """Reset the scraped_product_ids in MongoDB if the date has changed."""
         mongo_service.reset_scraped_ids(self.current_day_in_iso())
@@ -233,7 +229,7 @@ class MigrosScraper:
             migros_id, self.current_day_in_iso()
         ):
             self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
-            self.scraped_product_ids.add(migros_id)
+            self.todays_scraped_product_ids.add(migros_id)
             return
 
         product_uri = self.BASE_URL + "product/" + migros_id
@@ -241,39 +237,24 @@ class MigrosScraper:
         try:
             self.make_request_and_validate(product_uri)
 
-            product_cards = self._get_category_response("product-cards")
-            if product_cards:
-                for product in product_cards:
-                    new_id = product.get("migrosId")
-                    if new_id:
-                        self.product_ids.add(new_id)
-
             product_data = self._get_category_response("product-detail")
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
 
-            self.scraped_product_ids.add(migros_id)
             self.mongo_service.save_scraped_product_id(
                 migros_id, self.current_day_in_iso()
             )
+            self.todays_scraped_product_ids.add(migros_id)
 
+            product_cards = self._get_category_response("product-cards", 5)
+            if product_cards:
+                for product in product_cards:
+                    new_id = product.get("migrosId")
+                    if new_id and new_id not in self.known_ids:
+                        self.known_ids.add(new_id)
+                        self.scrape_product_by_id(new_id)
         except Exception as e:
             self.error(f"Error scraping product {migros_id}: {str(e)}")
-
-    def scrape_products(self) -> None:
-        """Scrape all products from the Migros website."""
-        max_time = 60 * 60  # 1 hour
-        start_time = time.time()
-        try:
-            while (len(self.product_ids) > len(self.scraped_product_ids)) and (
-                time.time() - start_time < max_time
-            ):
-                ids_to_scrape = self.product_ids - self.scraped_product_ids
-                self.yeet(f"Scraping {len(ids_to_scrape)} products")
-                for migros_id in ids_to_scrape:
-                    self.scrape_product_by_id(migros_id)
-        except Exception as e:
-            self.error(f"Error during product scraping: {str(e)}")
 
     def make_request_and_validate(self, url: str) -> None:
         """
@@ -325,11 +306,32 @@ if __name__ == "__main__":
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
 
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
+    hour = datetime.now().hour % 12
+
     try:
-        scraper.get_and_store_base_categories()
-        scraper.scrape_products()
-        scraper.scrape_categorie_from_base()
-        scraper.scrape_products()
+        # if hour is 0 we will scrape all categories.
+        # if we encounter a product that was never seen before we will scrape it.
+        # repeating product scrapes will be done in product rounds.
+        if hour == 0:
+            yeeter.yeet("i'ts category time.")
+            scraper.get_and_store_base_categories()
+            yeeter.yeet("Finished scraping categories.")
+        # else we will scrape all products that have migrosId mod 11 == hour
+        # this is to distribute the scraping of products over the day.
+        # we need to keep the github action time from going over the limit
+        else:
+            ids = mongo_service.get_all_known_migros_ids()
+            ids_to_scrape = [
+                id
+                for id in ids
+                if (
+                    int(id) % 11 == hour
+                    and id not in scraper.todays_scraped_product_ids
+                )
+            ]
+            yeeter.yeet(f"Scraping {len(ids_to_scrape)} products. Hour: {hour}")
+            for migros_id in ids_to_scrape:
+                scraper.scrape_product_by_id(migros_id)
 
     finally:
         scraper.close()

@@ -97,12 +97,7 @@ class MongoService:
             return
 
         existing_product = self.get_latest_product_entry_by_migros_id(migros_id)
-        new_unit_price = (
-            product_data.get("offer", {})
-            .get("price", {})
-            .get("unitPrice", {})
-            .get("value")
-        )
+        new_price = product_data.get("offer", {}).get("price", {})
 
         if not existing_product:
             # Product doesn't exist, insert as new
@@ -110,13 +105,7 @@ class MongoService:
             self.db.products.insert_one(product_data)
             self.yeeter.yeet(f"Inserted new product with migrosId: {migros_id}")
 
-        elif (
-            existing_product.get("offer", {})
-            .get("price", {})
-            .get("unitPrice", {})
-            .get("value")
-            != new_unit_price
-        ):
+        elif existing_product.get("offer", {}).get("price", {}) != new_price:
             # Unit price has changed, insert as new and log price change
             product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             self.db.products.insert_one(product_data)
@@ -124,7 +113,7 @@ class MongoService:
             # Log the price change in the 'unit_price_history' collection
             price_change_entry = {
                 "migrosId": migros_id,
-                "newPrice": new_unit_price,
+                "newPrice": new_price,
                 "dateChanged": time.strftime("%Y-%m-%dT%H:%M:%S"),
             }
             self.db.unit_price_history.insert_one(price_change_entry)

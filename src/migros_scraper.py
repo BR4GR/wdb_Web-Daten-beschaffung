@@ -275,11 +275,11 @@ class MigrosScraper:
                 if url in request.url and request.response:
                     # Handle 429 Too Many Requests
                     if request.response.status_code == 429:
-                        retry_after = int(
-                            request.response.headers.get("Retry-After", 60) * 1.6
-                        )
                         self.error(
                             f"HTTP 429 Too Many Requests. Retrying after {retry_after} seconds."
+                        )
+                        retry_after = int(
+                            request.response.headers.get("Retry-After", 60) * 1.6
                         )
                         time.sleep(
                             retry_after

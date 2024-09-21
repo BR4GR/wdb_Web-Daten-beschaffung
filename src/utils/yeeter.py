@@ -105,10 +105,8 @@ class Yeeter:
         Log the final state of the scraper before shutdown.
         This captures details about the URL, request, response, and any other relevant data.
         """
+        self.yeet("Something triggered the scraper to log final state...")
         self.yeet(f"Logging scraper state for URL: {url}")
-
-        # Log current URL being processed
-        self.yeet(f"Current URL: {url}")
 
         # Log the request and response if available
         if request:
@@ -116,6 +114,7 @@ class Yeeter:
             if request.response:
                 self.yeet(f"Response Status Code: {request.response.status_code}")
                 self.yeet(f"Response Headers: {request.response.headers}")
+                self.yeet(f"Response Body: {request.response.text}")
             else:
                 self.yeet("No response available for this request.")
         else:

@@ -334,7 +334,7 @@ if __name__ == "__main__":
     eatable_ids = mongo_service.db.products.distinct(
         "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}
     )
-    yeeter.yeet(f"{len(eatable_ids)}of which are eatable products.")
+    yeeter.yeet(f"{len(eatable_ids)} of which are eatable products.")
 
     ids_eatable_but_not_scraped_today = [
         id for id in eatable_ids if (id not in scraper.todays_scraped_product_ids)

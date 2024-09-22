@@ -114,7 +114,7 @@ class Yeeter:
             if request.response:
                 self.yeet(f"Response Status Code: {request.response.status_code}")
                 self.yeet(f"Response Headers: {request.response.headers}")
-                self.yeet(f"Response Body: {request.response.text}")
+                self.yeet(f"Response Body: {request.response.body}")
             else:
                 self.yeet("No response available for this request.")
         else:

@@ -275,17 +275,14 @@ class MigrosScraper:
                 if url in request.url and request.response:
                     # Handle 429 Too Many Requests
                     if request.response.status_code == 429:
-                        self.error(
-                            f"HTTP 429 Too Many Requests. Retrying after {retry_after} seconds."
-                        )
+                        self.error(f"Encountered HTTP 429 Too Many Requests.")
                         retry_after = int(
-                            request.response.headers.get("Retry-After", 60) * 1.6
+                            request.response.headers.get("Retry-After", 60) * 2
                         )
-                        time.sleep(
-                            retry_after
-                        )  # Wait for the time specified in Retry-After
-                        self.make_request_and_validate(url)  # Retry the request
-                        return  # Exit after retrying
+                        self.error(f"Retrying after {retry_after} seconds.")
+                        time.sleep(retry_after)
+                        self.make_request_and_validate(url)
+                        return
 
                     elif request.response.status_code >= 400:
                         self.error(
@@ -351,7 +348,7 @@ if __name__ == "__main__":
             if hour == 23:
                 yeeter.yeet("i'ts category time.")
                 scraper.get_and_store_base_categories()
-                yeeter.yeet("Finished scraping categories.")
+                yeeter.yeet("Finished scraping categories. Closing scraper.")
             # else we will scrape all products that have migrosId mod 23 == hour
             # this is to distribute the scraping of products over the day.
             # we need to keep the github action time from going over the limit
@@ -364,9 +361,11 @@ if __name__ == "__main__":
                 yeeter.yeet(f"Scraping {len(ids_to_scrape)} products. Hour: {hour}")
                 for migros_id in ids_to_scrape:
                     scraper.scrape_product_by_id(migros_id)
+                yeeter.yeet(
+                    "Finished scraping products. Hour: {hour} . Closing scraper."
+                )
         finally:
             scraper.close()
-
     else:
         yeeter.yeet("Running in local mode.")
         random.shuffle(ids_eatable_but_not_scraped_today)

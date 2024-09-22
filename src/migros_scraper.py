@@ -279,6 +279,12 @@ class MigrosScraper:
                         retry_after = int(
                             request.response.headers.get("Retry-After", 60) * 2
                         )
+                        # if retry_after is longer than 1 hour, stop the scraper
+                        if retry_after > 3600:
+                            self.error(
+                                f"Retry-After value is too high ({retry_after} seconds). Stopping scraper."
+                            )
+                            self._log_scraper_state(url, request)
                         self.error(f"Retrying after {retry_after} seconds.")
                         time.sleep(retry_after)
                         self.make_request_and_validate(url)
@@ -288,9 +294,7 @@ class MigrosScraper:
                         self.error(
                             f"Error: {url} returned HTTP status {request.response.status_code}. Stopping scraper."
                         )
-                        self._log_scraper_state(
-                            url, request
-                        )  # Log final state before exit
+                        self._log_scraper_state(url, request)
                         self.close()
                         raise SystemExit(f"Scraper stopped due to error on URL: {url}")
 
@@ -323,7 +327,8 @@ if __name__ == "__main__":
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
 
-    hour = datetime.now().hour
+    hour_mod = datetime.now().hour
+    day_mod = datetime.now().day % 3
 
     ids = mongo_service.get_all_known_migros_ids()
     yeeter.yeet(f"We have {len(ids)} known products.")
@@ -339,13 +344,12 @@ if __name__ == "__main__":
     yeeter.yeet(
         f"{len(ids_eatable_but_not_scraped_today)} of which are unscraped today."
     )
-
     if RUNNING_IN_GITHUB_ACTIONS:
         try:
             # if hour is 23 we will scrape all categories.
             # if we encounter a product that was never seen before we will scrape it.
             # repeating product scrapes will be done in product rounds.
-            if hour == 23:
+            if hour_mod == 23:
                 yeeter.yeet("i'ts category time.")
                 scraper.get_and_store_base_categories()
                 yeeter.yeet("Finished scraping categories. Closing scraper.")
@@ -356,9 +360,11 @@ if __name__ == "__main__":
                 ids_to_scrape = [
                     id
                     for id in ids_eatable_but_not_scraped_today
-                    if (int(id) % 23 == hour)
+                    if ((int(id) % 23 == hour_mod) and (int(id) % 3 == day_mod))
                 ]
-                yeeter.yeet(f"Scraping {len(ids_to_scrape)} products. Hour: {hour}")
+                yeeter.yeet(
+                    f"Scraping {len(ids_to_scrape)} products. Hour: {hour_mod} Day: {day_mod}"
+                )
                 for migros_id in ids_to_scrape:
                     scraper.scrape_product_by_id(migros_id)
                 yeeter.yeet(

@@ -1,0 +1,17 @@
+services:
+  scraper:
+    build: .
+    volumes:
+      - .:/app # Map the current directory to /app inside the container
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    command: poetry run python src/migros_scraper.py
+
+  mongo:
+    image: mongo:4.4-bionic
+    ports:
+      - "27017:27017"
+    tmpfs:
+      - /data/db

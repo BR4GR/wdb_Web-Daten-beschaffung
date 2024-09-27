@@ -43,11 +43,15 @@ class MigrosScraper:
         service = Service(driver_path)
         options = Options()
         options.binary_location = binary_location
-        options.add_argument("--headless")  # Run Chrome in headless mode
+        options.add_argument("--headless")  # Ensures no UI is needed
+        options.add_argument("--no-sandbox")  # Required for running Chrome in Docker
         options.add_argument(
             "--disable-dev-shm-usage"
-        )  # Overcome limited resource problems
-        options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
+        )  # Overcomes limited resource problems
+        options.add_argument(
+            "--disable-gpu"
+        )  # Recommended when running in headless mode
+        options.add_argument("--remote-debugging-port=9222")  # Debugging port if needed
         driver = webdriver.Chrome(service=service, options=options)
         return driver
 
@@ -350,9 +354,10 @@ if __name__ == "__main__":
             # if we encounter a product that was never seen before we will scrape it.
             # repeating product scrapes will be done in product rounds.
             if hour_mod == 23:
-                yeeter.yeet("i'ts category time.")
-                scraper.get_and_store_base_categories()
-                yeeter.yeet("Finished scraping categories. Closing scraper.")
+                pass
+                # yeeter.yeet("i'ts category time.")
+                # scraper.get_and_store_base_categories()
+                # yeeter.yeet("Finished scraping categories. Closing scraper.")
             # else we will scrape all products that have migrosId mod 23 == hour
             # this is to distribute the scraping of products over the day.
             # we need to keep the github action time from going over the limit

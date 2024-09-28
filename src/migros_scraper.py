@@ -6,7 +6,6 @@ import time
 from datetime import datetime
 
 import brotli
-import requests
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from selenium.common.exceptions import WebDriverException
@@ -14,8 +13,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver
 
-from services.mongo_service import MongoService
-from utils.yeeter import Yeeter
+from src.services.mongo_service import MongoService
+from src.utils.yeeter import Yeeter
 
 
 class MigrosScraper:

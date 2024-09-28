@@ -99,6 +99,7 @@ jobs:
       - name: Run scraper
         run: |
           source .venv/bin/activate
+          export PYTHONPATH=$PYTHONPATH:$PWD/src
           poetry run python src/migros_scraper.py
         env:
           MONGO_URI: ${{ secrets.MONGODB_URI }}

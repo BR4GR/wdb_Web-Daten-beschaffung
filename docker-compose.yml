@@ -5,8 +5,8 @@ services:
       - .:/app # Map the current directory to /app inside the container
     env_file:
       - .env
-    depends_on:
-      - mongo
+    environment:
+      - PYTHONPATH=/app
     command: poetry run python src/migros_scraper.py
 
   mongo:
@@ -15,3 +15,15 @@ services:
       - "27017:27017"
     tmpfs:
       - /data/db
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    environment:
+      - PYTHONPATH=/app
+    command: poetry run pytest

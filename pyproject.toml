@@ -21,11 +21,11 @@ sqlalchemy = "^2.0.32"
 pymongo = "^4.8.0"
 python-dotenv = "^1.0.1"
 selenium-wire = {extras = ["devtools"], version = "^5.1.0"}
-blinker = "<1.9.0"
+blinker = "<1.8.0"
 mitmproxy = "^10.4.2"
 colorama = "^0.4.6"
 matplotlib = "^3.9.2"
-
+pytest = "^7.0.0"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"

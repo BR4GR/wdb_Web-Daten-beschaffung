@@ -332,7 +332,7 @@ if __name__ == "__main__":
     scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
 
     hour_mod = datetime.now().hour
-    day_mod = datetime.now().day % 3
+    weekday = datetime.now().weekday()
 
     ids = mongo_service.get_all_known_migros_ids()
     yeeter.yeet(f"We have {len(ids)} known products.")
@@ -365,10 +365,10 @@ if __name__ == "__main__":
                 ids_to_scrape = [
                     id
                     for id in ids_eatable_but_not_scraped_today
-                    if ((int(id) % 23 == hour_mod) and (int(id) % 3 == day_mod))
+                    if ((int(id) % 23 == hour_mod) and (int(id) % 3 == weekday))
                 ]
                 yeeter.yeet(
-                    f"Scraping {len(ids_to_scrape)} products. Hour: {hour_mod} Day: {day_mod}"
+                    f"Scraping {len(ids_to_scrape)} products. Hour: {hour_mod} Day: {weekday}"
                 )
                 for migros_id in ids_to_scrape:
                     scraper.scrape_product_by_id(migros_id)

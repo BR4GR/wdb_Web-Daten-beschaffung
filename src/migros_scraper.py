@@ -364,7 +364,7 @@ if __name__ == "__main__":
                 ids_to_scrape = [
                     id
                     for id in ids_eatable_but_not_scraped_today
-                    if ((int(id) % 23 == hour_mod) and (int(id) % 3 == weekday))
+                    if ((int(id) % 23 == hour_mod) and (int(id) % 7 == weekday))
                 ]
                 yeeter.yeet(
                     f"Scraping {len(ids_to_scrape)} products. Hour: {hour_mod} Day: {weekday}"

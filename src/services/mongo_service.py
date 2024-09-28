@@ -3,12 +3,12 @@ import time
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
-from utils.yeeter import Yeeter, yeet
+from src.utils.yeeter import Yeeter, yeet
 
 
 class MongoService:
     def __init__(self, uri: str, db_name: str, yeeter: Yeeter):
-        self.client = MongoClient(uri, server_api=ServerApi("1"))
+        self.client = MongoClient(uri)
         self.db = self.client[db_name]
         self.yeeter = yeeter
 
@@ -28,6 +28,10 @@ class MongoService:
         if not self.check_category_exists(category_data["id"]):
             self.db.categories.insert_one(category_data)
             self.yeeter.yeet(f"Inserted new category: {category_data['id']}")
+
+    # ----------------------------------------------
+    #       category_tracker
+    # ----------------------------------------------
 
     def insert_new_base_categories(self, new_categories: list) -> None:
         """Insert new base categories into the category_tracker collection."""
@@ -49,10 +53,6 @@ class MongoService:
             if category["id"] not in tracked_categories_ids
         ]
 
-    # ----------------------------------------------
-    #       category_tracker
-    # ----------------------------------------------
-
     def get_unscraped_categories(self) -> list:
         """Fetch categories that have never been scraped (i.e., last_scraped is None)."""
         return list(self.db.category_tracker.find({"last_scraped": None}))
@@ -66,7 +66,10 @@ class MongoService:
         )
 
     def get_oldest_scraped_category(self) -> dict:
-        """Fetch the category that was scraped the longest time ago."""
+        """
+        Fetch the category that was scraped the longest time ago.
+        also return a category that has never been scraped.
+        """
         return self.db.category_tracker.find_one(
             sort=[("last_scraped", 1)],
         )
@@ -79,21 +82,19 @@ class MongoService:
         """Check if a product with the given migrosId already exists in the MongoDB collection."""
         return self.db.products.find_one({"migrosId": migros_id}) is not None
 
-    def get_latest_product_entry_by_migros_id(self, migros_id: str) -> dict:
-        """Fetch the latest product entry for a given migrosId, based on the date it was added."""
-        return self.db.products.find_one(
-            {"migrosId": migros_id}, sort=[("dateAdded", -1)]
-        )
-
-    def get_all_known_migros_ids(self) -> list:
-        """Fetch all migrosIds of the known products."""
-        return self.db.products.distinct("migrosId")
-
     def insert_product(self, product_data: dict) -> None:
-        """Insert a new product document if the unitPrice is new or the product doesn't exist."""
+        """Insert a new product document if the price is new or the product doesn't exist
+        in the db jet."""
         migros_id = product_data.get("migrosId")
         if not migros_id:
             self.yeeter.error("Product does not contain migrosId, skipping insertion.")
+            return
+
+        # check if product has offer
+        if not product_data.get("offer"):
+            self.yeeter.error(
+                f"Product with migrosId {migros_id} does not have an offer, skipping insertion."
+            )
             return
 
         existing_product = self.get_latest_product_entry_by_migros_id(migros_id)
@@ -126,6 +127,16 @@ class MongoService:
             self.yeeter.logger.debug(
                 f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
             )
+
+    def get_latest_product_entry_by_migros_id(self, migros_id: str) -> dict:
+        """Fetch the latest product entry for a given migrosId, based on the date it was added."""
+        return self.db.products.find_one(
+            {"migrosId": migros_id}, sort=[("dateAdded", -1)]
+        )
+
+    def get_all_known_migros_ids(self) -> list:
+        """Fetch all migrosIds of the known products."""
+        return self.db.products.distinct("migrosId")
 
     # ----------------------------------------------
     #       unit_price_history

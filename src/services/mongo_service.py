@@ -190,7 +190,7 @@ class MongoService:
     def save_scraped_product_id(self, migros_id: str) -> None:
         """Save the scraped product ID with the current date."""
         current_date = datetime.now(timezone.utc)
-        self.db.scraped_ids.update_one(
+        self.db.id_scraped_at.update_one(
             {"migrosId": migros_id},
             {"$set": {"lastScraped": current_date}},
             upsert=True,
@@ -204,7 +204,7 @@ class MongoService:
 
         # Query for products that were scraped within the last 24 hours
         return (
-            self.db.scraped_ids.find_one(
+            self.db.id_scraped_at.find_one(
                 {
                     "migrosId": migros_id,
                     "lastScraped": {
@@ -221,7 +221,7 @@ class MongoService:
         # Find all entries where lastScraped is within the last 24 hours
         return [
             scraped_data["migrosId"]
-            for scraped_data in self.db.scraped_ids.find(
+            for scraped_data in self.db.id_scraped_at.find(
                 {"lastScraped": {"$gte": cutoff_time}}
             )
             if "migrosId" in scraped_data  # Ensure the key exists

@@ -3,7 +3,7 @@ import json
 import os
 import random
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import brotli
 from dotenv import load_dotenv
@@ -26,15 +26,17 @@ class MigrosScraper:
         yeeter: Yeeter,
         driver_path: str = "/usr/bin/chromedriver",
         binary_location: str = "/usr/bin/chromium",
+        average_request_sleep_time: float = 4.0,
     ):
         self.driver = self._initialize_driver(driver_path, binary_location)
-        self.mongo_service = mongo_service
-        self.yeeter = yeeter
+        self.mongo_service: MongoService = mongo_service
+        self.yeeter: Yeeter = yeeter
         self.base_categories = []
         self.known_ids = set(mongo_service.get_all_known_migros_ids())
         self.todays_scraped_product_ids = set(
-            mongo_service.retrieve_todays_scraped_ids(self.current_day_in_iso())
+            mongo_service.retrieve_scraped_ids_last_24_hours()
         )
+        self.average_request_sleep_time = average_request_sleep_time
 
     def _initialize_driver(
         self, driver_path: str, binary_location: str
@@ -81,7 +83,7 @@ class MigrosScraper:
 
     def current_day_in_iso(self):
         """Return the current day in ISO format."""
-        return datetime.now().date().isoformat()
+        return datetime.now(timezone.utc).date().isoformat()
 
     def _decompress_response(self, response: bytes, encoding: str) -> bytes:
         """Decompress response if necessary."""
@@ -228,9 +230,7 @@ class MigrosScraper:
     def scrape_product_by_id(self, migros_id: str) -> None:
         """Scrape a product by its migrosId."""
         # Check if product was already scraped today
-        if self.mongo_service.is_product_scraped_today(
-            migros_id, self.current_day_in_iso()
-        ):
+        if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
             self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
             self.todays_scraped_product_ids.add(migros_id)
             return
@@ -244,9 +244,7 @@ class MigrosScraper:
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
 
-            self.mongo_service.save_scraped_product_id(
-                migros_id, self.current_day_in_iso()
-            )
+            self.mongo_service.save_scraped_product_id(migros_id)
             self.todays_scraped_product_ids.add(migros_id)
 
             product_cards = self._get_specific_response("product-cards", 5)
@@ -270,7 +268,7 @@ class MigrosScraper:
             del self.driver.requests
             self.driver.get(url)
             self.mongo_service.increment_request_count(self.current_day_in_iso())
-            delay = random.uniform(0.0, 3.9)
+            delay = random.uniform(0.0, (self.average_request_sleep_time * 2))
             self.yeet(f"Sleeping for {delay:.2f} seconds before the next request.")
             time.sleep(delay)
 
@@ -323,61 +321,49 @@ if __name__ == "__main__":
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
     RUNNING_IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
+    # RUNNING_IN_GITHUB_ACTIONS = True
+
     yeeter = Yeeter()
-    yeeter.yeet("Running in GitHub Actions:")
-    yeeter.yeet(RUNNING_IN_GITHUB_ACTIONS)
-
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
-    scraper = MigrosScraper(mongo_service=mongo_service, yeeter=yeeter)
+    average_request_sleep_time = 4.0
+    if not RUNNING_IN_GITHUB_ACTIONS:
+        average_request_sleep_time = 10.0
 
-    hour_mod = datetime.now().hour
-    weekday = datetime.now().weekday()
-
-    ids = mongo_service.get_all_known_migros_ids()
-    yeeter.yeet(f"We have {len(ids)} known products.")
-
-    eatable_ids = mongo_service.db.products.distinct(
-        "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}
+    scraper = MigrosScraper(
+        mongo_service=mongo_service,
+        yeeter=yeeter,
+        average_request_sleep_time=average_request_sleep_time,
     )
-    yeeter.yeet(f"{len(eatable_ids)} of which are eatable products.")
+    try:
+        # mongo_service.migrate_scraped_ids_to_new_format()
+        yeeter.yeet("Running in GitHub Actions:")
+        yeeter.yeet(
+            RUNNING_IN_GITHUB_ACTIONS
+        )  # Set parameters for the scraping process
+        days = 7 if RUNNING_IN_GITHUB_ACTIONS else 6  # Use 7 days in GitHub, 5 locally
+        limit = (
+            100 if RUNNING_IN_GITHUB_ACTIONS else 1000
+        )  # Limit to 100 products in GitHub, 1000 locally
+        yeeter.yeet(f"{days} days, {limit} products")
 
-    ids_eatable_but_not_scraped_today = [
-        id for id in eatable_ids if (id not in scraper.todays_scraped_product_ids)
-    ]
-    yeeter.yeet(
-        f"{len(ids_eatable_but_not_scraped_today)} of which are unscraped today."
-    )
-    if RUNNING_IN_GITHUB_ACTIONS:
-        try:
-            # if hour is 23 we will scrape all categories.
-            # if we encounter a product that was never seen before we will scrape it.
-            # repeating product scrapes will be done in product rounds.
-            if hour_mod == 23:
-                pass
-                # yeeter.yeet("i'ts category time.")
-                # scraper.get_and_store_base_categories()
-                # yeeter.yeet("Finished scraping categories. Closing scraper.")
-            # else we will scrape all products that have migrosId mod 23 == hour
-            # this is to distribute the scraping of products over the day.
-            # we need to keep the github action time from going over the limit
-            else:
-                ids_to_scrape = [
-                    id
-                    for id in ids_eatable_but_not_scraped_today
-                    if ((int(id) % 23 == hour_mod) and (int(id) % 7 == weekday))
-                ]
-                yeeter.yeet(
-                    f"Scraping {len(ids_to_scrape)} products. Hour: {hour_mod} Day: {weekday}"
-                )
-                for migros_id in ids_to_scrape:
-                    scraper.scrape_product_by_id(migros_id)
-                yeeter.yeet(
-                    "Finished scraping products. Hour: {hour} . Closing scraper."
-                )
-        finally:
-            scraper.close()
-    else:
-        yeeter.yeet("Running in local mode.")
-        random.shuffle(ids_eatable_but_not_scraped_today)
-        for migros_id in ids_eatable_but_not_scraped_today:
+        # Fetch all edible product migrosIds from the products collection
+        edible_ids = mongo_service.db.products.distinct(
+            "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}
+        )
+        yeeter.yeet(f"Found {len(edible_ids)} edible products.")
+
+        # Fetch the products to scrape
+        yeeter.yeet(f"Fetching products not scraped in {days}+ days.")
+        ids_to_scrape = mongo_service.get_products_not_scraped_in_days(
+            days=days, limit=limit
+        )
+        yeeter.yeet(f"Scraping {len(ids_to_scrape)} products.")
+        yeeter.yeet(ids_to_scrape)
+
+        # Scrape each product by its migrosId
+        for migros_id in ids_to_scrape:
             scraper.scrape_product_by_id(migros_id)
+
+        yeeter.yeet("Finished scraping products. Closing scraper.")
+    finally:
+        scraper.close()

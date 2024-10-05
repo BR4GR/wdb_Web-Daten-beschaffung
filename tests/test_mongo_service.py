@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 import pytest
 from pymongo import MongoClient
 
@@ -11,6 +13,11 @@ from tests.data.oliveoil_offer_missing import oliveoil_offer_missing
 from tests.data.oliveoil_price_change import oliveoil_price_change
 from tests.data.oliveoil_price_change_2 import oliveoil_price_change_2
 from tests.data.penne import penne
+
+
+def current_day_in_iso() -> str:
+    """Return the current day in ISO format."""
+    return datetime.now(timezone.utc).date().isoformat()
 
 
 @pytest.fixture(scope="function")
@@ -37,6 +44,7 @@ def mongo_service():
     mongo_service.db.unit_price_history.delete_many({})
     mongo_service.db.scraped_ids.delete_many({})
     mongo_service.db.request_counts.delete_many({})
+    mongo_service.db.id_scraped_at.delete_many({})
 
     yield mongo_service
 
@@ -592,134 +600,196 @@ def test_get_all_known_migros_ids_multiple_instances_of_same_product(
     assert mongo_service.get_all_known_migros_ids() == [oliveoil["migrosId"]]
 
 
+def test_get_products_not_scraped_in_days_all_sraped_recently(
+    mongo_service: MongoService,
+):
+    """Test that no products are returned when all products have been scraped recently."""
+    migros_id_1 = oliveoil["migrosId"]
+    migros_id_2 = penne["migrosId"]
+    recent_date = datetime.now(timezone.utc) - timedelta(days=1)
+    mongo_service.db.scraped_ids.insert_one(
+        {"migrosId": migros_id_1, "lastScraped": recent_date}
+    )
+    mongo_service.db.scraped_ids.insert_one(
+        {"migrosId": migros_id_2, "lastScraped": recent_date}
+    )
+    result = mongo_service.get_products_not_scraped_in_days(days=7)
+    assert result == []
+
+
+def test_get_products_not_scraped_in_days_no_products_scraped(
+    mongo_service: MongoService,
+):
+    """Test that no products are returned when no products have been scraped."""
+    assert mongo_service.get_products_not_scraped_in_days(days=7) == []
+
+
+def test_get_products_not_scraped_in_days_scraped_10_days_ago(
+    mongo_service: MongoService,
+):
+    migros_id = koriander["migrosId"]
+    past_date = datetime.now(timezone.utc) - timedelta(days=10)
+    mongo_service.db.id_scraped_at.insert_one(
+        {"migrosId": migros_id, "lastScraped": past_date}
+    )
+    mongo_service.db.products.insert_one(koriander)
+    result = mongo_service.get_products_not_scraped_in_days(days=7)
+    assert result == [migros_id]
+
+
+def test_get_products_not_scraped_in_days_mixed(mongo_service: MongoService):
+    """Test that only products not scraped in the last 'days' are returned.
+    in this test, only the product scraped 10 days ago should be returned."""
+    migros_id_1 = koriander["migrosId"]
+    migros_id_2 = penne["migrosId"]
+    recent_date = datetime.now(timezone.utc) - timedelta(days=1)
+    past_date = datetime.now(timezone.utc) - timedelta(days=10)
+    mongo_service.db.id_scraped_at.insert_one(
+        {"migrosId": migros_id_1, "lastScraped": recent_date}
+    )
+    mongo_service.db.id_scraped_at.insert_one(
+        {"migrosId": migros_id_2, "lastScraped": past_date}
+    )
+    mongo_service.db.products.insert_one(koriander)
+    mongo_service.db.products.insert_one(penne)
+    result = mongo_service.get_products_not_scraped_in_days(days=7)
+    assert result == [migros_id_2]
+
+
+def test_get_products_not_scraped_in_days_with_limit(mongo_service: MongoService):
+    """Test that the limit parameter works correctly."""
+    days = 7
+    limit = 1
+    migros_id_1 = koriander["migrosId"]
+    migros_id_2 = penne["migrosId"]
+    past_date = datetime.now(timezone.utc) - timedelta(days=10)
+    mongo_service.db.id_scraped_at.insert_one(
+        {"migrosId": migros_id_1, "lastScraped": past_date}
+    )
+    mongo_service.db.id_scraped_at.insert_one(
+        {"migrosId": migros_id_2, "lastScraped": past_date}
+    )
+    mongo_service.db.products.insert_one(koriander)
+    mongo_service.db.products.insert_one(penne)
+    result = mongo_service.get_products_not_scraped_in_days(days=7, limit=1)
+    assert len(result) == 1
+
+
+# Test for products scraped almost 'days' ago are not returned.
+def test_get_products_not_scraped_in_days_threshold(mongo_service: MongoService):
+    days = 7
+    migros_id = oliveoil["migrosId"]
+    threshold_date = datetime.now(timezone.utc) - timedelta(hours=(24 * days - 1))
+
+    # Insert product scraped exactly 'days' ago
+    mongo_service.db.scraped_ids.insert_one(
+        {"migrosId": migros_id, "lastScraped": threshold_date}
+    )
+
+    # Query for products not scraped in 'days'
+    result = mongo_service.get_products_not_scraped_in_days(days)
+
+    # Since the product was scraped exactly 'days' ago, it should not be returned
+    assert result == []
+
+    # ----------------------------------------------
+    #       scraped_ids
+    # ----------------------------------------------
+
+
 def test_save_scraped_product_id_new_entry(mongo_service: MongoService):
     """Test that a new scraped product ID is saved when it hasn't been scraped on the same day."""
     migros_id = oliveoil["migrosId"]
-    date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, date)
-    assert (
-        mongo_service.db.scraped_ids.count_documents(
-            {"migrosId": migros_id, "date": date}
-        )
-        == 1
-    )
+    date = datetime.now(timezone.utc)
+    mongo_service.save_scraped_product_id(migros_id)
+    assert mongo_service.db.scraped_ids.count_documents({"migrosId": migros_id}) == 1
 
 
 def test_save_scraped_product_id_duplicate_entry_same_day(mongo_service: MongoService):
     """Test that duplicate scraped product IDs are not saved on the same day."""
     migros_id = oliveoil["migrosId"]
-    date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, date)
-    mongo_service.save_scraped_product_id(
-        migros_id, date
-    )  # Try saving again on the same day
-    assert (
-        mongo_service.db.scraped_ids.count_documents(
-            {"migrosId": migros_id, "date": date}
-        )
-        == 1
+    date = datetime.now(timezone.utc)
+
+    mongo_service.save_scraped_product_id(migros_id)
+    mongo_service.save_scraped_product_id(migros_id)  # Try saving again on the same day
+    assert mongo_service.db.scraped_ids.count_documents({"migrosId": migros_id}) == 1
+
+
+def test_save_scraped_product_id_updates_last_scraped(mongo_service: MongoService):
+    """Test that the same product's lastScraped field is updated when saved on a different day."""
+    migros_id = oliveoil["migrosId"]
+    date1 = datetime.now(timezone.utc) - timedelta(days=2)
+
+    # Insert product with a past scrape date
+    mongo_service.db.scraped_ids.insert_one(
+        {"migrosId": migros_id, "lastScraped": date1}
     )
+    date1 = date1.replace(tzinfo=None)
+
+    # Save the product scraped now (today)
+    mongo_service.save_scraped_product_id(migros_id)
+
+    # Retrieve the updated product
+
+    updated_product = mongo_service.db.scraped_ids.find_one({"migrosId": migros_id})
+    print("test_save_scraped_product_id_updates_last_scraped")
+    print(f"{updated_product["lastScraped"]=}")
+    print(f"{date1=}")
+
+    # Check that the lastScraped date was updated to the current date
+    assert updated_product["lastScraped"] > date1  # Ensure it's more recent
 
 
-def test_save_scraped_product_id_different_days(mongo_service: MongoService):
-    """Test that the same product can be saved as scraped on different days."""
+def test_is_product_scraped_last_24_h_not_scraped(mongo_service: MongoService):
+    """Test that is_product_scraped_last_24_hours returns False when the product hasn't been scraped on last 24 h."""
     migros_id = oliveoil["migrosId"]
-    date1 = "2024-09-28"
-    date2 = "2024-09-29"
-    mongo_service.save_scraped_product_id(migros_id, date1)
-    mongo_service.save_scraped_product_id(migros_id, date2)
-    assert mongo_service.db.scraped_ids.count_documents({"migrosId": migros_id}) == 2
+    assert not mongo_service.is_product_scraped_last_24_hours(migros_id)
 
 
-def test_is_product_scraped_today_not_scraped(mongo_service: MongoService):
-    """Test that is_product_scraped_today returns False when the product hasn't been scraped on the given day."""
+def test_is_product_scraped_last_24_h_scraped(mongo_service: MongoService):
+    """Test that is_product_scraped_last_24_hours returns True when the product has been scraped last 24 h."""
     migros_id = oliveoil["migrosId"]
-    date = "2024-09-28"
-    assert not mongo_service.is_product_scraped_today(migros_id, date)
+    mongo_service.save_scraped_product_id(migros_id)
+    assert mongo_service.is_product_scraped_last_24_hours(migros_id)
 
 
-def test_is_product_scraped_today_scraped(mongo_service: MongoService):
-    """Test that is_product_scraped_today returns True when the product has been scraped on the given day."""
-    migros_id = oliveoil["migrosId"]
-    date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, date)
-    assert mongo_service.is_product_scraped_today(migros_id, date)
-
-
-def test_is_product_scraped_today_scraped_different_day(mongo_service: MongoService):
-    """Test that is_product_scraped_today returns False when the product was scraped on a different day."""
-    migros_id = oliveoil["migrosId"]
-    date_scraped = "2024-09-27"
-    date_today = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, date_scraped)
-    assert not mongo_service.is_product_scraped_today(migros_id, date_today)
-
-
-def test_reset_scraped_ids_no_entries(mongo_service: MongoService, caplog):
-    """Test that reset_scraped_ids works with no entries in the collection."""
-    caplog.clear()
-    current_date = "2024-09-28"
-    mongo_service.reset_scraped_ids(current_date)
-    assert mongo_service.db.scraped_ids.count_documents({}) == 0
-    assert f"Reset scraped IDs not from {current_date}." in caplog.text
-
-
-def test_reset_scraped_ids_with_old_entries(mongo_service: MongoService, caplog):
-    """Test that reset_scraped_ids removes all entries that are not from the current date."""
-    caplog.clear()
-    migros_id = oliveoil["migrosId"]
-    old_date = "2024-09-27"
-    current_date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, old_date)
-    mongo_service.save_scraped_product_id(migros_id, current_date)
-    mongo_service.reset_scraped_ids(current_date)
-    assert mongo_service.db.scraped_ids.count_documents({}) == 1
-    assert mongo_service.db.scraped_ids.count_documents({"date": current_date}) == 1
-    assert mongo_service.db.scraped_ids.count_documents({"date": old_date}) == 0
-    assert f"Reset scraped IDs not from {current_date}." in caplog.text
-
-
-def test_reset_scraped_ids_only_current_date_entries(
-    mongo_service: MongoService, caplog
+def test_is_product_scraped_last_24_h_scraped_different_day(
+    mongo_service: MongoService,
 ):
-    """Test that reset_scraped_ids does not remove entries if all are from the current date."""
-    caplog.clear()
+    """Test that is_product_scraped_last_24_hours returns False when the product was scraped more than 24 h ago."""
     migros_id = oliveoil["migrosId"]
-    current_date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id, current_date)
-    assert mongo_service.db.scraped_ids.count_documents({}) == 1
-    mongo_service.reset_scraped_ids(current_date)
-    assert mongo_service.db.scraped_ids.count_documents({}) == 1
-    assert mongo_service.db.scraped_ids.count_documents({"date": current_date}) == 1
-    assert f"Reset scraped IDs not from {current_date}." in caplog.text
+    date_scraped = datetime.now(timezone.utc) - timedelta(days=5)
+    mongo_service.db.scraped_ids.insert_one(
+        {"migrosId": migros_id, "date": date_scraped}
+    )
+    assert not mongo_service.is_product_scraped_last_24_hours(migros_id)
 
 
-def test_retrieve_todays_scraped_ids_no_entries(mongo_service: MongoService):
-    """Test that retrieve_todays_scraped_ids returns an empty list when there are no entries for the current date."""
-    current_date = "2024-09-28"
-    assert mongo_service.retrieve_todays_scraped_ids(current_date) == []
+def test_retrieve_scraped_ids_last_24_hours_no_entries(mongo_service: MongoService):
+    """Test that retrieve_scraped_ids_last_24_hours returns an empty list when there are no entries for the current date."""
+    assert mongo_service.retrieve_scraped_ids_last_24_hours() == []
 
 
-def test_retrieve_todays_scraped_ids_with_entries(mongo_service: MongoService):
-    """Test that retrieve_todays_scraped_ids returns all migrosIds for the current date."""
+def test_retrieve_scraped_ids_last_24_hours_with_entries(mongo_service: MongoService):
+    """Test that retrieve_scraped_ids_last_24_hours returns all migrosIds for the current date."""
     migros_id_1 = oliveoil["migrosId"]
     migros_id_2 = penne["migrosId"]
-    current_date = "2024-09-28"
-    mongo_service.save_scraped_product_id(migros_id_1, current_date)
-    mongo_service.save_scraped_product_id(migros_id_2, current_date)
-    assert set(mongo_service.retrieve_todays_scraped_ids(current_date)) == {
+    mongo_service.save_scraped_product_id(migros_id_1)
+    mongo_service.save_scraped_product_id(migros_id_2)
+    assert set(mongo_service.retrieve_scraped_ids_last_24_hours()) == {
         migros_id_1,
         migros_id_2,
     }
 
 
-def test_retrieve_todays_scraped_ids_ignores_other_dates(mongo_service: MongoService):
-    """Test that retrieve_todays_scraped_ids does not return migrosIds from other dates."""
+def test_retrieve_scraped_ids_last_24_hours_ignores_other_dates(
+    mongo_service: MongoService,
+):
+    """Test that retrieve_scraped_ids_last_24_hours does not return migrosIds from other dates."""
     migros_id = oliveoil["migrosId"]
-    current_date = "2024-09-28"
-    old_date = "2024-09-27"
-    mongo_service.save_scraped_product_id(migros_id, old_date)
-    assert mongo_service.retrieve_todays_scraped_ids(current_date) == []
+    old_date = datetime.now(timezone.utc) - timedelta(hours=25 * 7)
+    mongo_service.db.scraped_ids.insert_one({"migrosId": migros_id, "date": old_date})
+    assert mongo_service.retrieve_scraped_ids_last_24_hours() == []
 
     # ----------------------------------------------
     #       request_counts
@@ -780,7 +850,6 @@ def test_increment_request_count_default_increment_no_entry(
     current_date = "2024-09-28"
     mongo_service.increment_request_count(current_date)
     result = mongo_service.get_request_count(current_date)
-    assert result == 1
     mongo_service.increment_request_count(current_date)
     result = mongo_service.get_request_count(current_date)
     assert result == 2

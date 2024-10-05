@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta, timezone
 
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
@@ -14,6 +15,10 @@ class MongoService:
 
     def close(self):
         self.client.close()
+
+    def current_day_in_iso(self):
+        """Return the current day in ISO format."""
+        return datetime.now(timezone.utc).date().isoformat()
 
     # ----------------------------------------------
     #       categories
@@ -138,6 +143,34 @@ class MongoService:
         """Fetch all migrosIds of the known products."""
         return self.db.products.distinct("migrosId")
 
+    def get_products_not_scraped_in_days(
+        self, days: int, limit: int = 100, only_edible=True
+    ) -> list:
+        """Retrieve migrosIds of products that haven't been scraped in the last 'x' days."""
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+
+        # Base query to get products not scraped in 'x' days
+        query = {"lastScraped": {"$lt": cutoff_date}}
+
+        if only_edible:
+            # Add the filter for only edible products
+            edible_ids = self.db.products.distinct(
+                "migrosId",
+                {"productInformation.nutrientsInformation": {"$exists": True}},
+            )
+            query["migrosId"] = {"$in": edible_ids}
+
+        # Fetch product IDs with the defined limit
+        products = self.db.id_scraped_at.find(
+            query, {"migrosId": 1}  # Only return migrosId
+        ).limit(limit)
+
+        ids_to_scrape = [product["migrosId"] for product in products]
+        self.yeeter.yeet(
+            f"Found {len(ids_to_scrape)} products that haven't been scraped in {days}+ days."
+        )
+        return ids_to_scrape
+
     # ----------------------------------------------
     #       unit_price_history
     # ----------------------------------------------
@@ -154,28 +187,43 @@ class MongoService:
     #       scraped_ids
     # ----------------------------------------------
 
-    def save_scraped_product_id(self, migros_id: str, date: str) -> None:
-        """Save the scraped product ID with the date to prevent scraping the same product multiple times per day."""
-        if not self.is_product_scraped_today(migros_id, date):
-            self.db.scraped_ids.insert_one({"migrosId": migros_id, "date": date})
+    def save_scraped_product_id(self, migros_id: str) -> None:
+        """Save the scraped product ID with the current date."""
+        current_date = datetime.now(timezone.utc)
+        self.db.scraped_ids.update_one(
+            {"migrosId": migros_id},
+            {"$set": {"lastScraped": current_date}},
+            upsert=True,
+        )
 
-    def is_product_scraped_today(self, migros_id: str, date: str) -> bool:
-        """Check if a product with the given migrosId has already been scraped today."""
+    def is_product_scraped_last_24_hours(self, migros_id: str) -> bool:
+        """Check if a product with the given migrosId has been scraped in the last 24 hours."""
+        # Get the current time and calculate the cutoff time (24 hours ago)
+        now = datetime.now(timezone.utc)
+        cutoff_time = now - timedelta(hours=24)
+
+        # Query for products that were scraped within the last 24 hours
         return (
-            self.db.scraped_ids.find_one({"migrosId": migros_id, "date": date})
+            self.db.scraped_ids.find_one(
+                {
+                    "migrosId": migros_id,
+                    "lastScraped": {
+                        "$gte": cutoff_time
+                    },  # Check if lastScraped is greater than or equal to the cutoff
+                }
+            )
             is not None
         )
 
-    def reset_scraped_ids(self, current_date: str):
-        """Remove all scraped_ids entries that are not from the current date."""
-        self.db.scraped_ids.delete_many({"date": {"$ne": current_date}})
-        self.yeeter.yeet(f"Reset scraped IDs not from {current_date}.")
-
-    def retrieve_todays_scraped_ids(self, current_date: str) -> list[int]:
-        """Retrieve all scraped_ids entries that are from the current date."""
+    def retrieve_scraped_ids_last_24_hours(self) -> list[int]:
+        """Retrieve all scraped_ids entries that have been scraped in the last 24 hours."""
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=24)
+        # Find all entries where lastScraped is within the last 24 hours
         return [
             scraped_data["migrosId"]
-            for scraped_data in self.db.scraped_ids.find({"date": current_date})
+            for scraped_data in self.db.scraped_ids.find(
+                {"lastScraped": {"$gte": cutoff_time}}
+            )
             if "migrosId" in scraped_data  # Ensure the key exists
         ]
 
@@ -183,18 +231,83 @@ class MongoService:
     #       request_counts
     # ----------------------------------------------
 
-    def get_request_count(self, current_date: str) -> int:
+    def get_request_count(self, date: str) -> int:
         """Retrieve the request count for the given date."""
-        record = self.db.request_counts.find_one({"date": current_date})
+        record = self.db.request_counts.find_one({"date": date})
         if record:
             return record.get("count", 0)
         return 0
 
-    def increment_request_count(self, current_date: str, count: int = 1) -> None:
+    def increment_request_count(self, date: str, count: int = 1) -> None:
         """Increment the request count for the given date."""
         self.db.request_counts.update_one(
-            {"date": current_date}, {"$inc": {"count": count}}, upsert=True
+            {"date": date}, {"$inc": {"count": count}}, upsert=True
         )
+
+    # deleteagain
+
+    # Migrate data from scraped_ids to id_scraped_at
+    def migrate_scraped_ids_to_new_format(self):
+        # Aggregate to get the most recent scrape date for each migrosId
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$migrosId",
+                    "lastScraped": {"$max": "$date"},  # Get the most recent 'date'
+                }
+            }
+        ]
+
+        # Run the aggregation pipeline
+        results = self.db.scraped_ids.aggregate(pipeline)
+        self.yeeter.yeet("Starting migration of scraped_ids to id_scraped_at...")
+
+        # Convert the results to a list for the length count (but don't consume the cursor)
+        results_list = list(results)
+        self.yeeter.yeet(f"Found {len(results_list)} results")
+
+        # Process the aggregated results
+        for result in results_list:  # Use the list version of the results here
+            migros_id = result["_id"]
+            last_scraped = result.get("lastScraped")
+
+            self.yeeter.yeet(
+                f"Processing migrosId {migros_id} with last scraped: {last_scraped}"
+            )
+
+            # Convert 'lastScraped' to datetime if it's a string
+            self.yeeter.yeet(f"is str = {isinstance(last_scraped, str)}")
+            if isinstance(last_scraped, str):
+                try:
+                    last_scraped = datetime.strptime(last_scraped, "%Y-%m-%d").replace(
+                        tzinfo=timezone.utc
+                    )
+                except ValueError:
+                    print(f"Skipping document with invalid date format: {last_scraped}")
+                    continue
+
+            # If no valid 'lastScraped' set last scraped to 1 year ago
+            if not last_scraped:
+                self.yeeter.yeet("No valid 'lastScraped' found, setting to 1 year ago.")
+                last_scraped = datetime.now(timezone.utc) - timedelta(days=365)
+
+            # Create the new document for id_scraped_at
+            new_doc = {
+                "migrosId": migros_id,
+                "lastScraped": last_scraped,
+            }
+
+            # Insert into the new collection
+            self.db.id_scraped_at.update_one(
+                {"migrosId": migros_id},  # Match by 'migrosId' to avoid duplicates
+                {"$set": new_doc},
+                upsert=True,
+            )
+            self.yeeter.yeet(
+                f"Migrated migrosId {migros_id}, last scraped: {last_scraped}"
+            )
+
+        print("Migration complete.")
 
 
 if __name__ == "__main__":

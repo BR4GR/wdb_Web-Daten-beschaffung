@@ -91,6 +91,8 @@ class MongoService:
         """Insert a new product document if the price is new or the product doesn't exist
         in the db jet."""
         migros_id = product_data.get("migrosId")
+        description = product_data.get("description")
+        name = product_data.get("name")
         if not migros_id:
             self.yeeter.error("Product does not contain migrosId, skipping insertion.")
             return
@@ -109,7 +111,7 @@ class MongoService:
             # Product doesn't exist, insert as new
             product_data["dateAdded"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             self.db.products.insert_one(product_data)
-            self.yeeter.yeet(f"Inserted new product with migrosId: {migros_id}")
+            self.yeeter.yeet(f"Inserted new product {name} with migrosId: {migros_id}")
 
         elif existing_product.get("offer", {}).get("price", {}) != new_price:
             # Unit price has changed, insert as new and log price change
@@ -124,7 +126,7 @@ class MongoService:
             }
             self.db.unit_price_history.insert_one(price_change_entry)
             self.yeeter.yeet(
-                f"\033[1;32mNew unit price detected for product with migrosId: {migros_id}. Logged price change.\033[0m"
+                f"\033[1;32mNew unit price detected for product {name} with migrosId: {migros_id}. Logged price change.\033[0m"
             )
 
         else:

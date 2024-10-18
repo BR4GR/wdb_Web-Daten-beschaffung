@@ -327,7 +327,7 @@ if __name__ == "__main__":
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
     average_request_sleep_time = 4.0
     if not RUNNING_IN_GITHUB_ACTIONS:
-        average_request_sleep_time = 10.0
+        average_request_sleep_time = 12.0
 
     scraper = MigrosScraper(
         mongo_service=mongo_service,
@@ -340,9 +340,9 @@ if __name__ == "__main__":
         yeeter.yeet(
             RUNNING_IN_GITHUB_ACTIONS
         )  # Set parameters for the scraping process
-        days = 7 if RUNNING_IN_GITHUB_ACTIONS else 6  # Use 7 days in GitHub, 5 locally
+        days = 9 if RUNNING_IN_GITHUB_ACTIONS else 6
         limit = (
-            100 if RUNNING_IN_GITHUB_ACTIONS else 1000
+            100 if RUNNING_IN_GITHUB_ACTIONS else 10001
         )  # Limit to 100 products in GitHub, 1000 locally
         yeeter.yeet(f"{days} days, {limit} products")
 

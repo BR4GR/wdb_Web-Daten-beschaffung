@@ -186,7 +186,7 @@ class MongoService:
         )
 
     # ----------------------------------------------
-    #       scraped_ids
+    #       id_scraped_at
     # ----------------------------------------------
 
     def save_scraped_product_id(self, migros_id: str) -> None:

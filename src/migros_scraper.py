@@ -335,12 +335,11 @@ if __name__ == "__main__":
         average_request_sleep_time=average_request_sleep_time,
     )
     try:
-        # mongo_service.migrate_scraped_ids_to_new_format()
         yeeter.yeet("Running in GitHub Actions:")
         yeeter.yeet(
             RUNNING_IN_GITHUB_ACTIONS
         )  # Set parameters for the scraping process
-        days = 9 if RUNNING_IN_GITHUB_ACTIONS else 6
+        days = 7 if RUNNING_IN_GITHUB_ACTIONS else 5
         limit = (
             100 if RUNNING_IN_GITHUB_ACTIONS else 10001
         )  # Limit to 100 products in GitHub, 1000 locally

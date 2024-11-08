@@ -217,8 +217,8 @@ class MongoService:
             is not None
         )
 
-    def retrieve_scraped_ids_last_24_hours(self) -> list[int]:
-        """Retrieve all scraped_ids entries that have been scraped in the last 24 hours."""
+    def retrieve_id_scraped_at_last_24_hours(self) -> list[int]:
+        """Retrieve all id_scraped_at entries that have been scraped in the last 24 hours."""
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=24)
         # Find all entries where lastScraped is within the last 24 hours
         return [
@@ -249,7 +249,7 @@ class MongoService:
     # deleteagain
 
     # Migrate data from scraped_ids to id_scraped_at
-    def migrate_scraped_ids_to_new_format(self):
+    def migrate_id_scraped_at_to_new_format(self):
         # Aggregate to get the most recent scrape date for each migrosId
         pipeline = [
             {

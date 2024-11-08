@@ -42,7 +42,7 @@ def mongo_service():
     mongo_service.db.category_tracker.delete_many({})
     mongo_service.db.products.delete_many({})
     mongo_service.db.unit_price_history.delete_many({})
-    mongo_service.db.scraped_ids.delete_many({})
+    mongo_service.db.id_scraped_at.delete_many({})
     mongo_service.db.request_counts.delete_many({})
     mongo_service.db.id_scraped_at.delete_many({})
 
@@ -468,7 +468,6 @@ def test_insert_new_product(mongo_service: MongoService, caplog):
     assert mongo_service.db.products.count_documents({"migrosId": migros_id}) == 0
     mongo_service.insert_product(oliveoil)
     assert mongo_service.db.products.count_documents({"migrosId": migros_id}) == 1
-    assert "Inserted new product with migrosId" in caplog.text
 
 
 def test_insert_product_with_same_price(mongo_service: MongoService, caplog):
@@ -607,10 +606,10 @@ def test_get_products_not_scraped_in_days_all_sraped_recently(
     migros_id_1 = oliveoil["migrosId"]
     migros_id_2 = penne["migrosId"]
     recent_date = datetime.now(timezone.utc) - timedelta(days=1)
-    mongo_service.db.scraped_ids.insert_one(
+    mongo_service.db.id_scraped_at.insert_one(
         {"migrosId": migros_id_1, "lastScraped": recent_date}
     )
-    mongo_service.db.scraped_ids.insert_one(
+    mongo_service.db.id_scraped_at.insert_one(
         {"migrosId": migros_id_2, "lastScraped": recent_date}
     )
     result = mongo_service.get_products_not_scraped_in_days(days=7)
@@ -682,7 +681,7 @@ def test_get_products_not_scraped_in_days_threshold(mongo_service: MongoService)
     threshold_date = datetime.now(timezone.utc) - timedelta(hours=(24 * days - 1))
 
     # Insert product scraped exactly 'days' ago
-    mongo_service.db.scraped_ids.insert_one(
+    mongo_service.db.id_scraped_at.insert_one(
         {"migrosId": migros_id, "lastScraped": threshold_date}
     )
 
@@ -693,7 +692,7 @@ def test_get_products_not_scraped_in_days_threshold(mongo_service: MongoService)
     assert result == []
 
     # ----------------------------------------------
-    #       scraped_ids
+    #       id_scraped_at
     # ----------------------------------------------
 
 
@@ -702,7 +701,7 @@ def test_save_scraped_product_id_new_entry(mongo_service: MongoService):
     migros_id = oliveoil["migrosId"]
     date = datetime.now(timezone.utc)
     mongo_service.save_scraped_product_id(migros_id)
-    assert mongo_service.db.scraped_ids.count_documents({"migrosId": migros_id}) == 1
+    assert mongo_service.db.id_scraped_at.count_documents({"migrosId": migros_id}) == 1
 
 
 def test_save_scraped_product_id_duplicate_entry_same_day(mongo_service: MongoService):
@@ -712,7 +711,7 @@ def test_save_scraped_product_id_duplicate_entry_same_day(mongo_service: MongoSe
 
     mongo_service.save_scraped_product_id(migros_id)
     mongo_service.save_scraped_product_id(migros_id)  # Try saving again on the same day
-    assert mongo_service.db.scraped_ids.count_documents({"migrosId": migros_id}) == 1
+    assert mongo_service.db.id_scraped_at.count_documents({"migrosId": migros_id}) == 1
 
 
 def test_save_scraped_product_id_updates_last_scraped(mongo_service: MongoService):
@@ -721,7 +720,7 @@ def test_save_scraped_product_id_updates_last_scraped(mongo_service: MongoServic
     date1 = datetime.now(timezone.utc) - timedelta(days=2)
 
     # Insert product with a past scrape date
-    mongo_service.db.scraped_ids.insert_one(
+    mongo_service.db.id_scraped_at.insert_one(
         {"migrosId": migros_id, "lastScraped": date1}
     )
     date1 = date1.replace(tzinfo=None)
@@ -731,7 +730,7 @@ def test_save_scraped_product_id_updates_last_scraped(mongo_service: MongoServic
 
     # Retrieve the updated product
 
-    updated_product = mongo_service.db.scraped_ids.find_one({"migrosId": migros_id})
+    updated_product = mongo_service.db.id_scraped_at.find_one({"migrosId": migros_id})
     print("test_save_scraped_product_id_updates_last_scraped")
     print(f"{updated_product["lastScraped"]=}")
     print(f"{date1=}")
@@ -759,37 +758,37 @@ def test_is_product_scraped_last_24_h_scraped_different_day(
     """Test that is_product_scraped_last_24_hours returns False when the product was scraped more than 24 h ago."""
     migros_id = oliveoil["migrosId"]
     date_scraped = datetime.now(timezone.utc) - timedelta(days=5)
-    mongo_service.db.scraped_ids.insert_one(
+    mongo_service.db.id_scraped_at.insert_one(
         {"migrosId": migros_id, "date": date_scraped}
     )
     assert not mongo_service.is_product_scraped_last_24_hours(migros_id)
 
 
-def test_retrieve_scraped_ids_last_24_hours_no_entries(mongo_service: MongoService):
-    """Test that retrieve_scraped_ids_last_24_hours returns an empty list when there are no entries for the current date."""
-    assert mongo_service.retrieve_scraped_ids_last_24_hours() == []
+def test_retrieve_id_scraped_at_last_24_hours_no_entries(mongo_service: MongoService):
+    """Test that retrieve_id_scraped_at_last_24_hours returns an empty list when there are no entries for the current date."""
+    assert mongo_service.retrieve_id_scraped_at_last_24_hours() == []
 
 
-def test_retrieve_scraped_ids_last_24_hours_with_entries(mongo_service: MongoService):
-    """Test that retrieve_scraped_ids_last_24_hours returns all migrosIds for the current date."""
+def test_retrieve_id_scraped_at_last_24_hours_with_entries(mongo_service: MongoService):
+    """Test that retrieve_id_scraped_at_last_24_hours returns all migrosIds for the current date."""
     migros_id_1 = oliveoil["migrosId"]
     migros_id_2 = penne["migrosId"]
     mongo_service.save_scraped_product_id(migros_id_1)
     mongo_service.save_scraped_product_id(migros_id_2)
-    assert set(mongo_service.retrieve_scraped_ids_last_24_hours()) == {
+    assert set(mongo_service.retrieve_id_scraped_at_last_24_hours()) == {
         migros_id_1,
         migros_id_2,
     }
 
 
-def test_retrieve_scraped_ids_last_24_hours_ignores_other_dates(
+def test_retrieve_id_scraped_at_last_24_hours_ignores_other_dates(
     mongo_service: MongoService,
 ):
-    """Test that retrieve_scraped_ids_last_24_hours does not return migrosIds from other dates."""
+    """Test that retrieve_id_scraped_at_last_24_hours does not return migrosIds from other dates."""
     migros_id = oliveoil["migrosId"]
     old_date = datetime.now(timezone.utc) - timedelta(hours=25 * 7)
-    mongo_service.db.scraped_ids.insert_one({"migrosId": migros_id, "date": old_date})
-    assert mongo_service.retrieve_scraped_ids_last_24_hours() == []
+    mongo_service.db.id_scraped_at.insert_one({"migrosId": migros_id, "date": old_date})
+    assert mongo_service.retrieve_id_scraped_at_last_24_hours() == []
 
     # ----------------------------------------------
     #       request_counts

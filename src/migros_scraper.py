@@ -34,7 +34,7 @@ class MigrosScraper:
         self.base_categories = []
         self.known_ids = set(mongo_service.get_all_known_migros_ids())
         self.todays_scraped_product_ids = set(
-            mongo_service.retrieve_scraped_ids_last_24_hours()
+            mongo_service.retrieve_id_scraped_at_last_24_hours()
         )
         self.average_request_sleep_time = average_request_sleep_time
 
@@ -46,13 +46,11 @@ class MigrosScraper:
         options.binary_location = binary_location
         options.add_argument("--headless")  # Ensures no UI is needed
         options.add_argument("--no-sandbox")  # Required for running Chrome in Docker
-        options.add_argument(
-            "--disable-dev-shm-usage"
-        )  # Overcomes limited resource problems
+        options.add_argument("--disable-dev-shm-usage")
         options.add_argument(
             "--disable-gpu"
         )  # Recommended when running in headless mode
-        options.add_argument("--remote-debugging-port=9222")  # Debugging port if needed
+        options.add_argument("--remote-debugging-port=9222")
         driver = webdriver.Chrome(service=service, options=options)
         return driver
 
@@ -161,7 +159,6 @@ class MigrosScraper:
         self.base_categories = categories_response.get("categories", [])
         for category in self.base_categories:
             self.mongo_service.insert_category(category)
-        # Store any new categories in the category_tracker collection
         untracked_categories = self.mongo_service.get_untracked_base_categories(
             self.base_categories
         )
@@ -229,7 +226,6 @@ class MigrosScraper:
 
     def scrape_product_by_id(self, migros_id: str) -> None:
         """Scrape a product by its migrosId."""
-        # Check if product was already scraped today
         if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
             self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
             self.todays_scraped_product_ids.add(migros_id)
@@ -274,13 +270,11 @@ class MigrosScraper:
 
             for request in self.driver.requests:
                 if url in request.url and request.response:
-                    # Handle 429 Too Many Requests
                     if request.response.status_code == 429:
                         self.error(f"Encountered HTTP 429 Too Many Requests.")
                         retry_after = int(
-                            request.response.headers.get("Retry-After", 60) * 2
+                            request.response.headers.get("Retry-After", 60)
                         )
-                        # if retry_after is longer than 1 hour, stop the scraper
                         if retry_after > 3600:
                             self.error(
                                 f"Retry-After value is too high ({retry_after} seconds). Stopping scraper."
@@ -299,17 +293,15 @@ class MigrosScraper:
                         self.close()
                         raise SystemExit(f"Scraper stopped due to error on URL: {url}")
 
-        # Handle WebDriver-specific errors
         except WebDriverException as e:
             self.error(f"WebDriverException on {url}: {str(e)}")
-            self._log_scraper_state(url)  # Log final state before exit
+            self._log_scraper_state(url)
             self.close()
             raise SystemExit(f"Scraper stopped due to WebDriverException on URL: {url}")
 
-        # Catch all other exceptions
         except Exception as e:
             self.error(f"Unexpected error during request to {url}: {str(e)}")
-            self._log_scraper_state(url)  # Log final state before exit
+            self._log_scraper_state(url)
             self.close()
             raise SystemExit(f"Scraper stopped due to unexpected error on URL: {url}")
 
@@ -321,11 +313,9 @@ if __name__ == "__main__":
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
     RUNNING_IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
-    # RUNNING_IN_GITHUB_ACTIONS = True
-
     yeeter = Yeeter()
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
-    average_request_sleep_time = 4.0
+    average_request_sleep_time = 2.0
     if not RUNNING_IN_GITHUB_ACTIONS:
         average_request_sleep_time = 12.0
 
@@ -336,22 +326,16 @@ if __name__ == "__main__":
     )
     try:
         yeeter.yeet("Running in GitHub Actions:")
-        yeeter.yeet(
-            RUNNING_IN_GITHUB_ACTIONS
-        )  # Set parameters for the scraping process
-        days = 7 if RUNNING_IN_GITHUB_ACTIONS else 5
-        limit = (
-            100 if RUNNING_IN_GITHUB_ACTIONS else 10001
-        )  # Limit to 100 products in GitHub, 1000 locally
+        yeeter.yeet(RUNNING_IN_GITHUB_ACTIONS)
+        days = 5 if RUNNING_IN_GITHUB_ACTIONS else 3
+        limit = 400 if RUNNING_IN_GITHUB_ACTIONS else 10001
         yeeter.yeet(f"{days} days, {limit} products")
 
-        # Fetch all edible product migrosIds from the products collection
         edible_ids = mongo_service.db.products.distinct(
             "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}
         )
         yeeter.yeet(f"Found {len(edible_ids)} edible products.")
 
-        # Fetch the products to scrape
         yeeter.yeet(f"Fetching products not scraped in {days}+ days.")
         ids_to_scrape = mongo_service.get_products_not_scraped_in_days(
             days=days, limit=limit
@@ -359,7 +343,6 @@ if __name__ == "__main__":
         yeeter.yeet(f"Scraping {len(ids_to_scrape)} products.")
         yeeter.yeet(ids_to_scrape)
 
-        # Scrape each product by its migrosId
         for migros_id in ids_to_scrape:
             scraper.scrape_product_by_id(migros_id)
 

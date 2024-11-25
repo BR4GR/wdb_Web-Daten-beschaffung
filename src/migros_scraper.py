@@ -80,11 +80,29 @@ class MigrosScraper:
         self.yeeter.alarm(message)
 
     def current_day_in_iso(self):
-        """Return the current day in ISO format."""
+        """
+        Retrieves the current day in ISO 8601 format.
+
+        Returns:
+            str: The current date in ISO format (e.g., "2024-11-25").
+        """
         return datetime.now(timezone.utc).date().isoformat()
 
     def _decompress_response(self, response: bytes, encoding: str) -> bytes:
-        """Decompress response if necessary."""
+        """
+        Decompresses a given response if it is encoded in gzip or brotli format.
+
+        Args:
+            response (bytes): The compressed response body.
+            encoding (str): The encoding type (e.g., "gzip" or "br").
+
+        Returns:
+            bytes: The decompressed response body. If no encoding is recognized, returns the original response.
+
+        Raises:
+            gzip.BadGzipFile: If the gzip decompression fails.
+            brotli.error: If the brotli decompression fails.
+        """
         if encoding == "gzip":
             return gzip.decompress(response)
         elif encoding == "br":
@@ -93,7 +111,14 @@ class MigrosScraper:
 
     def _log_scraper_state(self, url: str, request=None) -> None:
         """
-        Use the Yeeter to log the scraper state before shutdown.
+        Logs the current state of the scraper, including the URL being processed and request details.
+
+        Args:
+            url (str): The URL being processed at the time of logging.
+            request (seleniumwire.request.Request, optional): The Selenium Wire request object associated with the URL.
+
+        Returns:
+            None
         """
         self.yeeter.log_scraper_state(
             url=url,
@@ -105,7 +130,20 @@ class MigrosScraper:
     def _get_specific_response(
         self, url_contains: str, max_wait_time: int = 10
     ) -> dict:
-        """Helper function to capture a network request and return the response."""
+        """
+        Captures a network request that matches the specified URL fragment and retrieves its response.
+
+        Args:
+            url_contains (str): A substring to identify the target URL in the network requests.
+            max_wait_time (int): Maximum time to wait for the response in seconds (default is 10).
+
+        Returns:
+            dict: The decoded JSON response as a dictionary. Returns an empty dictionary if no response is found
+            or if an error occurs during JSON decoding.
+
+        Raises:
+            json.JSONDecodeError: If the response body is not valid JSON.
+        """
         start_time = time.time()
 
         while True:
@@ -149,8 +187,21 @@ class MigrosScraper:
 
     def get_and_store_base_categories(self) -> None:
         """
-        Fetch all base categories and ensure they are tracked in MongoDB.
-        if we encounter a product that was never seen before we will scrape it.
+        Fetches all base categories from the main page of the Migros website and stores them in MongoDB.
+
+        This method retrieves the categories via a network request, stores any new categories in MongoDB.
+
+        Steps:
+            1. Loads the main page.
+            2. Retrieves the base categories from the "storemap" response.
+            3. Stores new categories in MongoDB.
+            4. Scrapes products associated with each base category.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an error occurs during fetching or storing the categories.
         """
         self.yeet("Fetching and storing base categories")
         self.load_main_page()
@@ -159,6 +210,7 @@ class MigrosScraper:
         self.base_categories = categories_response.get("categories", [])
         for category in self.base_categories:
             self.mongo_service.insert_category(category)
+
         untracked_categories = self.mongo_service.get_untracked_base_categories(
             self.base_categories
         )
@@ -177,8 +229,22 @@ class MigrosScraper:
 
     def scrape_categories_from_base(self) -> None:
         """
-        Try to get all subcategories for each base category.
-        if we encounter a product that was never seen before we will scrape it.
+        Scrapes the products and subcategories for a given category URL.
+
+        This method performs the following actions:
+            1. Sends a request to load the category URL.
+            2. Captures and processes the products within the category.
+            3. Retrieves subcategory data and returns their slugs for further scraping.
+
+        Args:
+            category_url (str): The full URL of the category page to scrape.
+            slug (str): The unique identifier or slug for the category being processed.
+
+        Returns:
+            list[str]: A list of slugs for the subcategories within the category.
+
+        Raises:
+            Exception: If the category data or product information cannot be fetched.
         """
         for category in self.base_categories:
             category_url = self.BASE_URL + "category/" + category["slug"]
@@ -220,12 +286,16 @@ class MigrosScraper:
             self.error(f"Failed to fetch data for category: {category_url}")
             return []
 
-    def reset_scraped_ids_daily(self) -> None:
-        """Reset the scraped_product_ids in MongoDB if the date has changed."""
-        mongo_service.reset_scraped_ids(self.current_day_in_iso())
-
     def scrape_product_by_id(self, migros_id: str) -> None:
-        """Scrape a product by its migrosId."""
+        """
+        Scrapes product details for a given migros_id.
+
+        Args:
+            migros_id (str): The unique identifier for the product.
+
+        Raises:
+            Exception: If scraping fails due to network or parsing issues.
+        """
         if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
             self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
             self.todays_scraped_product_ids.add(migros_id)
@@ -255,10 +325,14 @@ class MigrosScraper:
 
     def make_request_and_validate(self, url: str) -> None:
         """
-        Wrapper function to delete the acumulated requests,
-        handle the driver.get(), increment request counter,
-        and check for valid response (HTTP 200).
-        If a error status code is encountered, stop the scraper.
+        Sends a GET request to the specified URL, validates the response, and handles errors gracefully.
+
+        Args:
+            url (str): The target URL to send the request to.
+
+        Raises:
+            WebDriverException: If there is an issue with the Selenium WebDriver during the request.
+            SystemExit: If the response status code indicates an error (e.g., 429 or 4xx/5xx codes).
         """
         try:
             del self.driver.requests

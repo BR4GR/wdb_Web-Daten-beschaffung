@@ -1,6 +1,7 @@
 import gzip
 import json
 import os
+import pdb
 import random
 import time
 from datetime import datetime, timedelta, timezone
@@ -8,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 import brotli
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -259,31 +261,49 @@ class MigrosScraper:
                 self.scrape_category_via_url(url, slug)
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
-        """Scrape a category by loading the URL and capturing the network requests."""
-        self.yeet(f"Scraping category URL: {category_url}")
-        self.make_request_and_validate(category_url)
+        """
+        Scrapes a category by loading its URL and processing the network requests.
 
-        product_data = self._get_specific_response("product-cards", 5)
-        if product_data:
-            for product in product_data:
-                migros_id = product.get("migrosId")
-                if migros_id:
-                    if migros_id not in self.known_ids:
+        Args:
+            category_url (str): Full URL of the category page to scrape.
+            slug (str): Unique slug identifier for the category.
+
+        Returns:
+            list[str]: List of subcategory slugs found within the category.
+        """
+        self.yeet(f"Scraping category URL: {category_url}")
+        try:
+            self.make_request_and_validate(category_url)
+
+            product_data = self._get_specific_response("product-cards", 5)
+            if product_data:
+                for product in product_data:
+                    migros_id = product.get("migrosId")
+                    if migros_id and migros_id not in self.known_ids:
                         self.known_ids.add(migros_id)
                         self.scrape_product_by_id(migros_id)
 
-        category_data = self._get_specific_response("search/category")
-        if category_data:
-            for category in category_data.get("categories", []):
-                self.mongo_service.insert_category(category)
-            slugs = [
-                category["slug"]
-                for category in category_data.get("categories", [])
-                if category.get("level") == 3
-            ]
-            return slugs
-        else:
-            self.error(f"Failed to fetch data for category: {category_url}")
+            category_data = self._get_specific_response("search/category")
+            if category_data:
+                for category in category_data.get("categories", []):
+                    self.mongo_service.insert_category(category)
+                return [
+                    category["slug"]
+                    for category in category_data.get("categories", [])
+                    if category.get("level") == 3
+                ]
+            else:
+                self.error(f"No subcategories found for category URL: {category_url}")
+                return []
+        except PyMongoError as e:
+            self.error(f"MongoDB error while scraping category {slug}: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
+            return []
+        except Exception as e:
+            self.error(f"Error while scraping category {slug}: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
             return []
 
     def scrape_product_by_id(self, migros_id: str) -> None:

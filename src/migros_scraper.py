@@ -4,11 +4,10 @@ import os
 import pdb
 import random
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import brotli
 from dotenv import load_dotenv
-from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
@@ -30,31 +29,53 @@ class MigrosScraper:
         binary_location: str = "/usr/bin/chromium",
         average_request_sleep_time: float = 4.0,
     ):
-        self.driver = self._initialize_driver(driver_path, binary_location)
-        self.mongo_service: MongoService = mongo_service
-        self.yeeter: Yeeter = yeeter
+        self.mongo_service = mongo_service
+        self.yeeter = yeeter
         self.base_categories = []
-        self.known_ids = set(mongo_service.get_all_known_migros_ids())
-        self.todays_scraped_product_ids = set(
-            mongo_service.retrieve_id_scraped_at_last_24_hours()
-        )
+        self.known_ids = set()
+        self.todays_scraped_product_ids = set()
         self.average_request_sleep_time = average_request_sleep_time
+        try:
+            self.driver = self._initialize_driver(driver_path, binary_location)
+            self.known_ids = set(mongo_service.get_all_known_migros_ids())
+            self.todays_scraped_product_ids = set(
+                mongo_service.retrieve_id_scraped_at_last_24_hours()
+            )
+        except WebDriverException as e:
+            yeeter.error(f"Failed to initialize WebDriver: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
+            raise
+        except PyMongoError as e:
+            yeeter.error(f"Error fetching stuff from MongoDB: {str(e)}")
 
     def _initialize_driver(
         self, driver_path: str, binary_location: str
     ) -> webdriver.Chrome:
-        service = Service(driver_path)
-        options = Options()
-        options.binary_location = binary_location
-        options.add_argument("--headless")  # Ensures no UI is needed
-        options.add_argument("--no-sandbox")  # Required for running Chrome in Docker
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument(
-            "--disable-gpu"
-        )  # Recommended when running in headless mode
-        options.add_argument("--remote-debugging-port=9222")
-        driver = webdriver.Chrome(service=service, options=options)
-        return driver
+        """
+        Initializes the Selenium WebDriver with the specified options.
+
+        Args:
+            driver_path (str): Path to the ChromeDriver executable.
+            binary_location (str): Path to the Chromium binary.
+
+        Returns:
+            webdriver.Chrome: Configured Selenium WebDriver instance.
+        """
+        try:
+            service = Service(driver_path)
+            options = Options()
+            options.binary_location = binary_location
+            options.add_argument("--headless")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--remote-debugging-port=9222")
+            return webdriver.Chrome(service=service, options=options)
+        except Exception as e:
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
+            raise WebDriverException(f"Failed to initialize WebDriver: {str(e)}")
 
     def load_main_page(self) -> None:
         """Load the main page of the Migros website."""
@@ -105,11 +126,15 @@ class MigrosScraper:
             gzip.BadGzipFile: If the gzip decompression fails.
             brotli.error: If the brotli decompression fails.
         """
-        if encoding == "gzip":
-            return gzip.decompress(response)
-        elif encoding == "br":
-            return brotli.decompress(response)
-        return response
+        try:
+            if encoding == "gzip":
+                return gzip.decompress(response)
+            elif encoding == "br":
+                return brotli.decompress(response)
+            return response
+        except (gzip.BadGzipFile, brotli.error) as e:
+            self.error(f"Decompression failed: {str(e)}")
+            return b""
 
     def _log_scraper_state(self, url: str, request=None) -> None:
         """
@@ -176,9 +201,13 @@ class MigrosScraper:
                         return {}
                     except AttributeError as e:
                         self.error(f"Attribute error: {str(e)}")
+                        if os.getenv("DEBUG_MODE") == "true":
+                            pdb.set_trace()  # Enter interactive debugger
                         continue
                     except Exception as e:
                         self.error(f"Unexpected error: {str(e)}")
+                        if os.getenv("DEBUG_MODE") == "true":
+                            pdb.set_trace()  # Enter interactive debugger
                         continue
 
             if time.time() - start_time > max_wait_time:
@@ -205,29 +234,25 @@ class MigrosScraper:
         Raises:
             Exception: If an error occurs during fetching or storing the categories.
         """
-        self.yeet("Fetching and storing base categories")
-        self.load_main_page()
-        categories_response = self._get_specific_response("storemap")
-
-        self.base_categories = categories_response.get("categories", [])
-        for category in self.base_categories:
-            self.mongo_service.insert_category(category)
-
-        untracked_categories = self.mongo_service.get_untracked_base_categories(
-            self.base_categories
-        )
-        if untracked_categories:
-            self.mongo_service.insert_new_base_categories(untracked_categories)
-
-        product_data = self._get_specific_response("product-cards", 5)
-        if product_data:
-            for product in product_data:
-                migros_id = product.get("migrosId")
-                if migros_id:
-                    if migros_id not in self.known_ids:
-                        self.known_ids.add(migros_id)
-                        self.scrape_product_by_id(migros_id)
-        self.scrape_categories_from_base()
+        try:
+            self.yeet("Fetching and storing base categories")
+            self.load_main_page()
+            categories_response = self._get_specific_response("storemap")
+            self.base_categories = categories_response.get("categories", [])
+            for category in self.base_categories:
+                self.mongo_service.insert_category(category)
+            untracked_categories = self.mongo_service.get_untracked_base_categories(
+                self.base_categories
+            )
+            if untracked_categories:
+                self.mongo_service.insert_new_base_categories(untracked_categories)
+            self.check_for_product_cards()
+        except PyMongoError as e:
+            self.error(f"MongoDB operation failed: {str(e)}")
+        except Exception as e:
+            self.error(f"Error fetching or storing base categories: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
 
     def scrape_categories_from_base(self) -> None:
         """
@@ -248,17 +273,22 @@ class MigrosScraper:
         Raises:
             Exception: If the category data or product information cannot be fetched.
         """
-        for category in self.base_categories:
-            category_url = self.BASE_URL + "category/" + category["slug"]
-            second_level_slugs = self.scrape_category_via_url(
-                category_url, category["slug"]
-            )
-            self.mongo_service.mark_category_as_scraped(
-                category["id"], self.current_day_in_iso()
-            )
-            for slug in second_level_slugs:
-                url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
-                self.scrape_category_via_url(url, slug)
+        try:
+            for category in self.base_categories:
+                category_url = self.BASE_URL + "category/" + category["slug"]
+                second_level_slugs = self.scrape_category_via_url(
+                    category_url, category["slug"]
+                )
+                self.mongo_service.mark_category_as_scraped(
+                    category["id"], self.current_day_in_iso()
+                )
+                for slug in second_level_slugs:
+                    url = self.BASE_URL + "category/" + category["slug"] + "/" + slug
+                    self.scrape_category_via_url(url, slug)
+        except Exception as e:
+            self.error(f"Error while scraping categories: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
 
     def scrape_category_via_url(self, category_url: str, slug: str) -> list[str]:
         """
@@ -275,13 +305,7 @@ class MigrosScraper:
         try:
             self.make_request_and_validate(category_url)
 
-            product_data = self._get_specific_response("product-cards", 5)
-            if product_data:
-                for product in product_data:
-                    migros_id = product.get("migrosId")
-                    if migros_id and migros_id not in self.known_ids:
-                        self.known_ids.add(migros_id)
-                        self.scrape_product_by_id(migros_id)
+            self.check_for_product_cards()
 
             category_data = self._get_specific_response("search/category")
             if category_data:
@@ -316,32 +340,39 @@ class MigrosScraper:
         Raises:
             Exception: If scraping fails due to network or parsing issues.
         """
-        if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
-            self.yeet(f"Product {migros_id} was already scraped today. Skipping.")
-            self.todays_scraped_product_ids.add(migros_id)
-            return
-
-        product_uri = self.BASE_URL + "product/" + migros_id
-        self.yeet(f"Scraping product: {product_uri}")
         try:
-            self.make_request_and_validate(product_uri)
+            if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
+                self.yeet(f"Product {migros_id} already scraped today. Skipping.")
+                self.todays_scraped_product_ids.add(migros_id)
+                return
 
+            product_url = self.BASE_URL + "product/" + migros_id
+            self.make_request_and_validate(product_url)
             product_data = self._get_specific_response("product-detail")
             if product_data:
                 self.mongo_service.insert_product(product_data[0])
-
-            self.mongo_service.save_scraped_product_id(migros_id)
-            self.todays_scraped_product_ids.add(migros_id)
-
-            product_cards = self._get_specific_response("product-cards", 5)
-            if product_cards:
-                for product in product_cards:
-                    new_id = product.get("migrosId")
-                    if new_id and new_id not in self.known_ids:
-                        self.known_ids.add(new_id)
-                        self.scrape_product_by_id(new_id)
+            self.check_for_product_cards()
+        except PyMongoError as e:
+            self.error(f"MongoDB error while scraping product {migros_id}: {str(e)}")
         except Exception as e:
             self.error(f"Error scraping product {migros_id}: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
+
+    def check_for_product_cards(self) -> None:
+        try:
+            product_cards = self._get_specific_response("product-cards", 5)
+            if not product_cards:
+                return
+            for product in product_cards:
+                new_id = product.get("migrosId")
+                if new_id and new_id not in self.known_ids:
+                    self.known_ids.add(new_id)
+                    self.scrape_product_by_id(new_id)
+        except Exception as e:
+            self.error(f"Error while checking for product cards: {str(e)}")
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
 
     def make_request_and_validate(self, url: str) -> None:
         """
@@ -363,39 +394,45 @@ class MigrosScraper:
             time.sleep(delay)
 
             for request in self.driver.requests:
-                if url in request.url and request.response:
-                    if request.response.status_code == 429:
-                        self.error(f"Encountered HTTP 429 Too Many Requests.")
-                        retry_after = int(
-                            request.response.headers.get("Retry-After", 60)
-                        )
-                        if retry_after > 3600:
-                            self.error(
-                                f"Retry-After value is too high ({retry_after} seconds). Stopping scraper."
-                            )
-                            self._log_scraper_state(url, request)
-                        self.error(f"Retrying after {retry_after} seconds.")
-                        time.sleep(retry_after)
-                        self.make_request_and_validate(url)
-                        return
-
-                    elif request.response.status_code >= 400:
+                if url not in request.url:
+                    continue
+                if request.response is None:
+                    self.error(f"No response for request: {request.url}")
+                    continue
+                if request.response.status_code == 429:
+                    self.error(f"Encountered HTTP 429 Too Many Requests.")
+                    retry_after = int(request.response.headers.get("Retry-After", 60))
+                    if retry_after > 3600:
                         self.error(
-                            f"Error: {url} returned HTTP status {request.response.status_code}. Stopping scraper."
+                            f"Retry-After value is too high ({retry_after} seconds). Stopping scraper."
                         )
                         self._log_scraper_state(url, request)
-                        self.close()
-                        raise SystemExit(f"Scraper stopped due to error on URL: {url}")
+                    self.error(f"Retrying after {retry_after} seconds.")
+                    time.sleep(retry_after)
+                    self.make_request_and_validate(url)
+                    return
+
+                elif request.response.status_code >= 400:
+                    self.error(
+                        f"Error: {url} returned HTTP status {request.response.status_code}. Stopping scraper."
+                    )
+                    self._log_scraper_state(url, request)
+                    self.close()
+                    raise SystemExit(f"Scraper stopped due to error on URL: {url}")
 
         except WebDriverException as e:
             self.error(f"WebDriverException on {url}: {str(e)}")
             self._log_scraper_state(url)
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
             self.close()
             raise SystemExit(f"Scraper stopped due to WebDriverException on URL: {url}")
 
         except Exception as e:
             self.error(f"Unexpected error during request to {url}: {str(e)}")
             self._log_scraper_state(url)
+            if os.getenv("DEBUG_MODE") == "true":
+                pdb.set_trace()  # Enter interactive debugger
             self.close()
             raise SystemExit(f"Scraper stopped due to unexpected error on URL: {url}")
 

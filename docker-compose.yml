@@ -2,19 +2,30 @@ services:
   scraper:
     build: .
     volumes:
-      - .:/app # Map the current directory to /app inside the container
+      - .:/app
     env_file:
       - .env
+    depends_on:
+      - mongo
     environment:
       - PYTHONPATH=/app
     command: poetry run python src/migros_scraper.py
 
   mongo:
-    image: mongo:4.4-bionic
+    image: mongo:latest
+    container_name: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  test_mongo:
+    image: mongo:latest
+    container_name: test_mongo
+    ports:
+      - "27018:27017" # Different port to avoid conflicts with production MongoDB
     tmpfs:
-      - /data/db
+      - /data/db # Temporary storage, starts fresh every time
 
   test:
     build: .
@@ -23,7 +34,11 @@ services:
     env_file:
       - .env
     depends_on:
-      - mongo
+      - test_mongo
     environment:
       - PYTHONPATH=/app
+      - MONGO_URI=mongodb://test_mongo:27017 # Override to use the test MongoDB
     command: poetry run pytest
+
+volumes:
+  mongo_data: # Persistent storage for production MongoDB

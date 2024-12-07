@@ -16,6 +16,16 @@ class MongoService:
             self.client = MongoClient(uri, server_api=ServerApi("1"))
             self.db = self.client[db_name]
             self.yeeter = yeeter
+            # Ensure required collections exist
+            for collection in [
+                "products",
+                "categories",
+                "id_scraped_at",
+                "unit_price_history",
+                "request_counts",
+            ]:
+                self.yeeter.yeet(f"Ensuring collection exists: {collection}")
+                self.ensure_collection_exists(collection)
             self.yeeter.yeet(f"Connected to MongoDB database: {db_name}")
         except ConnectionFailure as e:
             self.yeeter.error(f"MongoDB connection failed: {str(e)}")
@@ -27,6 +37,14 @@ class MongoService:
             )
             self.log_debug_info()
             raise
+
+    def ensure_collection_exists(self, collection_name: str):
+        """Ensure that a collection exists in the database."""
+        if collection_name not in self.db.list_collection_names():
+            self.db.create_collection(collection_name)
+            self.yeeter.yeet(f"Created collection: {collection_name}")
+        else:
+            self.yeeter.yeet(f"Collection existed: {collection_name}")
 
     def log_debug_info(self):
         """

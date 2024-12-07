@@ -341,11 +341,12 @@ class MigrosScraper:
             Exception: If scraping fails due to network or parsing issues.
         """
         try:
+            self.yeet(f"Scraping product by id: {migros_id}")
             if self.mongo_service.is_product_scraped_last_24_hours(migros_id):
                 self.yeet(f"Product {migros_id} already scraped today. Skipping.")
                 self.todays_scraped_product_ids.add(migros_id)
                 return
-
+            self.mongo_service.save_scraped_product_id(migros_id)
             product_url = self.BASE_URL + "product/" + migros_id
             self.make_request_and_validate(product_url)
             product_data = self._get_specific_response("product-detail")
@@ -361,14 +362,18 @@ class MigrosScraper:
 
     def check_for_product_cards(self) -> None:
         try:
+            self.yeet("Checking for product cards.")
             product_cards = self._get_specific_response("product-cards", 5)
+            self.yeet(f"Found {len(product_cards)} product cards.")
             if not product_cards:
                 return
             for product in product_cards:
                 new_id = product.get("migrosId")
+
                 if new_id and new_id not in self.known_ids:
-                    self.known_ids.add(new_id)
+                    self.yeet(f"new product card ID: {new_id}")
                     self.scrape_product_by_id(new_id)
+                    self.known_ids.add(new_id)
         except Exception as e:
             self.error(f"Error while checking for product cards: {str(e)}")
             if os.getenv("DEBUG_MODE") == "true":
@@ -387,11 +392,12 @@ class MigrosScraper:
         """
         try:
             del self.driver.requests
-            self.driver.get(url)
-            self.mongo_service.increment_request_count(self.current_day_in_iso())
             delay = random.uniform(0.0, (self.average_request_sleep_time * 2))
             self.yeet(f"Sleeping for {delay:.2f} seconds before the next request.")
             time.sleep(delay)
+            self.yeet(f"Making request to {url}")
+            self.driver.get(url)
+            self.mongo_service.increment_request_count(self.current_day_in_iso())
 
             for request in self.driver.requests:
                 if url not in request.url:
@@ -448,7 +454,7 @@ if __name__ == "__main__":
     mongo_service = MongoService(MONGO_URI, MONGO_DB_NAME, yeeter)
     average_request_sleep_time = 2.0
     if not RUNNING_IN_GITHUB_ACTIONS:
-        average_request_sleep_time = 12.0
+        average_request_sleep_time = 3.0
 
     scraper = MigrosScraper(
         mongo_service=mongo_service,
@@ -461,6 +467,10 @@ if __name__ == "__main__":
         days = 5 if RUNNING_IN_GITHUB_ACTIONS else 3
         limit = 400 if RUNNING_IN_GITHUB_ACTIONS else 10001
         yeeter.yeet(f"{days} days, {limit} products")
+
+        if not RUNNING_IN_GITHUB_ACTIONS:
+            scraper.get_and_store_base_categories()
+            scraper.scrape_categories_from_base()
 
         edible_ids = mongo_service.db.products.distinct(
             "migrosId", {"productInformation.nutrientsInformation": {"$exists": True}}

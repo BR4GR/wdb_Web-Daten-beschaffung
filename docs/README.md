@@ -37,10 +37,6 @@ This project is a web scraper designed to extract product information from a sup
      - [How It Works](#how-it-works)
      - [Additional Utilities](#additional-utilities)
      - [Use Cases](#use-cases)
-5. [Testing](#testing)
-6. [Docker and Deployment](#docker-and-deployment)
-
----
 
 ---
 

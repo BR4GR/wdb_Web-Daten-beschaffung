@@ -344,3 +344,67 @@ yeeter.yeet("Scraping started.")
 yeeter.bugreport("Debugging some minor issue.")
 yeeter.alarm("Received unexpected status code, retrying...")
 yeeter.error("Failed to scrape product details due to timeout.")
+```
+---
+
+### MongoToPostgresSync
+
+**Location:** `src/sync/mongo_to_postgres_sync.py` (Adjust the path based on your actual directory structure.)
+
+**Description:**
+`MongoToPostgresSync` is a synchronization utility that fetches product data from a MongoDB database and ensures that the corresponding records in a PostgreSQL database remain consistent and up-to-date. It checks for existing products, inserts new products that are not yet in the PostgreSQL database, and updates any products that have changed since their last synchronization.
+
+**Key Functions:**
+
+- **`sync_products()`**
+  Fetches products from MongoDB, compares them with their PostgreSQL counterparts, and then:
+  - Inserts new products if they don't exist in PostgreSQL.
+  - Updates products that have changed.
+  - Skips products that are already up-to-date.
+
+- **`close_connections()`**
+  Closes the MongoDB and PostgreSQL connections cleanly after synchronization is complete.
+
+**Dependencies:**
+
+- **MongoDB**: The service queries the `products` collection of the specified MongoDB database for product data.
+- **PostgreSQL**: The synchronization requires a PostgreSQL database with corresponding tables and schema defined. It uses `Product` models and factories (defined in `src/models/product.py` and `src/models/product_factory.py`) to represent and manipulate product records.
+- **Python Packages**:
+  - `pymongo` for MongoDB interactions.
+  - `psycopg2` for PostgreSQL interactions.
+  - Custom model classes `Product` and `ProductFactory`.
+
+**Configuration:**
+
+- **MongoDB**:
+  Set `MONGO_URI` and `MONGO_DB_NAME` environment variables (or hardcode them in the script, as shown in the example).
+  Example:
+  ```python
+  MONGO_URI = "mongodb://mongo:27017"
+  MONGO_DB_NAME = "productsandcategories"
+  ```
+
+- **PostgreSQL**:
+  Define `POSTGRES_CONFIG` to specify `dbname`, `user`, `password`, `host`, and `port`.
+  Example:
+  ```python
+  POSTGRES_CONFIG = {
+      "dbname": "postgres_db",
+      "user": "postgres",
+      "password": "password",
+      "host": "postgres",
+      "port": 5432,
+  }
+  ```
+
+**Usage Example:**
+
+To run the synchronization, make sure that both MongoDB and PostgreSQL services are available, and then execute:
+
+```python
+docker compose run --rm sync
+```
+
+**Error Handling:**
+
+The script logs any issues encountered during the synchronization process. If it fails to locate a product or encounters unexpected data issues, it logs warnings or errors and continues processing the next product. Any database exceptions are caught and logged.

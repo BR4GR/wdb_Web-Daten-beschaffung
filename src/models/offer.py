@@ -65,3 +65,25 @@ class Offer:
         except Exception as e:
             logging.error(f"Error updating offer: {e}", exc_info=True)
             raise
+
+    def get_by_id(cursor, nutrient_id):
+        """Fetch an offer by its ID."""
+        logging.info(f"Fetching offer with ID {nutrient_id}...")
+        cursor.execute(
+            """
+            SELECT price, quantity, unit_price, promotion_price, promotion_unit_price
+            FROM offer
+            WHERE id = %s;
+            """,
+            (nutrient_id,),
+        )
+        result = cursor.fetchone()
+        if result is None:
+            return None
+        return Offer(
+            price=result["price"],
+            quantity=result["quantity"],
+            unit_price=result["unit_price"],
+            promotion_price=result["promotion_price"],
+            promotion_unit_price=result["promotion_unit_price"],
+        )

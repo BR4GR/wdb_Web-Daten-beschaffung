@@ -15,7 +15,7 @@ class Nutrition:
     fibre: str = None
     protein: str = None
     salt: str = None
-    id: int = field(init=False, default=None)
+    id: int = None
 
     def save_to_db(self, cursor):
         """Insert nutrients data into PostgreSQL and return the nutrient ID."""
@@ -88,3 +88,32 @@ class Nutrition:
         except Exception as e:
             logging.error(f"Error updating nutrients: {e}", exc_info=True)
             raise
+
+    def get_by_id(cursor, nutrient_id):
+        """Fetch a nutrient by its ID."""
+        logging.info(f"Fetching nutrient with ID {nutrient_id}.")
+        cursor.execute(
+            """
+            SELECT * FROM nutrients WHERE id = %s;
+            """,
+            (nutrient_id,),
+        )
+        result = cursor.fetchone()
+        if result is None:
+            return None
+        logging.info(f"Nutrient with ID {nutrient_id} fetched.")
+
+        return Nutrition(
+            unit=result["unit"],
+            quantity=result["quantity"],
+            kcal=result["kcal"],
+            kJ=result["kj"],
+            fat=result["fat"],
+            saturates=result["saturates"],
+            carbohydrate=result["carbohydrate"],
+            sugars=result["sugars"],
+            fibre=result["fibre"],
+            protein=result["protein"],
+            salt=result["salt"],
+            id=result["id"],
+        )

@@ -1,10 +1,16 @@
 import logging
+import os
+import pdb
+import traceback
 
+from dotenv import load_dotenv
 from psycopg2 import connect
 from psycopg2.extensions import cursor as PostgresCursor
 from psycopg2.extras import RealDictCursor
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
+from src.models.category import Category
 from src.models.product import Product
 from src.models.product_factory import ProductFactory
 
@@ -23,9 +29,37 @@ class MongoToPostgresSync:
             mongo_db_name (str): The name of the MongoDB database.
             postgres_cursor (PostgresCursor): The PostgreSQL cursor for database operations.
         """
-        self.mongo_client = MongoClient(mongo_uri)
+        self.mongo_client = MongoClient(mongo_uri, server_api=ServerApi("1"))
         self.mongo_db = self.mongo_client[mongo_db_name]
         self.postgres_cursor = postgres_cursor
+
+    def sync_categories(self):
+        """
+        Sync categories from MongoDB to PostgreSQL.
+        Compares data in MongoDB with PostgreSQL and updates/inserts as necessary.
+        """
+        try:
+            mongo_categories = self.mongo_db.categories.find(
+                {}, {"_id": 0}
+            )  # Fetch all categories
+            logging.info(
+                f"Found {self.mongo_db.categories.count_documents({})} categories in MongoDB."
+            )
+
+            for mongo_category in mongo_categories:
+                try:
+                    logging.info(f"Processing category: {mongo_category.get('id')}.")
+                    # Deserialize category data
+                    category = Category.from_json(mongo_category)
+
+                    # Save category to PostgreSQL
+                    category.save_to_db(self.postgres_cursor)
+                except Exception as e:
+                    logging.error(
+                        f"Error syncing category {mongo_category.get('id')}: {e}"
+                    )
+        except Exception as e:
+            logging.error(f"Error during category sync: {e}")
 
     def sync_products(self):
         """
@@ -74,7 +108,8 @@ class MongoToPostgresSync:
                         f"Product {migros_id}, {scraped_at} is already up-to-date."
                     )
             except Exception as e:
-                logging.error(f"Error syncing product {_id}: {e}")
+                logging.error(f"Error syncing product {mongo_product_id}: {e}")
+                self.log_debug_info()
 
         logging.info("Product synchronization complete.")
 
@@ -85,13 +120,21 @@ class MongoToPostgresSync:
             logging.info("MongoDB connection closed.")
         except Exception as e:
             logging.error(f"Error closing MongoDB connection: {e}")
+            self.log_debug_info()
+
+    def log_debug_info(self):
+        """
+        Logs detailed debugging information, including the current stack trace and local variables.
+        """
+        debug_info = traceback.format_exc()  # Get the current exception traceback
+        self.yeeter.error(f"Traceback:\n{debug_info}")
+
+        # Optionally, log local variables for additional context
+        frame = traceback.extract_tb(traceback.walk_stack(None)[-1].frame)[-1]
+        local_vars = frame[0].f_locals
+        self.yeeter.error(f"Local variables: {local_vars}")
 
 
-from psycopg2 import connect
-from psycopg2.extras import RealDictCursor
-
-MONGO_URI = "mongodb://mongo:27017"
-MONGO_DB_NAME = "productsandcategories"
 POSTGRES_CONFIG = {
     "dbname": "postgres_db",
     "user": "postgres",
@@ -102,14 +145,21 @@ POSTGRES_CONFIG = {
 
 
 def main():
+    load_dotenv()
+
+    MONGO_URI = os.getenv("MONGO_URI")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
     # Connect to PostgreSQL
     with connect(**POSTGRES_CONFIG, cursor_factory=RealDictCursor) as conn:
         with conn.cursor() as cursor:
             # Initialize the sync service
             sync_service = MongoToPostgresSync(MONGO_URI, MONGO_DB_NAME, cursor)
 
+            # Perform category synchronization
+            sync_service.sync_categories()
+
             # Perform synchronization
-            sync_service.sync_products()
+            # sync_service.sync_products()
 
             # Commit changes to PostgreSQL
             conn.commit()

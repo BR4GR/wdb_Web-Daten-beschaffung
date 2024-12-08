@@ -11,6 +11,19 @@ services:
       - PYTHONPATH=/app
     command: poetry run python src/migros_scraper.py
 
+  sync:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - postgres
+    environment:
+      - PYTHONPATH=/app
+    command: poetry run python src/services/mongo_sql_sync.py
+
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -36,9 +49,10 @@ services:
       POSTGRES_DB: postgres_db
     ports:
       - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data # Temporary storage, starts fresh every time
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./src/setup/sql/createdb.sql:/docker-entrypoint-initdb.d/createdb.sql
+      - ./createdb.sql:/docker-entrypoint-initdb.d/createdb.sql
 
   postgres_test:
     image: postgres:latest

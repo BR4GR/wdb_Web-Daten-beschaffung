@@ -4,7 +4,6 @@ from datetime import datetime
 
 from src.models.nutrition import Nutrition
 from src.models.offer import Offer
-from src.models.product import Product
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -35,7 +34,9 @@ class ProductFactory:
         return None
 
     @staticmethod
-    def create_product_from_json(product_json, cursor):
+    def create_product_from_json(product_json):
+        from src.models.product import Product
+
         nutrient_id = None
         offer_id = None
         nutrition = None
@@ -78,7 +79,6 @@ class ProductFactory:
                 gtins=gtins_str,
                 scraped_at=scraped_at,
             )
-            product.save_to_db(cursor)
         except Exception as e:
             logging.error(f"Error processing product: {e}")
 

@@ -23,7 +23,7 @@ services:
     image: mongo:latest
     container_name: test_mongo
     ports:
-      - "27018:27017" # Different port to avoid conflicts with production MongoDB
+      - "27018:27017" # Different port to avoid conflicts with dev MongoDB
     tmpfs:
       - /data/db # Temporary storage, starts fresh every time
 

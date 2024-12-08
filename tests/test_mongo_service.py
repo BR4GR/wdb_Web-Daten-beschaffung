@@ -34,7 +34,7 @@ def mongo_service():
 
     # Initialize the MongoService with test database
     mongo_service: MongoService = MongoService(
-        uri="mongodb://mongo:27017", db_name="testdb", yeeter=yeeter
+        uri="mongodb://test_mongo:27017", db_name="testdb", yeeter=yeeter
     )
 
     # Clean up all collections before each test

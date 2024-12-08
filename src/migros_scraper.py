@@ -28,6 +28,7 @@ class MigrosScraper:
         driver_path: str = "/usr/bin/chromedriver",
         binary_location: str = "/usr/bin/chromium",
         average_request_sleep_time: float = 4.0,
+        disable_check_for_product_cards: bool = False,
     ):
         self.mongo_service = mongo_service
         self.yeeter = yeeter
@@ -35,6 +36,7 @@ class MigrosScraper:
         self.known_ids = set()
         self.todays_scraped_product_ids = set()
         self.average_request_sleep_time = average_request_sleep_time
+        self.disable_check_for_product_cards = disable_check_for_product_cards
         try:
             self.driver = self._initialize_driver(driver_path, binary_location)
             self.known_ids = set(mongo_service.get_all_known_migros_ids())
@@ -307,14 +309,12 @@ class MigrosScraper:
 
             self.check_for_product_cards()
 
-            category_data = self._get_specific_response("search/category")
+            category_data = self._get_specific_response("products/category")
             if category_data:
                 for category in category_data.get("categories", []):
                     self.mongo_service.insert_category(category)
                 return [
-                    category["slug"]
-                    for category in category_data.get("categories", [])
-                    if category.get("level") == 3
+                    category["slug"] for category in category_data.get("categories", [])
                 ]
             else:
                 self.error(f"No subcategories found for category URL: {category_url}")
@@ -361,6 +361,8 @@ class MigrosScraper:
                 pdb.set_trace()  # Enter interactive debugger
 
     def check_for_product_cards(self) -> None:
+        if self.disable_check_for_product_cards:
+            return
         try:
             self.yeet("Checking for product cards.")
             product_cards = self._get_specific_response("product-cards", 5)
@@ -394,9 +396,9 @@ class MigrosScraper:
             del self.driver.requests
             delay = random.uniform(0.0, (self.average_request_sleep_time * 2))
             self.yeet(f"Sleeping for {delay:.2f} seconds before the next request.")
-            time.sleep(delay)
             self.yeet(f"Making request to {url}")
             self.driver.get(url)
+            time.sleep(delay)
             self.mongo_service.increment_request_count(self.current_day_in_iso())
 
             for request in self.driver.requests:

@@ -1,0 +1,258 @@
+{
+    "uid": 100005479,
+    "migrosId": "100100300000",
+    "migrosOnlineId": "53924",
+    "name": "Chocolate bars",
+    "brand": "Frey",
+    "versioning": "Milk chocolate with hazelnuts",
+    "title": "Frey · Chocolate bars · Milk chocolate with hazelnuts",
+    "description": "Frey Chocolate bars Milk chocolate with hazelnuts Enjoy sensual moments with specialties from our extensive range",
+    "productRange": "STANDARD",
+    "productAvailability": "ONLINE_AND_INSTORE",
+    "productInformation": {
+        "mainInformation": {
+            "labels": [
+                {
+                    "id": "L53",
+                    "name": "Swissness",
+                    "slug": "swissness",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679483312/labels/Swissness_-_RGB_-_DEpng"
+                },
+                {
+                    "id": "L71",
+                    "name": "Rainforest Alliance",
+                    "slug": "rainforest-alliance",
+                    "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679483537/labels/Rainforest_Alliance_-_RGB_-_DE"
+                }
+            ],
+            "brand": {
+                "name": "Frey",
+                "slug": "frey",
+                "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1692178640/brands/Frey_Logo_FOLIE"
+            },
+            "ingredients": "sugar, whole and ground <strong>hazelnuts</strong> 21%, cocoa butter⁺, skimmed <strong>milk</strong> powder, cocoa mass⁺, concentrated <strong>butter</strong>, emulsifier: lecithins, natural flavouring.\n⁺ Rainforest Alliance Certified\n\nCocoa solids: 30% minimum in chocolate.\nMilk solids: 18% minimum in chocolate.",
+            "allergenIndication": "May contain: soy, almonds and other nuts.",
+            "allergens": "Milk and products thereof, Hazelnuts and products thereof",
+            "origin": "You can find information about the origin on the packaging in the store.",
+            "mcheck": {
+                "carbonFootprint": {
+                    "rating": 2,
+                    "co2CarKmEquivalent": 31,
+                    "productionRatio": 94,
+                    "transportRatio": 1,
+                    "packagingRatio": 3,
+                    "image": "https://image.migros.ch/original/6137c42cbff331738ddeafb4f91efb06075417b3.svg",
+                    "stackImage": "https://image.migros.ch/{stack}/6137c42cbff331738ddeafb4f91efb06075417b3.svg",
+                    "co2KgRange": "4.8 - 9.9 kg CO₂eq / kg"
+                }
+            },
+            "rating": {
+                "nbReviews": 32,
+                "nbStars": 4.5
+            },
+            "migipediaUrl": "https://migipedia.migros.ch/de/products/100100300000"
+        },
+        "nutrientsInformation": {
+            "nutrientsTable": {
+                "headers": [
+                    "100 g",
+                    "2 Täfelchen (20 g)"
+                ],
+                "rows": [
+                    {
+                        "label": "Energy",
+                        "values": [
+                            "2360 kJ (567 kcal)",
+                            "473 kJ (114 kcal)",
+                            "6 %"
+                        ]
+                    },
+                    {
+                        "label": "Fat",
+                        "values": [
+                            "37 g",
+                            "7.4 g",
+                            "11 %"
+                        ],
+                        "fsaLevel": "HIGH"
+                    },
+                    {
+                        "label": "of which saturates",
+                        "values": [
+                            "15 g",
+                            "3 g",
+                            "15 %"
+                        ],
+                        "fsaLevel": "HIGH"
+                    },
+                    {
+                        "label": "Carbohydrate",
+                        "values": [
+                            "49 g",
+                            "9.9 g",
+                            "4 %"
+                        ]
+                    },
+                    {
+                        "label": "of which sugars",
+                        "values": [
+                            "47 g",
+                            "9.4 g",
+                            "10 %"
+                        ],
+                        "fsaLevel": "HIGH"
+                    },
+                    {
+                        "label": "Fibre",
+                        "values": [
+                            "3.6 g",
+                            "0.7 g",
+                            ""
+                        ]
+                    },
+                    {
+                        "label": "Protein",
+                        "values": [
+                            "7.6 g",
+                            "1.5 g",
+                            "3 %"
+                        ]
+                    },
+                    {
+                        "label": "Salt",
+                        "values": [
+                            "0.17 g",
+                            "0.03 g",
+                            "1 %"
+                        ],
+                        "fsaLevel": "LOW"
+                    }
+                ]
+            },
+            "portionSentence": "1 Package = 20 servings",
+            "isAnalyticalConstituents": false
+        },
+        "otherInformation": {
+            "articleNumber": "100100300000",
+            "legalDesignation": "Milk chocolate with hazelnuts",
+            "distributorName": "Migros-Genossenschafts-Bund",
+            "distributorStreetAndNumber": "Limmatstrasse 152, CH-8031 Zürich",
+            "mainSpecificities": [
+                {
+                    "code": "Number of removable individual units",
+                    "value": "1"
+                },
+                {
+                    "code": "Packaging type",
+                    "value": "Paper packaging"
+                },
+                {
+                    "code": "Type of candy",
+                    "value": "Tafel"
+                },
+                {
+                    "code": "Type of chocolate",
+                    "value": "Milchschokolade"
+                }
+            ]
+        }
+    },
+    "gtins": [
+        "7616500010031"
+    ],
+    "images": [
+        {
+            "cdn": "rokka",
+            "url": "https://image.migros.ch/{stack}/be326820e678402c24e673cc66452d771ca9d0d3/frey-milch-nuss.jpg"
+        }
+    ],
+    "breadcrumb": [
+        {
+            "id": "7494736",
+            "name": "Snacks & sweets",
+            "slugs": [
+                "snacks-sweets"
+            ]
+        },
+        {
+            "id": "7494782",
+            "name": "Chocolate & sweets",
+            "slugs": [
+                "snacks-sweets",
+                "chocolate-sweets"
+            ]
+        },
+        {
+            "id": "7495018",
+            "name": "Chocolate bars",
+            "slugs": [
+                "snacks-sweets",
+                "chocolate-sweets",
+                "chocolate-bars"
+            ]
+        }
+    ],
+    "productUrls": "https://www.migros.ch/en/product/100100300000",
+    "isMgbCompatible": true,
+    "isConsignmentProduct": false,
+    "offer": {
+        "price": {
+            "displayUnitPrice": false,
+            "formattedPrice": "7.20",
+            "advertisedDisplayValue": "7.20",
+            "effectiveDisplayValue": "7.20",
+            "multiplier": 1,
+            "value": 7.2,
+            "effectiveValue": 7.2,
+            "advertisedValue": 7.2
+        },
+        "promotionPrice": {
+            "displayUnitPrice": true,
+            "formattedPrice": "5.80",
+            "advertisedDisplayValue": "5.80",
+            "effectiveDisplayValue": "5.80",
+            "multiplier": 1,
+            "value": 5.8,
+            "effectiveValue": 5.8,
+            "advertisedValue": 5.8,
+            "unitPrice": {
+                "value": 1.45,
+                "unit": "100g"
+            }
+        },
+        "priceInsteadOfLabel": "was",
+        "quantity": "400g",
+        "quantityPrice": "1.45/100g",
+        "isVariableWeight": false,
+        "channel": {
+            "offerType": "OFFLINE",
+            "region": "national"
+        },
+        "maxOrderableQuantityV2": 96,
+        "pictos": [
+            {
+                "type": "REGION",
+                "imagePath": "https://www-leshop-ch-cld-res.cloudinary.com/image/upload/{stack}/v1679482984/labels/suisse",
+                "description": "Switzerland"
+            }
+        ],
+        "badges": [
+            {
+                "type": "PERCENTAGE_PROMOTION",
+                "description": "20%"
+            },
+            {
+                "type": "MINIMUM_PIECES",
+                "description": "2 or more"
+            }
+        ],
+        "promotionDateRange": {
+            "startDate": "2024-09-24",
+            "endDate": "2024-09-30"
+        },
+        "isNewOffer": false,
+        "displayPrice": true,
+        "type": "STANDARD"
+    },
+    "dateAdded": "2024-09-26T12:21:23"
+}

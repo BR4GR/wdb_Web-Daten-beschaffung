@@ -27,6 +27,33 @@ services:
     tmpfs:
       - /data/db # Temporary storage, starts fresh every time
 
+  postgres:
+    image: postgres:latest
+    container_name: wdb-postgresdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/setup/sql/createdb.sql:/docker-entrypoint-initdb.d/createdb.sql
+
+  postgres_test:
+    image: postgres:latest
+    container_name: wdb-postgresdb-test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_db
+    ports:
+      - "5433:5432" # Expose container's port 5432 as 5433 on the host
+    tmpfs:
+      - /var/lib/postgresql/data # Temporary storage, starts fresh every time
+    volumes:
+      - ./createdb.sql:/docker-entrypoint-initdb.d/createdb.sql
+
   test:
     build: .
     volumes:
@@ -35,6 +62,7 @@ services:
       - .env
     depends_on:
       - test_mongo
+      - postgres_test
     environment:
       - PYTHONPATH=/app
       - MONGO_URI=mongodb://test_mongo:27017 # Override to use the test MongoDB
@@ -42,3 +70,5 @@ services:
 
 volumes:
   mongo_data: # Persistent storage for production MongoDB
+  postgres_data:
+  test_postgres_data:

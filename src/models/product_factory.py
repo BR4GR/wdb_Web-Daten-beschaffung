@@ -201,41 +201,103 @@ def extract_nutrients(product_json):
 
 
 def extract_offer(product_json):
+    offer_json = product_json.get("offer", {})
     try:
-        offer_json = product_json.get("offer", {})
         if offer_json:
+            offer_json = product_json.get("offer", {})
             price = offer_json.get("price", {}).get("value")
             quantity_str = offer_json.get("quantity")
-            quantity = (
-                ProductFactory.extract_number(quantity_str) if quantity_str else None
-            )
-
-            # in case quantity is someting like 2 x 400g calculate the real quantity by spliting first and then extracting
-            if "x" in quantity_str:
-                quantity = quantity_str.split("x")
-                quantity = ProductFactory.extract_number(
-                    quantity[0]
-                ) * ProductFactory.extract_number(quantity[1])
-
-            # if quantity_str is in kg or l, convert to g or ml
-            if quantity_str and quantity_str.endswith(("kg", "l")):
-                quantity *= 1000
-
-            unit_price = (price * 100 / quantity) if price and quantity else None
             promotion_price = offer_json.get("promotionPrice", {}).get("value")
-            promotion_unit_price = (
-                (promotion_price * 100 / quantity)
-                if promotion_price and quantity
-                else None
-            )
+
+            normal_unit_price, promotion_unit_price = calculate_unit_prices(offer_json)
 
             offer = Offer(
                 price=price,
                 quantity=quantity_str,
-                unit_price=unit_price,
+                unit_price=normal_unit_price,
                 promotion_price=promotion_price,
                 promotion_unit_price=promotion_unit_price,
             )
             return offer
     except Exception as e:
         logging.error(f"Error processing offer: {e}")
+
+
+def parse_quantity_price(quantity_price_str):
+    """
+    Parse a quantity price string like '0.85/100g' into a tuple (unit_price, unit_quantity, unit).
+    For example:
+    '0.85/100g' -> (0.85, 100, 'g')
+    '1.20/100ml' -> (1.20, 100, 'ml')
+    """
+    if not quantity_price_str:
+        return None, None, None
+    # Remove all whitespace
+    quantity_price_str = "".join(quantity_price_str.split())
+    match = re.match(r"([\d\.]+)/(\d+)([a-zA-Z]+)$", quantity_price_str.strip())
+    if not match:
+        return None, None, None
+    value_str, qty_str, unit_str = match.groups()
+    try:
+        value = float(value_str)
+        qty = float(qty_str)
+        return value, qty, unit_str
+    except ValueError:
+        logging.error(f"Error parsing quantity price from {quantity_price_str}")
+        return None, None, None
+
+
+def calculate_unit_prices(offer_json):
+    """
+    Determine normal_unit_price and promotion_unit_price using the best available data.
+    Priority when a promotion is present:
+      1. promotionPrice.unitPrice (directly use it)
+      2. If missing, use quantityPrice (assume it reflects promotion price if promotion < price)
+    If no promotion is present:
+      - Use quantityPrice as normal unit price.
+    """
+
+    if not offer_json:
+        return None, None
+
+    price = offer_json.get("price", {}).get("value")
+    promotion_price = offer_json.get("promotionPrice", {}).get("value")
+    unit_info = offer_json.get("price", {}).get("unitPrice")
+    promotion_unit_info = offer_json.get("promotionPrice", {}).get("unitPrice")
+    quantity_price_str = offer_json.get("quantityPrice")  # e.g. "0.85/100g"
+
+    normal_unit_price = None
+    promotion_unit_price = None
+
+    # Check if there is a promotion
+    has_promotion = promotion_price is not None
+
+    # If there's a promotion, try promotionPrice.unitPrice first
+    if has_promotion and promotion_unit_info:
+        promotion_unit_price = promotion_unit_info.get("value")
+        if unit_info:
+            return unit_info.get("value"), promotion_unit_price
+        normal_unit_price = promotion_unit_price / promotion_price * price
+        return normal_unit_price, promotion_unit_price
+
+    if unit_info:
+        return unit_info.get("value"), None
+
+    q_val, q_qty, q_unit = parse_quantity_price(quantity_price_str)
+    # if it is kg or l then convert to 100 g or ml
+    if q_unit in ["kg", "l"]:
+        q_qty *= 1000
+        q_unit = "g" if q_unit == "kg" else "ml"
+
+    # in case there are strange units like pill, return None None if unit is not g or ml
+    if q_unit not in ["g", "ml"]:
+        return None, None
+
+    if has_promotion:
+        promotion_unit_price = q_val / q_qty * 100
+        normal_unit_price = promotion_unit_price / promotion_price * price
+        return normal_unit_price, promotion_unit_price
+
+    normal_unit_price = q_val / q_qty * 100
+
+    return normal_unit_price, promotion_unit_price

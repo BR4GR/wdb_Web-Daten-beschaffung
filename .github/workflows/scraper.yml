@@ -24,12 +24,11 @@ jobs:
           python-version: '3.12'
 
       #----------------------------------------------
-      #       Install Chrome
+      #       Install Playwright browsers
       #----------------------------------------------
-      - name: Install Chrome
+      - name: Install Playwright browsers
         run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser
+          poetry run playwright install firefox --with-deps
 
       #----------------------------------------------
       #  -----  install & configure poetry  -----
@@ -100,7 +99,7 @@ jobs:
         run: |
           source .venv/bin/activate
           export PYTHONPATH=$PYTHONPATH:$PWD/src
-          poetry run python src/migros_scraper.py
+          poetry run python -m src.playwright_scraper --two-phase --days 5 --headless
         env:
           MONGO_URI: ${{ secrets.MONGODB_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DBNAME }}

@@ -9,7 +9,7 @@ services:
       - mongo
     environment:
       - PYTHONPATH=/app
-    command: poetry run python src/migros_scraper.py
+    command: poetry run python -m src.playwright_scraper --two-phase --days 5 --headless
 
   sync:
     build: .

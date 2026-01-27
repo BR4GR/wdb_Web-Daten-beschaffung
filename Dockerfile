@@ -2,15 +2,8 @@ FROM python:3.12
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    chromium-driver \
     build-essential \
     curl \
-    unzip \
-    wget \
-    gnupg \
-    libssl-dev \
-    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -27,6 +20,9 @@ COPY pyproject.toml poetry.lock ./
 # Install dependencies
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction --no-ansi
+
+# Install Playwright browsers (Firefox for the scraper)
+RUN playwright install firefox --with-deps
 
 # The application code will be mounted via volumes, so no need to copy it
 

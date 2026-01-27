@@ -3,7 +3,7 @@ import time
 import traceback
 from datetime import datetime, timedelta, timezone
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from pymongo.errors import ConnectionFailure, PyMongoError
 from pymongo.server_api import ServerApi
 
@@ -243,12 +243,15 @@ class MongoService:
             self.log_debug_info()
             raise
 
-    def insert_product(self, product_data: dict) -> None:
+    def insert_product(self, product_data: dict) -> bool:
         """
         Insert a new product document if the price is new or the product doesn't exist in the database.
 
         Args:
             product_data (dict): Dictionary containing product details.
+
+        Returns:
+            bool: True if a price update was detected, False otherwise.
         """
         try:
             migros_id = product_data.get("migrosId")
@@ -259,14 +262,14 @@ class MongoService:
                 self.yeeter.error(
                     "Product does not contain migrosId, skipping insertion."
                 )
-                return
+                return False
 
             # Check if product has offer
             if not product_data.get("offer"):
                 self.yeeter.error(
                     f"Product with migrosId {migros_id} does not have an offer, skipping insertion."
                 )
-                return
+                return False
 
             existing_product = self.get_latest_product_entry_by_migros_id(migros_id)
             new_price = product_data.get("offer", {}).get("price", {})
@@ -278,6 +281,7 @@ class MongoService:
                 self.yeeter.yeet(
                     f"Inserted new product {name} with migrosId: {migros_id}"
                 )
+                return False
 
             elif existing_product.get("offer", {}).get("price", {}) != new_price:
                 # Unit price has changed, insert as new and log price change
@@ -294,12 +298,14 @@ class MongoService:
                 self.yeeter.yeet(
                     f"\033[1;32mNew unit price detected for product {name} with migrosId: {migros_id}. Logged price change.\033[0m"
                 )
+                return True
 
             else:
                 # Product exists with the same price, skip insertion
                 self.yeeter.logger.debug(
                     f"Product with migrosId {migros_id} already exists with the same unitPrice. Skipping insertion."
                 )
+                return False
         except Exception as e:
             self.yeeter.error(
                 f"Error inserting product with migrosId {migros_id}: {str(e)}"
@@ -350,37 +356,53 @@ class MongoService:
             raise
 
     def get_products_not_scraped_in_days(
-        self, days: int, limit: int = 100, only_edible=True
+        self, days: int, limit: int = None, only_edible: bool = True, exclude_edible: bool = False
     ) -> list:
         """
         Retrieve migrosIds of products that haven't been scraped in the last 'x' days.
+        Results are sorted by lastScraped ascending (oldest first).
+        Excludes products marked as notFound=True.
 
         Args:
             days (int): The number of days since the last scrape.
-            limit (int): Maximum number of products to retrieve.
+            limit (int): Maximum number of products to retrieve. None = no limit.
             only_edible (bool): If True, only fetch products with nutrients information.
+            exclude_edible (bool): If True, exclude products with nutrients information.
 
         Returns:
-            list: List of migrosIds that meet the criteria.
+            list: List of migrosIds that meet the criteria, sorted oldest first.
         """
         try:
             cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
-            query = {"lastScraped": {"$lt": cutoff_date}}
+            query = {
+                "lastScraped": {"$lt": cutoff_date},
+                # Exclude products that are marked as permanently not found
+                "$or": [
+                    {"notFound": {"$exists": False}},
+                    {"notFound": False}
+                ]
+            }
 
-            if only_edible:
-                # Add the filter for only edible products
+            if only_edible or exclude_edible:
+                # Get edible product IDs
                 edible_ids = self.db.products.distinct(
                     "migrosId",
                     {"productInformation.nutrientsInformation": {"$exists": True}},
                 )
-                query["migrosId"] = {"$in": edible_ids}
+                if only_edible:
+                    query["migrosId"] = {"$in": edible_ids}
+                elif exclude_edible:
+                    query["migrosId"] = {"$nin": edible_ids}
 
-            # Fetch product IDs with the defined limit
-            products = self.db.id_scraped_at.find(
-                query, {"migrosId": 1}  # Only return migrosId
-            ).limit(limit)
+            # Fetch product IDs sorted by lastScraped (oldest first)
+            cursor = self.db.id_scraped_at.find(
+                query, {"migrosId": 1}
+            ).sort("lastScraped", 1)  # 1 = ascending (oldest first)
 
-            ids_to_scrape = [product["migrosId"] for product in products]
+            if limit:
+                cursor = cursor.limit(limit)
+
+            ids_to_scrape = [product["migrosId"] for product in cursor]
             self.yeeter.yeet(
                 f"Found {len(ids_to_scrape)} products that haven't been scraped in {days}+ days."
             )
@@ -441,7 +463,7 @@ class MongoService:
             current_date = datetime.now(timezone.utc)
             self.db.id_scraped_at.update_one(
                 {"migrosId": migros_id},
-                {"$set": {"lastScraped": current_date}},
+                {"$set": {"lastScraped": current_date, "notFound": False, "notFoundCount": 0}},
                 upsert=True,
             )
             self.yeeter.yeet(
@@ -451,6 +473,91 @@ class MongoService:
             self.yeeter.error(f"Error saving scraped product ID {migros_id}: {str(e)}")
             self.log_debug_info()
             raise
+
+    def mark_product_not_found(self, migros_id: str) -> None:
+        """
+        Mark a product as not found (no longer exists on Migros website).
+        Increments notFoundCount and sets notFound=True after 3 consecutive failures.
+
+        Args:
+            migros_id (str): The unique ID of the product.
+        """
+        try:
+            current_date = datetime.now(timezone.utc)
+            # Increment the not found counter
+            result = self.db.id_scraped_at.find_one_and_update(
+                {"migrosId": migros_id},
+                {
+                    "$set": {"lastScraped": current_date},
+                    "$inc": {"notFoundCount": 1}
+                },
+                upsert=True,
+                return_document=ReturnDocument.AFTER
+            )
+            not_found_count = result.get("notFoundCount", 1)
+
+            # After 3 consecutive failures, mark as permanently not found
+            if not_found_count >= 3:
+                self.db.id_scraped_at.update_one(
+                    {"migrosId": migros_id},
+                    {"$set": {"notFound": True}}
+                )
+                self.yeeter.alarm(
+                    f"Product {migros_id} marked as NOT FOUND after {not_found_count} consecutive failures."
+                )
+            else:
+                self.yeeter.yeet(
+                    f"Product {migros_id} not found (attempt {not_found_count}/3). Updated lastScraped."
+                )
+        except Exception as e:
+            self.yeeter.error(f"Error marking product {migros_id} as not found: {str(e)}")
+            self.log_debug_info()
+            raise
+
+    def get_not_found_products_count(self) -> dict:
+        """
+        Get counts of products marked as not found.
+
+        Returns:
+            dict: Contains 'permanently_not_found' (notFound=True) and
+                  'pending_not_found' (notFoundCount > 0 but < 3) counts.
+        """
+        try:
+            permanently_not_found = self.db.id_scraped_at.count_documents(
+                {"notFound": True}
+            )
+            pending_not_found = self.db.id_scraped_at.count_documents(
+                {"notFoundCount": {"$gt": 0, "$lt": 3}, "notFound": {"$ne": True}}
+            )
+            self.yeeter.yeet(
+                f"Not found products: {permanently_not_found} permanent, {pending_not_found} pending"
+            )
+            return {
+                "permanently_not_found": permanently_not_found,
+                "pending_not_found": pending_not_found
+            }
+        except Exception as e:
+            self.yeeter.error(f"Error getting not found products count: {str(e)}")
+            return {"permanently_not_found": 0, "pending_not_found": 0}
+
+    def reset_not_found_products(self) -> int:
+        """
+        Reset all products marked as not found so they can be re-checked.
+        Useful if Migros restructures their product IDs or brings back discontinued products.
+
+        Returns:
+            int: Number of products reset.
+        """
+        try:
+            result = self.db.id_scraped_at.update_many(
+                {"$or": [{"notFound": True}, {"notFoundCount": {"$gt": 0}}]},
+                {"$set": {"notFound": False, "notFoundCount": 0}}
+            )
+            self.yeeter.yeet(f"Reset {result.modified_count} not-found products.")
+            return result.modified_count
+        except Exception as e:
+            self.yeeter.error(f"Error resetting not found products: {str(e)}")
+            return 0
 
     def is_product_scraped_last_24_hours(self, migros_id: str) -> bool:
         """

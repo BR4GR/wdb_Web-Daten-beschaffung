@@ -1,0 +1,89 @@
+{
+  "uid": 100002025,
+  "migrosId": "100953000000",
+  "migrosOnlineId": "13112",
+  "name": "The hazelnut in caramel with nougat cream and chocolate",
+  "brand": "Toffifee",
+  "title": "Toffifee \u00b7 The hazelnut in caramel with nougat cream and chocolate",
+  "description": "Toffifee The hazelnut in caramel with nougat cream and chocolate ",
+  "productRange": "STANDARD",
+  "productAvailability": "ONLINE_AND_INSTORE",
+  "gtins": [
+    "4014400400007"
+  ],
+  "images": [
+    {
+      "cdn": "rokka",
+      "url": "https://image.migros.ch/d/{stack}/o-af-1-t.clr-fff/e804892a77b28e6ed8d1d7cc32fff0a485584e85/toffifee-15-pieces.jpg"
+    }
+  ],
+  "imageTransparent": {
+    "cdn": "rokka",
+    "url": "https://image.migros.ch/d/{stack}/e804892a77b28e6ed8d1d7cc32fff0a485584e85/toffifee-15-pieces.png"
+  },
+  "breadcrumb": [
+    {
+      "id": "7494736",
+      "name": "Snacks & sweets",
+      "slugs": [
+        "snacks-sweets"
+      ]
+    },
+    {
+      "id": "7494782",
+      "name": "Chocolate & sweets",
+      "slugs": [
+        "snacks-sweets",
+        "chocolate-sweets"
+      ]
+    },
+    {
+      "id": "7495019",
+      "name": "Bars, branches & snacks",
+      "slugs": [
+        "snacks-sweets",
+        "chocolate-sweets",
+        "bars-branches-snacks"
+      ]
+    },
+    {
+      "id": "7495523",
+      "name": "Chocolate snacks",
+      "slugs": [
+        "snacks-sweets",
+        "chocolate-sweets",
+        "bars-branches-snacks",
+        "chocolate-snacks"
+      ]
+    }
+  ],
+  "productUrls": "https://www.migros.ch/en/product/100953000000",
+  "isMgbCompatible": true,
+  "isConsignmentProduct": false,
+  "offer": {
+    "price": {
+      "displayUnitPrice": true,
+      "advertisedDisplayValue": "2.\u2013",
+      "effectiveDisplayValue": "2.\u2013",
+      "multiplier": 1,
+      "effectiveValue": 2,
+      "advertisedValue": 2,
+      "unitPrice": {
+        "value": 1.6,
+        "unit": "100g"
+      }
+    },
+    "quantity": "125g",
+    "quantityPrice": "1.60/100g",
+    "isVariableWeight": false,
+    "channel": {
+      "offerType": "OFFLINE",
+      "region": "national"
+    },
+    "maxOrderableQuantityV2": 96,
+    "isNewOffer": false,
+    "isNotMorningDeliverable": false,
+    "displayPrice": true,
+    "type": "STANDARD"
+  }
+}

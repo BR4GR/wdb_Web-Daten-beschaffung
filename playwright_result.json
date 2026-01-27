@@ -1,0 +1,1660 @@
+{
+  "productIds": [
+    100006357,
+    100033132,
+    100038885,
+    100007074,
+    100033136,
+    100007435,
+    100005467,
+    100005465,
+    100007434,
+    100033146,
+    100003149,
+    100019227,
+    100004908,
+    100033141,
+    100004909,
+    100006785,
+    100051940,
+    100006784,
+    100008473,
+    100051476,
+    100029459,
+    100048261,
+    100028640,
+    100037358,
+    100041175,
+    100049365,
+    100205030,
+    100005142,
+    100037360,
+    100005145,
+    100022183,
+    100053867,
+    100129225,
+    100051948,
+    100048256,
+    100053448,
+    100051470,
+    100051471,
+    100051472,
+    100051474,
+    100051475,
+    100051480,
+    100051481,
+    100053849,
+    100091355,
+    100095043,
+    100095047,
+    100142378,
+    100145862,
+    100146000,
+    100146246,
+    100146442,
+    100147381,
+    100005485,
+    100148979,
+    100048257,
+    100048286,
+    100051473,
+    100005937,
+    100096444,
+    100152997,
+    100198542,
+    100202158,
+    100205032,
+    100036357,
+    100032183,
+    100164150,
+    100051484,
+    100051485,
+    100051492,
+    100051943,
+    100051944,
+    100051945,
+    100051947,
+    100051952,
+    100051953,
+    100051955,
+    100051956,
+    100053856,
+    100053906,
+    100095045,
+    100096468,
+    100130805,
+    100136707,
+    100142377,
+    100143117,
+    100145450,
+    100146430,
+    100150171,
+    100164321,
+    100051941,
+    100096460,
+    100143649,
+    100144125,
+    100146077,
+    100007528,
+    100013414,
+    100003687,
+    100049437,
+    100035810
+  ],
+  "categories": [
+    {
+      "id": 7494731,
+      "name": "Dairy, eggs & fresh convenience food",
+      "numberOfProducts": 340,
+      "sortPriority": 3,
+      "parentSortPriority": 1,
+      "path": "/DS/Dairyeggsfreshconveniencefood",
+      "type": "MAIN",
+      "slug": "dairy-eggs-fresh-convenience-foo",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494736,
+      "name": "Snacks & sweets",
+      "numberOfProducts": 201,
+      "sortPriority": 6,
+      "parentSortPriority": 1,
+      "path": "/DS/Snackssweets",
+      "type": "MAIN",
+      "slug": "snacks-sweets",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494742,
+      "name": "Baby & kids",
+      "numberOfProducts": 85,
+      "sortPriority": 12,
+      "parentSortPriority": 1,
+      "path": "/DS/Babykids",
+      "type": "MAIN",
+      "slug": "baby-kids",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494743,
+      "name": "Drugstore & cosmetics",
+      "numberOfProducts": 59,
+      "sortPriority": 10,
+      "parentSortPriority": 1,
+      "path": "/DS/Drugstorecosmetics",
+      "type": "MAIN",
+      "slug": "drugstore-cosmetics",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494735,
+      "name": "Pasta, condiments & canned food",
+      "numberOfProducts": 14,
+      "sortPriority": 5,
+      "parentSortPriority": 1,
+      "path": "/DS/Pastacondimentscannedfood",
+      "type": "MAIN",
+      "slug": "pasta-condiments-canned-food",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494733,
+      "name": "Bread, pastries & breakfast",
+      "numberOfProducts": 10,
+      "sortPriority": 4,
+      "parentSortPriority": 1,
+      "path": "/DS/Breadpastriesbreakfast",
+      "type": "MAIN",
+      "slug": "bread-pastries-breakfast",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494741,
+      "name": "Household & living",
+      "numberOfProducts": 8,
+      "sortPriority": 14,
+      "parentSortPriority": 1,
+      "path": "/DS/Householdliving",
+      "type": "MAIN",
+      "slug": "household-living",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494738,
+      "name": "Frozen food",
+      "numberOfProducts": 3,
+      "sortPriority": 7,
+      "parentSortPriority": 1,
+      "path": "/DS/Frozenfood",
+      "type": "MAIN",
+      "slug": "frozen-food",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494739,
+      "name": "Pets",
+      "numberOfProducts": 2,
+      "sortPriority": 13,
+      "parentSortPriority": 1,
+      "path": "/DS/Pets",
+      "type": "MAIN",
+      "slug": "pets",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494740,
+      "name": "Laundry & cleaning",
+      "numberOfProducts": 1,
+      "sortPriority": 11,
+      "parentSortPriority": 1,
+      "path": "/DS/Laundrycleaning",
+      "type": "MAIN",
+      "slug": "laundry-cleaning",
+      "addAllItemsToBasket": false,
+      "level": 2
+    },
+    {
+      "id": 7494734,
+      "name": "Drinks, coffee & tea",
+      "numberOfProducts": 1,
+      "sortPriority": 8,
+      "parentSortPriority": 1,
+      "path": "/DS/Drinkscoffeetea",
+      "type": "MAIN",
+      "slug": "drinks-coffee-tea",
+      "addAllItemsToBasket": false,
+      "level": 2
+    }
+  ],
+  "features": [
+    {
+      "id": "category",
+      "name": "Categories",
+      "type": "STRING",
+      "slug": "category",
+      "numberOfProducts": 724,
+      "values": [
+        {
+          "value": "Drugstore & cosmetics",
+          "slug": "7494743",
+          "numberOfProducts": 59
+        },
+        {
+          "value": "Bread, pastries & breakfast",
+          "slug": "7494733",
+          "numberOfProducts": 10
+        },
+        {
+          "value": "Household & living",
+          "slug": "7494741",
+          "numberOfProducts": 8
+        },
+        {
+          "value": "Dairy, eggs & fresh convenience food",
+          "slug": "7494731",
+          "numberOfProducts": 340
+        },
+        {
+          "value": "Baby & kids",
+          "slug": "7494742",
+          "numberOfProducts": 85
+        },
+        {
+          "value": "Laundry & cleaning",
+          "slug": "7494740",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Frozen food",
+          "slug": "7494738",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Pets",
+          "slug": "7494739",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Snacks & sweets",
+          "slug": "7494736",
+          "numberOfProducts": 201
+        },
+        {
+          "value": "Drinks, coffee & tea",
+          "slug": "7494734",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Pasta, condiments & canned food",
+          "slug": "7494735",
+          "numberOfProducts": 14
+        }
+      ]
+    },
+    {
+      "id": "brand",
+      "name": "Brand",
+      "type": "STRING",
+      "slug": "brand",
+      "numberOfProducts": 620,
+      "values": [
+        {
+          "value": "Frey",
+          "slug": "frey",
+          "numberOfProducts": 76
+        },
+        {
+          "value": "Migros Bio",
+          "slug": "migros-bio",
+          "numberOfProducts": 35
+        },
+        {
+          "value": "Emmi",
+          "slug": "emmi",
+          "numberOfProducts": 32
+        },
+        {
+          "value": "Lindt",
+          "slug": "lindt",
+          "numberOfProducts": 24
+        },
+        {
+          "value": "M-Classic",
+          "slug": "m-classic",
+          "numberOfProducts": 24
+        },
+        {
+          "value": "Aptamil",
+          "slug": "aptamil",
+          "numberOfProducts": 22
+        },
+        {
+          "value": "Alnatura",
+          "slug": "alnatura",
+          "numberOfProducts": 17
+        },
+        {
+          "value": "M-Budget",
+          "slug": "m-budget",
+          "numberOfProducts": 16
+        },
+        {
+          "value": "Kinder",
+          "slug": "kinder",
+          "numberOfProducts": 15
+        },
+        {
+          "value": "Valflora",
+          "slug": "valflora",
+          "numberOfProducts": 14
+        },
+        {
+          "value": "Nestl\u00e9",
+          "slug": "nestle",
+          "numberOfProducts": 13
+        },
+        {
+          "value": "Da Emilio",
+          "slug": "da-emilio",
+          "numberOfProducts": 12
+        },
+        {
+          "value": "I am",
+          "slug": "i-am",
+          "numberOfProducts": 12
+        },
+        {
+          "value": "Sobio Etic",
+          "slug": "sobio-etic",
+          "numberOfProducts": 11
+        },
+        {
+          "value": "HiPP",
+          "slug": "hipp",
+          "numberOfProducts": 10
+        },
+        {
+          "value": "Holle",
+          "slug": "holle",
+          "numberOfProducts": 10
+        },
+        {
+          "value": "Sun Look",
+          "slug": "sun-look",
+          "numberOfProducts": 10
+        },
+        {
+          "value": "BEBA",
+          "slug": "beba",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "Le Gruy\u00e8re",
+          "slug": "le-gruyere",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "V-Love",
+          "slug": "v-love",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "Oh!",
+          "slug": "oh",
+          "numberOfProducts": 8
+        },
+        {
+          "value": "Appenzeller",
+          "slug": "appenzeller",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Migros",
+          "slug": "migros",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Ovomaltine",
+          "slug": "ovomaltine",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Thai Kitchen",
+          "slug": "thai-kitchen",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Alpro",
+          "slug": "alpro",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Heidi",
+          "slug": "heidi",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Knoppers",
+          "slug": "knoppers",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "M&M's",
+          "slug": "mms",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Migros Kitchen & Co.",
+          "slug": "migros-kitchen-co",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Tartare",
+          "slug": "tartare",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Torino",
+          "slug": "torino",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Fol Epi",
+          "slug": "fol-epi",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Lavera",
+          "slug": "lavera",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Milette",
+          "slug": "milette",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Oatly!",
+          "slug": "oatly",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Starbucks",
+          "slug": "starbucks",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Tilsiter",
+          "slug": "tilsiter",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Twix",
+          "slug": "twix",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "YFood",
+          "slug": "yfood",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Babybel",
+          "slug": "babybel",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Camille Bloch",
+          "slug": "camille-bloch",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Chavroux",
+          "slug": "chavroux",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Cr\u00e9a d'Or",
+          "slug": "crea-dor",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Ferrero",
+          "slug": "ferrero",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Kneipp",
+          "slug": "kneipp",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Le Petit Marseillais",
+          "slug": "le-petit-marseillais",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Maltesers",
+          "slug": "maltesers",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Nivea Sun",
+          "slug": "nivea-sun",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Toblerone",
+          "slug": "toblerone",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "T\u00eate de Moine",
+          "slug": "tete-de-moine",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Vacherin Fribourgeois",
+          "slug": "vacherin-fribourgeois",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "babybio",
+          "slug": "babybio",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Caprice des Dieux",
+          "slug": "caprice-des-dieux",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Cave d'Or",
+          "slug": "cave-dor",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Demeter",
+          "slug": "demeter",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Emmentaler",
+          "slug": "emmentaler",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Farmer",
+          "slug": "farmer",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Garnier",
+          "slug": "garnier",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Hamlet",
+          "slug": "hamlet",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "K\u00e4gi",
+          "slug": "kagi",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "La Semeuse",
+          "slug": "la-semeuse",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Lattesso",
+          "slug": "lattesso",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Milupa",
+          "slug": "milupa",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Nivea",
+          "slug": "nivea",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "N\u00e9onail",
+          "slug": "neonail",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Risoletto",
+          "slug": "risoletto",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Saint Agur",
+          "slug": "saint-agur",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Smarties",
+          "slug": "smarties",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Snickers",
+          "slug": "snickers",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "St M\u00f4ret",
+          "slug": "st-moret",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "S\u00e9lection",
+          "slug": "selection",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Villars",
+          "slug": "villars",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Villars Ma\u00eetre Choc.",
+          "slug": "villars-maitre-choc",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Zo\u00e9",
+          "slug": "zoe",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Z\u00fcribieter",
+          "slug": "zuribieter",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Babybio",
+          "slug": "babybio",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Bi-Oil",
+          "slug": "bi-oil",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Bl\u00e9vita",
+          "slug": "blevita",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Brebiou",
+          "slug": "brebiou",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Cadbury",
+          "slug": "cadbury",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Caprice des Anges",
+          "slug": "caprice-des-anges",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Celebrations",
+          "slug": "celebrations",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Coccinelles",
+          "slug": "coccinelles",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Coeur de Lion",
+          "slug": "coeur-de-lion",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Delizio",
+          "slug": "delizio",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Edam",
+          "slug": "edam",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Eimalzin",
+          "slug": "eimalzin",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Fromage du Valais",
+          "slug": "fromage-du-valais",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Galet de la Loire",
+          "slug": "galet-de-la-loire",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Germain",
+          "slug": "germain",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Giotto",
+          "slug": "giotto",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Heless",
+          "slug": "heless",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Hipp",
+          "slug": "hipp",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Iberico",
+          "slug": "iberico",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Johnson's Baby",
+          "slug": "johnsons-baby",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Jura",
+          "slug": "jura",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "L'Etivaz",
+          "slug": "letivaz",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "LU",
+          "slug": "lu",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Le Brebiou",
+          "slug": "le-brebiou",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Le Mar\u00e9chal",
+          "slug": "le-marechal",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Le Petit Chevrier",
+          "slug": "le-petit-chevrier",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Manella",
+          "slug": "manella",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Matzinger",
+          "slug": "matzinger",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Ma\u00eetre Truffout",
+          "slug": "maitre-truffout",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Medela",
+          "slug": "medela",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "MegaStar",
+          "slug": "megastar",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Milkana",
+          "slug": "milkana",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Mio",
+          "slug": "mio",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Mio Star",
+          "slug": "mio-star",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Nesquik",
+          "slug": "nesquik",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Neutrogena",
+          "slug": "neutrogena",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Nocciolata",
+          "slug": "nocciolata",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Oatly",
+          "slug": "oatly",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Queso Manchego",
+          "slug": "queso-manchego",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Rapilait",
+          "slug": "rapilait",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Ringo",
+          "slug": "ringo",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Saint Albray",
+          "slug": "saint-albray",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Sanissa",
+          "slug": "sanissa",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Sbrinz",
+          "slug": "sbrinz",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Stalden",
+          "slug": "stalden",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Subito",
+          "slug": "subito",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Tiger Kitchen",
+          "slug": "tiger-kitchen",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Tomme du Ch\u00e2telard",
+          "slug": "tomme-du-chatelard",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Weleda",
+          "slug": "weleda",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Yogurette",
+          "slug": "yogurette",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Z\u00fcger",
+          "slug": "zuger",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "alviana",
+          "slug": "alviana",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "pH balance",
+          "slug": "ph-balance",
+          "numberOfProducts": 1
+        }
+      ]
+    },
+    {
+      "id": "CATEGORY_LEVEL_4",
+      "name": "category_level_4",
+      "type": "SPLITTED",
+      "slug": "category-level-4",
+      "numberOfProducts": 724,
+      "values": [
+        {
+          "value": "Bars & sticks",
+          "slug": "bars-sticks",
+          "numberOfProducts": 54
+        },
+        {
+          "value": "Milk",
+          "slug": "milk",
+          "numberOfProducts": 53
+        },
+        {
+          "value": "Plant-based alternatives to milk",
+          "slug": "plant-based-alternatives-to-milk",
+          "numberOfProducts": 26
+        },
+        {
+          "value": "Starter formulas",
+          "slug": "starter-formulas",
+          "numberOfProducts": 17
+        },
+        {
+          "value": "UHT milk",
+          "slug": "uht-milk",
+          "numberOfProducts": 17
+        },
+        {
+          "value": "Sun cream",
+          "slug": "sun-cream",
+          "numberOfProducts": 14
+        },
+        {
+          "value": "Dairy desserts",
+          "slug": "dairy-desserts",
+          "numberOfProducts": 13
+        },
+        {
+          "value": "Chocolate biscuits",
+          "slug": "chocolate-biscuits",
+          "numberOfProducts": 12
+        },
+        {
+          "value": "Spreadable cheese",
+          "slug": "spreadable-cheese",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "Thailand",
+          "slug": "thailand",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "Gruy\u00e8re",
+          "slug": "gruyere",
+          "numberOfProducts": 8
+        },
+        {
+          "value": "Grated cheeses",
+          "slug": "grated-cheeses",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Showers",
+          "slug": "showers",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Boxes of pralines",
+          "slug": "boxes-of-pralines",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Double cream & single cream",
+          "slug": "double-cream-single-cream",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Yoghurts & desserts",
+          "slug": "yoghurts-desserts",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Plain",
+          "slug": "plain",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Snacks & appetisers",
+          "slug": "snacks-appetisers",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Classic soap",
+          "slug": "classic-soap",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Creams & mousses",
+          "slug": "creams-mousses",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Cutlery",
+          "slug": "cutlery",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Day cream",
+          "slug": "day-cream",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Moisturising cream",
+          "slug": "moisturising-cream",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Plant-based alternatives to yoghurts",
+          "slug": "plant-based-alternatives-to-yogh",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Quarks",
+          "slug": "quarks",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Raclettes",
+          "slug": "raclettes",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Fresh & pasteurised milk",
+          "slug": "fresh-pasteurised-milk",
+          "numberOfProducts": 67
+        },
+        {
+          "value": "Follow-on formulas",
+          "slug": "follow-on-formulas",
+          "numberOfProducts": 38
+        },
+        {
+          "value": "Chocolate snacks",
+          "slug": "chocolate-snacks",
+          "numberOfProducts": 33
+        },
+        {
+          "value": "Fruit & flavoured",
+          "slug": "fruit-flavoured",
+          "numberOfProducts": 9
+        },
+        {
+          "value": "Sliced cheeses",
+          "slug": "sliced-cheeses",
+          "numberOfProducts": 7
+        },
+        {
+          "value": "Chocolate balls",
+          "slug": "chocolate-balls",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Cheeses for kids",
+          "slug": "cheeses-for-kids",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Cr\u00e8me fra\u00eeche & sour cream",
+          "slug": "creme-fraiche-sour-cream",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Emmental",
+          "slug": "emmental",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Cleansers",
+          "slug": "cleansers",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Liquid soap",
+          "slug": "liquid-soap",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Ice lollies",
+          "slug": "ice-lollies",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Margarine",
+          "slug": "margarine",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "After-sun milk",
+          "slug": "after-sun-milk",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Anti-ageing cream",
+          "slug": "anti-ageing-cream",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Bath & shower",
+          "slug": "bath-shower",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Baths & bath salts",
+          "slug": "baths-bath-salts",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Chocolate muesli",
+          "slug": "chocolate-muesli",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Flans & rice pudding",
+          "slug": "flans-rice-pudding",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Ricotta & mascarpone",
+          "slug": "ricotta-mascarpone",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Risotto",
+          "slug": "risotto",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Roll-on",
+          "slug": "roll-on",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Dairy drinks",
+          "slug": "dairy-drinks",
+          "numberOfProducts": 66
+        },
+        {
+          "value": "Lotions & oils",
+          "slug": "lotions-oils",
+          "numberOfProducts": 13
+        },
+        {
+          "value": "Appenzeller & Tilsit",
+          "slug": "appenzeller-tilsit",
+          "numberOfProducts": 12
+        },
+        {
+          "value": "Cereals",
+          "slug": "cereals",
+          "numberOfProducts": 8
+        },
+        {
+          "value": "Make-up removers",
+          "slug": "make-up-removers",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Blue & blue-veined cheeses",
+          "slug": "blue-blue-veined-cheeses",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Chocolate-coated marshmallows",
+          "slug": "chocolate-coated-marshmallows",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Other kitchen appliances",
+          "slug": "other-kitchen-appliances",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Basmati & fragrant rice",
+          "slug": "basmati-fragrant-rice",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Truffles",
+          "slug": "truffles",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Other soft cheeses",
+          "slug": "other-soft-cheeses",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Parmesan",
+          "slug": "parmesan",
+          "numberOfProducts": 6
+        },
+        {
+          "value": "Condensed milk",
+          "slug": "condensed-milk",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Brioche",
+          "slug": "brioche",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Napolitains",
+          "slug": "napolitains",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "Other regions of Asia",
+          "slug": "other-regions-of-asia",
+          "numberOfProducts": 2
+        },
+        {
+          "value": "For Dolce Gusto",
+          "slug": "for-dolce-gusto",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Other cheeses",
+          "slug": "other-cheeses",
+          "numberOfProducts": 15
+        },
+        {
+          "value": "Face & body care",
+          "slug": "face-body-care",
+          "numberOfProducts": 5
+        },
+        {
+          "value": "Alcohol-flavoured",
+          "slug": "alcohol-flavoured",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Masks",
+          "slug": "masks",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Goat & sheep",
+          "slug": "goat-sheep",
+          "numberOfProducts": 22
+        },
+        {
+          "value": "Filled",
+          "slug": "filled",
+          "numberOfProducts": 17
+        },
+        {
+          "value": "Preparation",
+          "slug": "preparation",
+          "numberOfProducts": 4
+        },
+        {
+          "value": "Other bars",
+          "slug": "other-bars",
+          "numberOfProducts": 3
+        },
+        {
+          "value": "Lip care",
+          "slug": "lip-care",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Normal hair",
+          "slug": "normal-hair",
+          "numberOfProducts": 1
+        },
+        {
+          "value": "Other accessories",
+          "slug": "other-accessories",
+          "numberOfProducts": 2
+        }
+      ]
+    }
+  ],
+  "labels": [
+    {
+      "id": "promotion",
+      "name": "Promotions",
+      "slug": "promotion",
+      "numberOfProducts": 67
+    },
+    {
+      "id": "PRODUCT_BIO",
+      "name": "Organic",
+      "slug": "product_bio",
+      "numberOfProducts": 110
+    },
+    {
+      "id": "PRODUCT_OF_SWITZERLAND",
+      "name": "Swiss product",
+      "slug": "product_of_switzerland",
+      "numberOfProducts": 140
+    },
+    {
+      "id": "DIETARY_BOOLEAN_FILTER_VEGETARIAN",
+      "name": "Vegetarian",
+      "slug": "vegetarian",
+      "numberOfProducts": 28
+    },
+    {
+      "id": "DIETARY_BOOLEAN_FILTER_VEGAN",
+      "name": "Vegan",
+      "slug": "vegan",
+      "numberOfProducts": 35
+    },
+    {
+      "id": "DIETARY_BOOLEAN_FILTER_GLUTEN_FREE",
+      "name": "Gluten-free",
+      "slug": "gluten-free",
+      "numberOfProducts": 8
+    },
+    {
+      "id": "DIETARY_BOOLEAN_FILTER_LACTOSE_FREE",
+      "name": "Lactose-free",
+      "slug": "lactose-free",
+      "numberOfProducts": 33
+    },
+    {
+      "id": "PRODUCT_NO_ADDED_SUGAR",
+      "name": "No added sugar",
+      "slug": "product_no_added_sugar",
+      "numberOfProducts": 50
+    }
+  ],
+  "groupedLabels": [
+    {
+      "id": "PRODUCT_SPECIAL_NUTRITION",
+      "name": "Special Nutrition",
+      "slug": "product_special_nutrition",
+      "values": [
+        {
+          "id": "vegan",
+          "name": "Vegan",
+          "slug": "vegan",
+          "numberOfProducts": 35
+        },
+        {
+          "id": "lactose-free",
+          "name": "Lactose-free",
+          "slug": "lactose-free",
+          "numberOfProducts": 33
+        },
+        {
+          "id": "vegetarian",
+          "name": "Vegetarian",
+          "slug": "vegetarian",
+          "numberOfProducts": 28
+        },
+        {
+          "id": "gluten-free",
+          "name": "Gluten-free",
+          "slug": "gluten-free",
+          "numberOfProducts": 8
+        }
+      ]
+    }
+  ],
+  "migrosLabels": [
+    {
+      "id": "L53",
+      "value": {
+        "en": "Swissness",
+        "de": "Swissness",
+        "fr": "Swissness",
+        "it": "Swissness"
+      },
+      "slug": {
+        "en": "swissness",
+        "de": "swissness",
+        "fr": "swissness",
+        "it": "swissness"
+      },
+      "numberOfProducts": 286
+    },
+    {
+      "id": "L71",
+      "value": {
+        "en": "Rainforest Alliance",
+        "de": "Rainforest Alliance",
+        "fr": "Rainforest Alliance",
+        "it": "Rainforest Alliance"
+      },
+      "slug": {
+        "en": "rainforest-alliance",
+        "de": "rainforest-alliance",
+        "fr": "rainforest-alliance",
+        "it": "rainforest-alliance"
+      },
+      "numberOfProducts": 145
+    },
+    {
+      "id": "L28",
+      "value": {
+        "en": "Aus der Region. F\u00fcr die Region.",
+        "de": "Aus der Region",
+        "fr": "De la r\u00e9gion. Pour la r\u00e9gion.",
+        "it": "De la r\u00e9gion"
+      },
+      "slug": {
+        "en": "aus-der-region-fur-die-region",
+        "de": "aus-der-region",
+        "fr": "de-la-region-pour-la-region",
+        "it": "de-la-region"
+      },
+      "numberOfProducts": 70
+    },
+    {
+      "id": "L03",
+      "value": {
+        "en": "IP-SUISSE",
+        "de": "IP-SUISSE",
+        "fr": "IP-SUISSE",
+        "it": "IP-SUISSE"
+      },
+      "slug": {
+        "en": "ip-suisse",
+        "de": "ip-suisse",
+        "fr": "ip-suisse",
+        "it": "ip-suisse"
+      },
+      "numberOfProducts": 63
+    },
+    {
+      "id": "L75",
+      "value": {
+        "en": "Bio Suisse Knospe",
+        "de": "Bio Suisse Knospe",
+        "fr": "Bio Suisse Knospe",
+        "it": "Bio Suisse Knospe"
+      },
+      "slug": {
+        "en": "bio-suisse-knospe",
+        "de": "bio-suisse-knospe",
+        "fr": "bio-suisse-knospe",
+        "it": "bio-suisse-knospe"
+      },
+      "numberOfProducts": 28
+    },
+    {
+      "id": "L57",
+      "value": {
+        "en": "V-Label vegan",
+        "de": "V-Label vegan",
+        "fr": "V-Label vegan",
+        "it": "V-Label vegan"
+      },
+      "slug": {
+        "en": "v-label-vegan",
+        "de": "v-label-vegan",
+        "fr": "v-label-vegan",
+        "it": "v-label-vegan"
+      },
+      "numberOfProducts": 17
+    },
+    {
+      "id": "L55",
+      "value": {
+        "en": "Vegan Flower",
+        "de": "Veganblume",
+        "fr": "Vegan Flower",
+        "it": "Vegan Flower"
+      },
+      "slug": {
+        "en": "vegan-flower",
+        "de": "veganblume",
+        "fr": "vegan-flower",
+        "it": "vegan-flower"
+      },
+      "numberOfProducts": 15
+    },
+    {
+      "id": "L15",
+      "value": {
+        "en": "aha!",
+        "de": "aha!",
+        "fr": "aha!",
+        "it": "aha!"
+      },
+      "slug": {
+        "en": "aha",
+        "de": "aha",
+        "fr": "aha",
+        "it": "aha"
+      },
+      "numberOfProducts": 12
+    },
+    {
+      "id": "L56",
+      "value": {
+        "en": "Demeter",
+        "de": "Demeter",
+        "fr": "Demeter",
+        "it": "Demeter"
+      },
+      "slug": {
+        "en": "demeter",
+        "de": "demeter",
+        "fr": "demeter",
+        "it": "demeter"
+      },
+      "numberOfProducts": 9
+    },
+    {
+      "id": "L73",
+      "value": {
+        "en": "Bio Knospe",
+        "de": "Bio Knospe",
+        "fr": "Bio Knospe",
+        "it": "Bio Knospe"
+      },
+      "slug": {
+        "en": "bio-knospe",
+        "de": "bio-knospe",
+        "fr": "bio-knospe",
+        "it": "bio-knospe"
+      },
+      "numberOfProducts": 8
+    },
+    {
+      "id": "L04",
+      "value": {
+        "en": "FAIRTRADE MAX HAVELAAR",
+        "de": "Fairtrade Max Havelaar",
+        "fr": "Fairtrade Max Havelaar",
+        "it": "Fairtrade Max Havelaar"
+      },
+      "slug": {
+        "en": "fairtrade-max-havelaar",
+        "de": "fairtrade-max-havelaar",
+        "fr": "fairtrade-max-havelaar",
+        "it": "fairtrade-max-havelaar"
+      },
+      "numberOfProducts": 5
+    },
+    {
+      "id": "L58",
+      "value": {
+        "en": "V-Label vegetarisch",
+        "de": "V-Label vegetarisch",
+        "fr": "V-Label vegetarisch",
+        "it": "V-Label vegetarisch"
+      },
+      "slug": {
+        "en": "v-label-vegetarisch",
+        "de": "v-label-vegetarisch",
+        "fr": "v-label-vegetarisch",
+        "it": "v-label-vegetarisch"
+      },
+      "numberOfProducts": 2
+    },
+    {
+      "id": "L61",
+      "value": {
+        "en": "Fols\u00e4ure",
+        "de": "Fols\u00e4ure",
+        "fr": "Fols\u00e4ure fr",
+        "it": "Fols\u00e4ure it"
+      },
+      "slug": {
+        "en": "folsaure",
+        "de": "folsaeure",
+        "fr": "folsaure-fr",
+        "it": "folsaure-it"
+      },
+      "numberOfProducts": 1
+    },
+    {
+      "id": "L88",
+      "value": {
+        "en": "Nostrani del Ticino",
+        "de": "Nostrani del Ticino",
+        "fr": "Nostrani del Ticino",
+        "it": "Nostrani del Ticino"
+      },
+      "slug": {
+        "en": "nostrani-del-ticino",
+        "de": "nostrani-del-ticino",
+        "fr": "nostrani-del-ticino",
+        "it": "nostrani-del-ticino"
+      },
+      "numberOfProducts": 1
+    }
+  ],
+  "additionalFields": {},
+  "semanticResults": false,
+  "numberOfProducts": 724,
+  "offset": 100
+}
